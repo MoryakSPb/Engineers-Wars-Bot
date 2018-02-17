@@ -1,3 +1,1 @@
-Программа для автоматизации действий, соверщаемых игроками, уаствующих в проекте Engineers Wars
-
-VK: https://vk.com/enwars
+![Build Status](https://travis-ci.org/MoryakSPb/Engineers-Wars-Bot.svg?branch=master)
