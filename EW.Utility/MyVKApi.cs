@@ -50,7 +50,7 @@ namespace EW.Utility
 
         public void SetLastApi() => LastApi = this;
 
-        public async void StartListen()
+        public void StartListen()
         {
             _httpListener.Start();
             while (_httpListener.IsListening)
