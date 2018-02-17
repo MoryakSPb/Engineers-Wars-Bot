@@ -2,3 +2,7 @@ language: csharp
 solution: EW.sln
 mono: none
 dotnet: 2.0.3
+before_script:
+  - dotnet restore
+  script:    # the following commands are just examples, use whatever your build process requires
+  - ./build.sh
