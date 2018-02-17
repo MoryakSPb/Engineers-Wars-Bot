@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -67,6 +66,7 @@ namespace EW
             Console.ForegroundColor = ConsoleColor.Red;
             Exception e = (Exception) a.ExceptionObject;
             Console.WriteLine($"{DateTime.Now}: Критическая ошибка: {e}");
+            Console.WriteLine("Нажмите любую клавишу для выхода…");
             Console.ReadKey();
         }
     }

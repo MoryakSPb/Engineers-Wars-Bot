@@ -1,4 +1,4 @@
-﻿namespace EW.ObjectModel.News
+﻿namespace EW.ObjectModel
 {
     public class MyNewsSectorOwnerChanged : AMyNews
     {

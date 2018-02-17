@@ -21,8 +21,8 @@ namespace EW.Utility
                 private const char Inf = '∞';
         */
         static private readonly MyBotRegisterApi RegApi = new MyBotRegisterApi();
+        private readonly MyBotFactionApi _factionApi;
         private readonly int _id;
-        private readonly MyBotFactionApi factionApi;
 
         private MyBotApi _api;
         private MyPlayer _player;
@@ -40,8 +40,8 @@ namespace EW.Utility
                 _api = null;
             }
 
-            if (_player is object && _player.IsFactionLeader && !_player.IsBanned)
-                factionApi = new MyBotFactionApi(_player);
+            if (_player != null && _player.IsFactionLeader && !_player.IsBanned)
+                _factionApi = new MyBotFactionApi(_player);
         }
 
         public string ExecuteCommand(string command, out string title)
@@ -407,7 +407,7 @@ namespace EW.Utility
                                 return "Неверный формат аргумента";
                             }
 
-                            switch (factionApi.SetBuild((ShipType) Convert.ToInt32(arguments[2])))
+                            switch (_factionApi.SetBuild((ShipType) Convert.ToInt32(arguments[2])))
                             {
                                 case MyBotFactionApi.MySetBuildResult.Ok:
                                     return "Корабль находится в очереди на строительство";
@@ -419,7 +419,7 @@ namespace EW.Utility
                         }
                         case "cancelbuild":
                         case "отменитьстроительство":
-                            return factionApi.CancelBuild() ? "Строительство отменено" : "Очередь пуста";
+                            return _factionApi.CancelBuild() ? "Строительство отменено" : "Очередь пуста";
                         case "buildimprovement":
                         case "построитьулучшение":
                         {
@@ -429,7 +429,7 @@ namespace EW.Utility
                             try
                             {
                                 Enum.IsDefined(typeof(SectorImprovementType), Convert.ToInt32(arguments[3]));
-                                switch (factionApi.BuildImprovement(sector, (SectorImprovementType) Convert.ToInt32(arguments[3])))
+                                switch (_factionApi.BuildImprovement(sector, (SectorImprovementType) Convert.ToInt32(arguments[3])))
                                 {
                                     case MyBotFactionApi.MyBuildImprovementResult.Ok: return "Улучшение построено";
                                     case MyBotFactionApi.MyBuildImprovementResult.NoResourses: return "Недостаточно ресурсов";
@@ -446,8 +446,67 @@ namespace EW.Utility
                                 return "Неверно указан тип улучшения";
                             }
                         }
-                        case "":
-
+                        case "upgrateimprovement":
+                        case "улучшитьулучшение":
+                        {
+                            if (arguments.Length < 3) return "Неверное количество аргументов";
+                            MySector sector = MySave.Sectors.Find(x => x.Name == arguments[2]);
+                            if (sector is null) return "Сектор не найден";
+                            switch (_factionApi.UpgrateImprovement(sector))
+                            {
+                                case MyBotFactionApi.MySectorUpdateResult.Ok: return "Уровень улучшения повышен";
+                                case MyBotFactionApi.MySectorUpdateResult.EmptySector: return "Сектор не имеет улучшений";
+                                case MyBotFactionApi.MySectorUpdateResult.NotOwner: return "Вы не являеетесь владельцем сектора";
+                                case MyBotFactionApi.MySectorUpdateResult.NoResourses: return "Недостаточно ресурсов";
+                                case MyBotFactionApi.MySectorUpdateResult.NotAvalable: return "Повышение уровня недоступно";
+                                case MyBotFactionApi.MySectorUpdateResult.NoPoints: return "Недостаточно очков строительства";
+                                default: throw new ArgumentOutOfRangeException();
+                            }
+                        }
+                        case "go":
+                        case "идти":
+                        {
+                            if (arguments.Length < 3) return "Неверное количество аргументов";
+                            MySector sector = MySave.Sectors.Find(x => x.Name == arguments[2]);
+                            if (sector is null) return "Сектор не найден";
+                            switch (_factionApi.Go(sector))
+                            {
+                                case MyBotFactionApi.MySectorGoResult.Ok: return "Сектор теперь под вашим контролем";
+                                case MyBotFactionApi.MySectorGoResult.YourSector: return "Сектор уже под вашим контролем";
+                                case MyBotFactionApi.MySectorGoResult.NoContacts: return "Нет прямого пути к сектору";
+                                case MyBotFactionApi.MySectorGoResult.OtherFaction: return "Сектор контролируется другой фракцией"; //TODO
+                                case MyBotFactionApi.MySectorGoResult.NoAttack: return "Нет возможности атаки сектора. Ожидайте следующего хода";
+                                default: throw new ArgumentOutOfRangeException();
+                            }
+                        }
+                        case "attack":
+                        case "атаковать":
+                        {
+                            if (arguments.Length < 4) return "Неверное количество аргументов";
+                            MySector sector = MySave.Sectors.Find(x => x.Name == arguments[2]);
+                            if (sector is null) return "Сектор не найден";
+                            if (!TimeSpan.TryParse(arguments[3], out TimeSpan time)) return "Неверный формат времени";
+                            switch (_factionApi.Attack(sector, time, out MySectorFight fight))
+                            {
+                                case MyBotFactionApi.MySectorAttackResult.Ok:
+                                {
+                                    MySave.Fights = MySave.Fights.Add(fight);
+                                    return "Битва запланированна";
+                                }
+                                case MyBotFactionApi.MySectorAttackResult.OkNoFight: return "Сектор был взят без боя";
+                                case MyBotFactionApi.MySectorAttackResult.YourSector: return "Сектор уже под вашим контролем";
+                                case MyBotFactionApi.MySectorAttackResult.NoContacts: return "Нет прямого пути к сектору";
+                                case MyBotFactionApi.MySectorAttackResult.NoAttack: return "Нет возможности атаки сектора. Ожидайте следующего хода";
+                                case MyBotFactionApi.MySectorAttackResult.NoWar: return "Вы не находитесь в состоянии войны с владельцем сектора";
+                                case MyBotFactionApi.MySectorAttackResult.InvalidYourTime: return "Вы не активны в это время. Измените время активности"; //TODO
+                                case MyBotFactionApi.MySectorAttackResult.InvalidEnemyTime: return "Противник не активен в это время";
+                                case MyBotFactionApi.MySectorAttackResult.InvalidAdminTime: return "Нет ни одного администратора, готового провести бой в заданное время";
+                                default: throw new ArgumentOutOfRangeException();
+                            }
+                        }
+                        case "starttradeship":
+                        case "запуститьторговыйкорабль": return _factionApi.StartTradeShip() ? "Торговый корабль запущен" : "Торговый корабль не запущен. Ожидайте следующего хода";
+                        
                         default:
                             return "Неизвестная команда. Используйте команду \"ботфракция помощь\" для получения справки";
                     }
@@ -658,8 +717,8 @@ NextTurn - Начинает следующий ход.
                             if (player.Status != PlayerStatus.FactionMember) return "Игрок не состоит во фракции";
                             player.IsFactionLeader = !player.IsFactionLeader;
                             return player.IsFactionLeader ? "Игрок теперь лидер фракции" : "Игрок больше не лидер фракции";
-                                }
-                            case "giveresourses":
+                        }
+                        case "giveresourses":
                         {
                             if (arguments.Length < 9) return "Неверное количество аргументов";
                             MyFaction faction = MySave.Factions.Find(x => x.Tag == arguments[2]);
@@ -867,8 +926,7 @@ NextTurn - Начинает следующий ход.
                         {
                             return @"gc.collect - начинает сборку мусора.
 setplayeradmin [Ник] - дает или убирает права администратора у игрока.
-clear - отчищает консоль.
-DisableConsole - отключает консоль";
+clear - отчищает консоль.";
                         }
                         case "gc.collect":
                         {
@@ -891,11 +949,11 @@ DisableConsole - отключает консоль";
                             Console.Clear();
                             return string.Empty;
                         }
-                        case "disableconsole":
+                        /*case "disableconsole":
                         {
                             MyExtensions.FreeConsole();
                             return string.Empty;
-                        }
+                        }*/
                         default:
                             return "Неизвестная команда. Используйте команду \"botconsole help\" для получения справки";
                     }

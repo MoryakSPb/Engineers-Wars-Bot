@@ -166,7 +166,7 @@ namespace EW.Utility.Api
         {
             if (sector.Tag != Tag) return MyDestroyImprovementResult.NotOwner;
             if (sector.Improvement.Type == 0) return MyDestroyImprovementResult.EmptySector;
-            var (buyable, cost, service) = SMyEconomyConsts.SectorImprovements[sector.Improvement];
+            var (buyable, cost, _) = SMyEconomyConsts.SectorImprovements[sector.Improvement];
             if (!buyable) return MyDestroyImprovementResult.NotAvalable;
             sector.Improvement = (SectorImprovementType.None, 0);
             _faction.Resourses += cost / 2;

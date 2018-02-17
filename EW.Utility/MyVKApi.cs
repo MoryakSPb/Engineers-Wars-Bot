@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -31,8 +32,8 @@ namespace EW.Utility
         static private readonly byte[] OkArray = {111, 107};
 
         static private int _avalableCalls = 20;
-        private readonly HttpListener _httpListener = new HttpListener();
         private readonly HttpClient _httpClient = new HttpClient();
+        private readonly HttpListener _httpListener = new HttpListener();
         static public MyVkApi LastApi { get; private set; }
 
         internal bool IsListening => _httpListener.IsListening;
@@ -49,7 +50,7 @@ namespace EW.Utility
 
         public void SetLastApi() => LastApi = this;
 
-        public void StartListen()
+        public async void StartListen()
         {
             _httpListener.Start();
             while (_httpListener.IsListening)
@@ -71,10 +72,9 @@ namespace EW.Utility
                 {
                     Console.WriteLine($"{DateTime.Now}: Отправлен ответ \"OK\" ВК");
                 }
-                catch (Exception )
+                catch (IOException)
                 {
                 }
-                
             }
 
             void Task2()
@@ -101,15 +101,16 @@ namespace EW.Utility
                     Console.ForegroundColor = ConsoleColor.Green;
                     throw;
                 }
+
                 DateTime t2 = DateTime.Now;
                 try
                 {
                     Console.WriteLine($"{DateTime.Now}: Затрачено мс: {(t2 - t1).TotalMilliseconds}");
                 }
-                catch (Exception )
+                catch (Exception)
                 {
+                    // ignored
                 }
-                
             }
 
             Parallel.Invoke(Task1, Task2);
@@ -143,7 +144,7 @@ namespace EW.Utility
                                                        };
             HttpContent content = new FormUrlEncodedContent(post);
             _avalableCalls--;
-            _ = _httpClient.PostAsync(MessageSend, content).Result;
+            _httpClient.PostAsync(MessageSend, content);
         }
 
         public void SendMessage(int[] vkIDs, string message, int messId = 0, string title = "")

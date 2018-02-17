@@ -1,18 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 namespace EW.Utility
 {
     static public class MyExtensions
     {
-        [DllImport("kernel32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static public extern bool AllocConsole();
-
-        [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
-        static public extern bool FreeConsole();
-
         static public DateTime CreateDateTimeFromUnixtime(this sbyte timestamp) => new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(timestamp);
 
         static public DateTime CreateDateTimeFromUnixtime(this byte timestamp) => new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(timestamp);

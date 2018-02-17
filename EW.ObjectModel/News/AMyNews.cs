@@ -2,6 +2,8 @@
 using System.Globalization;
 using System.Runtime.Serialization;
 
+// ReSharper disable ImpureMethodCallOnReadonlyValueField
+
 namespace EW.ObjectModel
 {
     [DataContract]

@@ -16,7 +16,7 @@ namespace EW.Utility
         /*
         private const string SavePath = "C:\\ProgramData\\EngineersWars\\Save\\";
 */
-        private const string SavePathPlayers = @"C:\ProgramData\EngineersWars\Save\Players\";
+        /*private const string SavePathPlayers = @"C:\ProgramData\EngineersWars\Save\Players\";
         private const string SavePathFactions = "C:\\ProgramData\\EngineersWars\\Save\\Factions\\";
         private const string SavePathSectors = "C:\\ProgramData\\EngineersWars\\Save\\Sectors\\";
         private const string SavePathPolitics = "C:\\ProgramData\\EngineersWars\\Save\\Politics\\";
@@ -24,7 +24,17 @@ namespace EW.Utility
         private const string SavePathOffers = "C:\\ProgramData\\EngineersWars\\Save\\Offers\\";
         private const string SavePathScripts = "C:\\ProgramData\\EngineersWars\\Save\\Scripts\\";
         private const string SavePathTimers = "C:\\ProgramData\\EngineersWars\\Save\\Timers\\";
-        private const string BotSettingsFile = "C:\\ProgramData\\EngineersWars\\BotSettings.json";
+        private const string BotSettingsFile = "C:\\ProgramData\\EngineersWars\\BotSettings.json";*/
+
+        private const string SavePathPlayers = @"Save\Players\";
+        private const string SavePathFactions = "Save\\Factions\\";
+        private const string SavePathSectors = "Save\\Sectors\\";
+        private const string SavePathPolitics = "Save\\Politics\\";
+        private const string SavePathFights = "Save\\Fights\\";
+        private const string SavePathOffers = "Save\\Offers\\";
+        private const string SavePathScripts = "Save\\Scripts\\";
+        private const string SavePathTimers = "Save\\Timers\\";
+        private const string BotSettingsFile = "BotSettings.json";
 
         static public ImmutableList<MyPlayer> Players;
         static internal ImmutableList<MyFaction> Factions;
