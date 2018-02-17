@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <ApplicationIcon />
+    <StartupObject>EW.Program</StartupObject>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <NeutralLanguage>ru-RU</NeutralLanguage>
+    <PackageProjectUrl>https://vk.com/enwars</PackageProjectUrl>
+    <Authors>MoryakSPb</Authors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>7.2</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DefineConstants>RELEASE;NETCOREAPP2_0</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EW.ObjectModel\EW.ObjectModel.csproj" />
+    <ProjectReference Include="..\EW.Utility\EW.Utility.csproj" />
+  </ItemGroup>
+
+</Project>
