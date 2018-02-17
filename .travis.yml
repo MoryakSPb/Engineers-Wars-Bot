@@ -2,7 +2,6 @@ language: csharp
 solution: EW.sln
 mono: none
 dotnet: 2.0.3
-before_script:
-  - dotnet restore
-  script:
-  - dotnet build ./src/EW.dll -c Release -f netcoreapp2.0
+script:
+- dotnet restore
+- dotnet build ./src/ -c Release -f netcoreapp2.0
