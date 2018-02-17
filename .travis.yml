@@ -1,5 +1,4 @@
 language: csharp
 solution: EW.sln
 dotnet: 2.0.5
-script:
- - dotnet restore
+os: windows
