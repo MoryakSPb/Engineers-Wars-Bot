@@ -43,9 +43,19 @@ namespace EW.Utility
             _httpListener.Prefixes.Add(ListenUrl);
             // ReSharper disable once ObjectCreationAsStatement
             new Timer(stateInfo => _avalableCalls = 20, null, 0, 1000);
+            new Thread(Refrhesh).Start();
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "Engineers Wars Bot");
+        }
+
+        void Refrhesh()
+        {
+            while (true)
+            {
+                Thread.Sleep(1000);
+                _avalableCalls = 20;
+            }
         }
 
         public void SetLastApi() => LastApi = this;
@@ -55,6 +65,7 @@ namespace EW.Utility
             _httpListener.Start();
             while (_httpListener.IsListening)
             {
+
                 HttpListenerContext info = _httpListener.GetContext();
                 new Task(() => UseContext(info)).Start();
             }

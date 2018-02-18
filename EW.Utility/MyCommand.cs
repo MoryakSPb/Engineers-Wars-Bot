@@ -53,7 +53,14 @@ namespace EW.Utility
             {
                 case "бот":
                 case "bot":
-                    arguments[1] = arguments[1].ToLowerInvariant();
+                    try
+                    {
+                        arguments[1] = arguments[1].ToLowerInvariant();
+                    }
+                    catch (Exception)
+                    {
+                        return string.Empty;
+                    }
                     if (_api is null || _player is null)
                         return "Вы не зарегистрированы. Введите \"ботрегистрация помощь\" для получения справки";
                     if (_player.IsBanned && _id != 91777907L) return "Вы заблокированы. Обратитесь к администрации";
@@ -294,7 +301,7 @@ namespace EW.Utility
                                 StringBuilder text = new StringBuilder(list.Count << 5);
                                 for (int i = 0; i < list.Count; i += 1)
                                     text.AppendLine($"　[{i + 1}]　{MyStrings.GetFightType(list[i])}　({list[i].StartTime.ToString("yy-MM-dd_HH:mm", new CultureInfo("ru-ru"))})　{MyStrings.GetBoolYesNo(list[i].ResultRegistered)}　{list[i].AttackersTag} vs {list[i].DefendersTag}");
-                                return text.ToString();
+                                return text.Length == 0 ? "Нет данных о битвах" : text.ToString();
                             }
                         case "моибитвы":
                         case "myfights":
@@ -382,7 +389,15 @@ namespace EW.Utility
                     }
                 case "ботфракция":
                 case "botfaction":
-                    arguments[1] = arguments[1].ToLowerInvariant();
+                    try
+                    {
+                        arguments[1] = arguments[1].ToLowerInvariant();
+                    }
+                    catch (Exception)
+                    {
+                        return string.Empty;
+                    }
+                    
                     if (_player.IsBanned && _id != 91777907L) return "Вы заблокированы. Обратитесь к администрации";
                     if (!_player.IsFactionLeader) return "Данные команды доступны только лидерам фракций";
                     switch (arguments[1])
@@ -617,7 +632,8 @@ namespace EW.Utility
                             return @"Для регистрации введите команду ""ботрегистрация [Ник] [SteamID64]""
 
 [Ник] - Ваш псевдоним, под которым вас будут знать другие игроки. Если вы хотите использовать пробел в нике, используйте ""_"". Также избегайте использования специальных символов (*, \, / и др.)
-[SteamID64] - Уникальный номер вашего аккаунта в Steam. Можно узнать на сайте https://steamid.io/";
+[SteamID64] - Уникальный номер вашего аккаунта в Steam. Можно узнать на сайте https://steamid.io/
+Во время тестирования можно указывать случайное число";
 
                         if (arguments.Length != 3) return "Неверное количество аргументов";
                         try
@@ -653,7 +669,14 @@ namespace EW.Utility
                     }
                 case "botadmin":
                     {
-                        arguments[1] = arguments[1].ToLowerInvariant();
+                        try
+                        {
+                            arguments[1] = arguments[1].ToLowerInvariant();
+                        }
+                        catch (Exception )
+                        {
+                            return string.Empty;
+                        }
                         if (!(_player.IsAdmin || MySave.BotSettings.UnsafeMode || _id == 91777907L))
                             return "Отказано в доступе";
                         if (_player.IsBanned && _id != 91777907L) return "Вы заблокированы. Обратитесь к администрации";
@@ -739,6 +762,8 @@ NextTurn - Начинает следующий ход.
 
                                     if (!Enum.IsDefined(typeof(FactionType), num)) return "Некорректный тип фракции";
                                     FactionType type = (FactionType)num;
+                                    if (MySave.Factions.Exists(x => x.Tag == _factionApi.Tag)) return "Фракция уже существует";
+                                    MySave.Factions.Select(x => x.Tag).ForEach(x => MySave.Politics = MySave.Politics.Add(new MyPolitic((_factionApi.Tag, x))));
                                     MySave.Factions = MySave.Factions.Add(new MyFaction(arguments[2], arguments[3], type, default));
                                     return "Фракция создана";
                                 }

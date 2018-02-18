@@ -31,6 +31,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Save\**" />
+    <EmbeddedResource Remove="Save\**" />
+    <None Remove="Save\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="BotSettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\EW.ObjectModel\EW.ObjectModel.csproj" />
     <ProjectReference Include="..\EW.Utility\EW.Utility.csproj" />
   </ItemGroup>

@@ -5,6 +5,13 @@
         private bool _mPact;
         protected (string, string) MFactions;
         protected bool MUnion;
+
+        public MyPolitic((string, string) mFactions)
+        {
+            MFactions = mFactions;
+            Status = MyPoliticStatus.Neutral;
+        }
+
         public string Id => Factions.Item1 + "-" + Factions.Item2;
         public string Id2 => Factions.Item2 + "-" + Factions.Item1;
 
@@ -32,15 +39,11 @@
 
         public void NextTurn()
         {
-            if (Pact)
-            {
-                --PactTurns;
-                if ((PactTurns <= 0) & (Status != MyPoliticStatus.Ally))
-                {
-                    Pact = false;
-                    PactTurns = 0;
-                }
-            }
+            if (!Pact) return;
+            --PactTurns;
+            if (!((PactTurns <= 0) & (Status != MyPoliticStatus.Ally))) return;
+            Pact = false;
+            PactTurns = 0;
         }
     }
 

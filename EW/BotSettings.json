@@ -1,9 +1,1 @@
-{
-  "ActivityTime": { "Item1": "PT20H", "Item2": "PT23H" },
-  "ConfirmMode": false,
-  "ConfirmString": "123456",
-  "EnableFights": true,
-  "SecretCode": "S9XjgMqA9Z6sVaZUUQ9hNuXmWkWGVvHVJRAG594V9V377Y4kZJ",
-  "UnsafeMode": true,
-  "VkToken": "2857965db5c4e567bf95ca9d21b1f0b43d5bb9dc8c5996acb1bc1448a62613c3f5b40c23fe44140dffc96"
-}
+{"ActivityTime":{"Item1":"PT20H","Item2":"PT23H"},"ConfirmMode":false,"ConfirmString":"123456","EnableFights":true,"SecretCode":"S9XjgMqA9Z6sVaZUUQ9hNuXmWkWGVvHVJRAG594V9V377Y4kZJ","UnsafeMode":true,"VkToken":"2857965db5c4e567bf95ca9d21b1f0b43d5bb9dc8c5996acb1bc1448a62613c3f5b40c23fe44140dffc96"}
