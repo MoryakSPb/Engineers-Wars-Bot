@@ -16,20 +16,23 @@ namespace EW.ObjectModel
         [DataMember] public readonly MyOfferType OfferType;
 
         [DataMember] public readonly MyOfferOptions Options;
+        [DataMember] public readonly int PactTurns;
 
         [DataMember] public (MyTradeResourses, MyTradeResourses) Deal;
 
         [DataMember]
         public (bool?, bool?) Confirm { get; set; }
 
-        public MyOffer((string, string) factions, bool creator, (bool, bool) confirm, MyOfferType offerType, MyOfferOptions options, (MyTradeResourses, MyTradeResourses) deal)
+        public MyOffer((string, string) factions, bool creator, (bool, bool) confirm, MyOfferType offerType, MyOfferOptions options, (MyTradeResourses, MyTradeResourses) deal, int pactTurns)
         {
             Factions = factions;
             Creator = creator;
             Confirm = confirm;
             OfferType = offerType;
             Options = options;
-            Deal = deal;
+            if ((OfferType == MyOfferType.WarToNeutral) || (OfferType == MyOfferType.NeutralToAlly)|| (OfferType == MyOfferType.Default)) Deal = deal;
+            else Deal = default;
+            PactTurns = pactTurns;
         }
     }
 

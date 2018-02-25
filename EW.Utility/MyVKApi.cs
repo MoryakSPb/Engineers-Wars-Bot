@@ -49,7 +49,7 @@ namespace EW.Utility
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "Engineers Wars Bot");
         }
 
-        void Refrhesh()
+        static void Refrhesh()
         {
             while (true)
             {
@@ -125,8 +125,18 @@ namespace EW.Utility
             }
 
             Parallel.Invoke(Task1, Task2);
-            context.Response.Close();
-            context.Request.InputStream.Close();
+            try
+            {
+                context.Response.Close();
+                context.Request.InputStream.Close();
+            }
+            catch (Exception )
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"{DateTime.Now}: Ошибка при отправке данных в ВК");
+                Console.ForegroundColor = ConsoleColor.Green;
+            }
+
         }
 
         public void SendMessage(int vkId, string message, int messId, string title = "")

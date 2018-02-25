@@ -1,4 +1,5 @@
-﻿using EW.ObjectModel;
+﻿using System;
+using EW.ObjectModel;
 
 namespace EW.Utility
 {
@@ -92,9 +93,40 @@ namespace EW.Utility
 
         static internal string GetFightType(AMyFight fight)
         {
-            if (fight is MySectorFight) return Flag;
-            if (fight is MyTradeShipFight) return Rocket;
-            return "⚔";
+            switch (fight)
+            {
+                case MySectorFight _:
+                    return Flag;
+                case MyTradeShipFight _:
+                    return Rocket;
+                default: return "⚔";
+            }
+        }
+
+        static internal string GetOfferType(MyOfferType type)
+        {
+            switch (type)
+            {
+                case MyOfferType.Default: return "Торговый";
+                case MyOfferType.WarToNeutral: return "Заключение мира";
+                case MyOfferType.NeutralToAlly: return "Союзный договор";
+                case MyOfferType.AllyToNeutral: return "Разрыв союзного договора";
+                case MyOfferType.NeutralToWar: return "Объявление войны";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+        }
+
+        static internal string GetOfferOptions(MyOfferOptions opt)
+        {
+            switch (opt)
+            {
+                case MyOfferOptions.Trade:return string.Empty;
+                case MyOfferOptions.CreatePact: return "Мирный договор";
+                case MyOfferOptions.ChangeUnion: return "Оборонительный союз";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(opt), opt, null);
+            }
         }
 
         static internal string GetBoolOnOff(bool logic) => logic ? "включено" : "выключено";
