@@ -14,6 +14,7 @@ namespace EW.ObjectModel
         [DataMember] public readonly (string, string) Factions;
 
         [DataMember] public readonly MyOfferType OfferType;
+        [DataMember] public bool Confirmed;
 
         [DataMember] public readonly MyOfferOptions Options;
         [DataMember] public readonly int PactTurns;

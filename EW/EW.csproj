@@ -9,13 +9,14 @@
     <NeutralLanguage>ru-RU</NeutralLanguage>
     <PackageProjectUrl>https://vk.com/enwars</PackageProjectUrl>
     <Authors>MoryakSPb</Authors>
-    <Version>0.0.1-ALPHA</Version>
+    <Version>0.0.2.0-ALPHA</Version>
     <Copyright>Copyright 2018 Alexandr Erohin</Copyright>
     <PackageLicenseUrl>https://github.com/MoryakSPb/Engineers-Wars-Bot/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/MoryakSPb/Engineers-Wars-Bot</RepositoryUrl>
     <FileVersion>0.0.0.0</FileVersion>
     <Company>Engineers Wars</Company>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <AssemblyVersion>0.0.2.0</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
