@@ -29,7 +29,7 @@ namespace EW.Utility
 
         //private static readonly DataContractJsonSerializer CallbackSer = new DataContractJsonSerializer(typeof(MyCallbackStruct<MyMessageStruct>));
 
-        static private readonly byte[] OkArray = {111, 107};
+        static private readonly byte[] OkArray = { 111, 107 };
 
         static private int _avalableCalls = 20;
         private readonly HttpClient _httpClient = new HttpClient();
@@ -74,7 +74,7 @@ namespace EW.Utility
         {
             void Task1()
             {
-                context.Response.StatusCode = (int) HttpStatusCode.OK;
+                context.Response.StatusCode = (int)HttpStatusCode.OK;
                 context.Response.StatusDescription = HttpStatusCode.OK.ToString();
                 byte[] text = MySave.BotSettings.ConfirmMode ? Encoding.UTF8.GetBytes(MySave.BotSettings.ConfirmString) : OkArray;
                 context.Response.OutputStream.Write(text, 0, text.Length);
@@ -90,7 +90,7 @@ namespace EW.Utility
             void Task2()
             {
                 DateTime t1 = DateTime.Now;
-                MyCallbackStruct<MyMessageStruct> callback = (MyCallbackStruct<MyMessageStruct>) MyCallbackStruct<MyMessageStruct>.SerializerMessage.ReadObject(context.Request.InputStream);
+                MyCallbackStruct<MyMessageStruct> callback = (MyCallbackStruct<MyMessageStruct>)MyCallbackStruct<MyMessageStruct>.SerializerMessage.ReadObject(context.Request.InputStream);
                 if (callback.secret != MySave.BotSettings.SecretCode)
                 {
                     Console.WriteLine($"{DateTime.Now}: Неверный секретный код");
@@ -140,6 +140,22 @@ namespace EW.Utility
         public void SendMessage(int vkId, string message, int messId, string title = "")
         {
             if (string.IsNullOrWhiteSpace(message)) return;
+            if (vkId == 0)
+            {
+                message = message.Replace("♔", "* ");
+                message = message.Replace("🗹", "+");
+                message = message.Replace("🗷", "—");
+                message = message.Replace("　", "  ");
+                lock (Console.Out)
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    if (!string.IsNullOrWhiteSpace(title)) Console.WriteLine(title);
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine(message.TrimEnd());
+                    Console.ForegroundColor = ConsoleColor.Green;
+                }
+                return;
+            }
             if (message.Length >= 7500)
                 throw new ArgumentException("Слишком большая длина сообщения.", nameof(message));
             while (_avalableCalls <= 0)

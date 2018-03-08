@@ -48,7 +48,7 @@ namespace EW
             while (true)
             {
                 string text = ccc.ExecuteCommand(Console.ReadLine(), out string title);
-                text = text.Replace("♔", "* ");
+                /*text = text.Replace("♔", "* ");
                 text = text.Replace("🗹", "+");
                 text = text.Replace("🗷", "—");
                 text = text.Replace("　", "  ");
@@ -56,7 +56,8 @@ namespace EW
                 if (!string.IsNullOrWhiteSpace(title)) Console.WriteLine(title);
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine(text.TrimEnd());
-                Console.ForegroundColor = ConsoleColor.Green;
+                Console.ForegroundColor = ConsoleColor.Green;*/
+                MyVkApi.LastApi.SendMessage(0,text,default,title);
             }
 
             // ReSharper disable once FunctionNeverReturns

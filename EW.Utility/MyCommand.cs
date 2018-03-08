@@ -15,6 +15,7 @@ namespace EW.Utility
 
         private const string Nd = "(Н/Д)";
 
+        private readonly CultureInfo RussianCulture = CultureInfo.CreateSpecificCulture("ru-RU");
         /*
                 private const char Inf = '∞';
         */
@@ -169,7 +170,7 @@ namespace EW.Utility
                                 string tag = item.Factions.Item1 == faction.Tag ? item.Factions.Item2 : item.Factions.Item1;
                                 text.Append("　");
                                 text.AppendLine(tag);
-                                text.AppendLine($"　{MyStrings.GetPolitic(item.Status)}");
+                                text.AppendLine($"　　{MyStrings.GetPolitic(item.Status)}");
                                 if (item.Status == MyPoliticStatus.Ally)
                                     text.AppendLine($"　　Оборонительный союз: {MyStrings.GetBoolYesNo(item.Union)}");
                                 if (item.Status == MyPoliticStatus.Neutral)
@@ -391,6 +392,7 @@ namespace EW.Utility
                         case "version":
                         case "версия":
                             return "Engineers Wars Bot\r\nВерсия: 0.0.3.0-ALPHA\r\nАвтор: MoryakSPb (https://vk.com/moryakspb)";
+                        case "time": return DateTime.UtcNow.ToString(RussianCulture);
                         /*case "politic":
                         case "политика":
                         {
@@ -984,9 +986,9 @@ NextTurn - Начинает следующий ход.
 
                             if (!Enum.IsDefined(typeof(FactionType), num)) return "Некорректный тип фракции";
                             FactionType type = (FactionType) num;
-                            if (MySave.Factions.Exists(x => x.Tag == _factionApi.Tag)) return "Фракция уже существует";
-                            MySave.Factions.Select(x => x.Tag).ForEach(x => MySave.Politics = MySave.Politics.Add(new MyPolitic((_factionApi.Tag, x))));
-                            MySave.Factions = MySave.Factions.Add(new MyFaction(arguments[2], arguments[3].ToUpperInvariant(), type, default));
+                            if (MySave.Factions.Exists(x => x.Tag == arguments[3])) return "Фракция уже существует";
+                            MySave.Factions.Select(x => x.Tag).ForEach(x => MySave.Politics = MySave.Politics.Add(new MyPolitic((arguments[3], x))));
+                            MySave.Factions = MySave.Factions.Add(new MyFaction(arguments[2], arguments[3], type, default));
                             return "Фракция создана";
                         }
                         case "createplayer":
@@ -1275,6 +1277,12 @@ NextTurn - Начинает следующий ход.
                                                                });
                             }
 
+                            foreach (var p in MySave.Politics)
+                            {
+                                if (!p.Pact || p.Status == MyPoliticStatus.Ally) continue;
+                                --p.PactTurns;
+                                if (p.PactTurns <= 0) p.Pact = false;
+                            }
                             return "Ход завершен";
                         }
                         case "send":
@@ -1282,6 +1290,7 @@ NextTurn - Начинает следующий ход.
                             if (arguments.Length < 4) return "Неверное количество аргументов";
 
                             int id;
+
                             try
                             {
                                 id = MySave.Players.Find(x => x.Name == arguments[2]).Vk;

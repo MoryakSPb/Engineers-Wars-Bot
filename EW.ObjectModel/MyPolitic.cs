@@ -1,13 +1,16 @@
-﻿namespace EW.ObjectModel
+﻿using System.Runtime.Serialization;
+
+namespace EW.ObjectModel
 {
+    [DataContract]
     public class MyPolitic
     {
-        private bool _mPact;
-        protected (string, string) MFactions;
-        protected bool MUnion;
+        [DataMember] private bool _mPact;
+        [DataMember] protected (string, string) MFactions;
+        [DataMember] protected bool MUnion;
 
-        public string Id => Factions.Item1 + "-" + Factions.Item2;
-        public string Id2 => Factions.Item2 + "-" + Factions.Item1;
+        [IgnoreDataMember] public string Id => Factions.Item1 + "-" + Factions.Item2;
+        [IgnoreDataMember] public string Id2 => Factions.Item2 + "-" + Factions.Item1;
 
         public (string, string) Factions
         {
@@ -21,7 +24,7 @@
             set => _mPact = value;
         }
 
-        public int PactTurns { get; set; }
+        [DataMember] public int PactTurns { get; set; }
 
         public bool Union
         {
@@ -29,7 +32,7 @@
             set => MUnion = value;
         }
 
-        public MyPoliticStatus Status { get; set; }
+        [DataMember] public MyPoliticStatus Status { get; set; }
 
         public MyPolitic((string, string) mFactions)
         {
