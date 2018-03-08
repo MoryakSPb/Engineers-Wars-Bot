@@ -6,12 +6,6 @@
         protected (string, string) MFactions;
         protected bool MUnion;
 
-        public MyPolitic((string, string) mFactions)
-        {
-            MFactions = mFactions;
-            Status = MyPoliticStatus.Neutral;
-        }
-
         public string Id => Factions.Item1 + "-" + Factions.Item2;
         public string Id2 => Factions.Item2 + "-" + Factions.Item1;
 
@@ -36,6 +30,12 @@
         }
 
         public MyPoliticStatus Status { get; set; }
+
+        public MyPolitic((string, string) mFactions)
+        {
+            MFactions = mFactions;
+            Status = MyPoliticStatus.Neutral;
+        }
 
         public void NextTurn()
         {

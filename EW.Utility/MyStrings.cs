@@ -121,7 +121,7 @@ namespace EW.Utility
         {
             switch (opt)
             {
-                case MyOfferOptions.Trade:return string.Empty;
+                case MyOfferOptions.Trade: return string.Empty;
                 case MyOfferOptions.CreatePact: return "Мирный договор";
                 case MyOfferOptions.ChangeUnion: return "Оборонительный союз";
                 default:

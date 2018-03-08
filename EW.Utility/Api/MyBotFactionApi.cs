@@ -63,6 +63,7 @@ namespace EW.Utility.Api
                 Faction.Attack = false;
                 return MyTradeShipAttackResult.OkNoFight;
             }
+
             enemy.TradeShipStatus = TradeShipStatus.Attacked;
             DateTime date = DateTime.UtcNow.Date.AddDays(1.0) + time;
             if (date < DateTime.UtcNow) date = date.AddDays(1.0);
@@ -119,7 +120,6 @@ namespace EW.Utility.Api
             Faction.TradeShipStatus = TradeShipStatus.Started;
             Faction.Attack = false;
             return true;
-
         }
 
         internal bool CancelTradeShip()
@@ -133,7 +133,7 @@ namespace EW.Utility.Api
             return false;
         }
 
-        internal List<MyOffer> Offers() => MySave.Offers.FindAll(x => (x.Factions.Item1 == Faction.Tag) ^ (x.Factions.Item2 == Faction.Tag) && x.Confirm.Item1 is null || x.Confirm.Item2 is null).ToList();
+        internal List<MyOffer> Offers() => MySave.Offers.FindAll(x => !x.Confirmed && (x.Factions.Item1 == Faction.Tag) ^ (x.Factions.Item2 == Faction.Tag) && x.Confirm.Item1 is null || x.Confirm.Item2 is null).ToList();
 
         internal MyOffer Offer(int index) => Offers().ElementAtOrDefault(index);
 
@@ -213,19 +213,19 @@ namespace EW.Utility.Api
                 case MySectorGoResult.NoContacts: return MySectorAttackResult.NoContacts;
                 case MySectorGoResult.NoAttack: return MySectorAttackResult.NoAttack;
                 default:
-                    {
-                        MyPolitic policits = MySave.Politics.Find(x => x.Factions.Item1 == Faction.Tag && (x.Factions.Item2 == sector.Tag) ^ (x.Factions.Item2 == Faction.Tag) && x.Factions.Item1 == sector.Tag) ?? throw new ArgumentException("Данные отношений не найдены", nameof(Faction));
-                        if (policits.Status != MyPoliticStatus.War) return MySectorAttackResult.NoWar;
-                        if (MySave.BotSettings.ActivityTime.Item1 > time || MySave.BotSettings.ActivityTime.Item2 < time) return MySectorAttackResult.InvalidAdminTime;
-                        if (Faction.ActiveInterval.start > time || Faction.ActiveInterval.finish < time) return MySectorAttackResult.InvalidYourTime;
-                        MyFaction enemyFaction = MySave.Factions.Find(x => x.Tag == sector.Tag);
-                        if (enemyFaction.ActiveInterval.start > time || enemyFaction.ActiveInterval.finish < time) return MySectorAttackResult.InvalidEnemyTime;
-                        DateTime date = DateTime.UtcNow.Date.AddDays(1.0) + time;
-                        if (date < DateTime.UtcNow) date = date.AddDays(1.0);
-                        fight = new MySectorFight(Tag, enemyFaction.Tag, date, sector.Name);
-                        MySave.Fights = MySave.Fights.Add(fight);
-                        return MySectorAttackResult.Ok;
-                    }
+                {
+                    MyPolitic policits = MySave.Politics.Find(x => x.Factions.Item1 == Faction.Tag && (x.Factions.Item2 == sector.Tag) ^ (x.Factions.Item2 == Faction.Tag) && x.Factions.Item1 == sector.Tag) ?? throw new ArgumentException("Данные отношений не найдены", nameof(Faction));
+                    if (policits.Status != MyPoliticStatus.War) return MySectorAttackResult.NoWar;
+                    if (MySave.BotSettings.ActivityTime.Item1 > time || MySave.BotSettings.ActivityTime.Item2 < time) return MySectorAttackResult.InvalidAdminTime;
+                    if (Faction.ActiveInterval.start > time || Faction.ActiveInterval.finish < time) return MySectorAttackResult.InvalidYourTime;
+                    MyFaction enemyFaction = MySave.Factions.Find(x => x.Tag == sector.Tag);
+                    if (enemyFaction.ActiveInterval.start > time || enemyFaction.ActiveInterval.finish < time) return MySectorAttackResult.InvalidEnemyTime;
+                    DateTime date = DateTime.UtcNow.Date.AddDays(1.0) + time;
+                    if (date < DateTime.UtcNow) date = date.AddDays(1.0);
+                    fight = new MySectorFight(Tag, enemyFaction.Tag, date, sector.Name);
+                    MySave.Fights = MySave.Fights.Add(fight);
+                    return MySectorAttackResult.Ok;
+                }
             }
         }
 

@@ -14,10 +14,10 @@ namespace EW.ObjectModel
         [DataMember] public readonly (string, string) Factions;
 
         [DataMember] public readonly MyOfferType OfferType;
-        [DataMember] public bool Confirmed;
 
         [DataMember] public readonly MyOfferOptions Options;
         [DataMember] public readonly int PactTurns;
+        [DataMember] public bool Confirmed;
 
         [DataMember] public (MyTradeResourses, MyTradeResourses) Deal;
 
@@ -31,7 +31,7 @@ namespace EW.ObjectModel
             Confirm = confirm;
             OfferType = offerType;
             Options = options;
-            if ((OfferType == MyOfferType.WarToNeutral) || (OfferType == MyOfferType.NeutralToAlly)|| (OfferType == MyOfferType.Default)) Deal = deal;
+            if (OfferType == MyOfferType.WarToNeutral || OfferType == MyOfferType.NeutralToAlly || OfferType == MyOfferType.Default) Deal = deal;
             else Deal = default;
             PactTurns = pactTurns;
         }
