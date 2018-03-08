@@ -548,6 +548,7 @@ namespace EW.Utility
                         case "идти":
                         {
                             if (arguments.Length < 3) return "Неверное количество аргументов";
+                            if (!MySave.BotSettings.EnableFights) return "Битвы отключены";
                             MySector sector = MySave.Sectors.Find(x => x.Name == arguments[2]);
                             if (sector is null) return "Сектор не найден";
                             switch (_factionApi.Go(sector))
@@ -564,6 +565,7 @@ namespace EW.Utility
                         case "атаковать":
                         {
                             if (arguments.Length < 4) return "Неверное количество аргументов";
+                            if (!MySave.BotSettings.EnableFights) return "Битвы отключены";
                             MySector sector = MySave.Sectors.Find(x => x.Name == arguments[2]);
                             if (sector is null) return "Сектор не найден";
                             if (!TimeSpan.TryParse(arguments[3], out TimeSpan time)) return "Неверный формат времени";
@@ -622,6 +624,7 @@ namespace EW.Utility
                         case "attacktradeship":
                         {
                             if (arguments.Length < 4) return "Неверное количество аргументов";
+                            if (!MySave.BotSettings.EnableFights) return "Битвы отключены";
                             if (!TimeSpan.TryParse(arguments[3], out TimeSpan time)) return "Неверный формат времени";
                             switch (_factionApi.AttackTradeShip(arguments[2], time, out _))
                             {
@@ -844,11 +847,13 @@ namespace EW.Utility
                     if (arguments.Length < 2) return "Неверное количество аргументов. Введите \"ботрегистрация помощь\" для получения справки";
 
                     if (arguments[1].ToLowerInvariant() == "помощь" || arguments[1].ToLowerInvariant() == "help" || arguments[1].ToLowerInvariant() == "?")
+                    {
                         return @"Для регистрации введите команду ""ботрегистрация [Ник] [SteamID64]""
 
 [Ник] - Ваш псевдоним, под которым вас будут знать другие игроки. Если вы хотите использовать пробел в нике, используйте ""_"". Также избегайте использования специальных символов (*, \, / и др.)
 [SteamID64] - Уникальный номер вашего аккаунта в Steam. Можно узнать на сайте https://steamid.io/
 Во время тестирования можно указывать случайное число";
+                    }
 
                     if (arguments.Length != 3) return "Неверное количество аргументов";
                     try
