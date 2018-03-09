@@ -40,8 +40,9 @@ namespace EW.ObjectModel
             Confirm = (true, true);
         }
 
-        public MyOffer((string, string) factions, bool creator, (bool?, bool?) confirm, MyOfferType offerType, MyOfferOptions options, int pactTurns, (int,int,int,int,int, int) resourses1, ICollection<string> sectors1, IDictionary<ShipType, int> ships1, (int, int, int, int, int, int) resourses2, ICollection<string> sectors2, IDictionary<ShipType, int> ships2) 
-            : this(factions,creator,confirm,offerType,options,(new MyTradeResourses(new MyResourses(resourses1),sectors1,ships1 ),new MyTradeResourses(new MyResourses(resourses2), sectors2, ships2) ), pactTurns) {}
+        public MyOffer((string, string) factions, bool creator, (bool?, bool?) confirm, MyOfferType offerType, MyOfferOptions options, int pactTurns, (int, int, int, int, int, int) resourses1, ICollection<string> sectors1, IDictionary<ShipType, int> ships1, (int, int, int, int, int, int) resourses2, ICollection<string> sectors2, IDictionary<ShipType, int> ships2) : this(factions, creator, confirm, offerType, options, (new MyTradeResourses(new MyResourses(resourses1), sectors1, ships1), new MyTradeResourses(new MyResourses(resourses2), sectors2, ships2)), pactTurns)
+        {
+        }
     }
 
     public enum MyOfferType

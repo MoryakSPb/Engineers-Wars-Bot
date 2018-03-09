@@ -38,10 +38,7 @@ namespace EW.Utility
 
         static internal readonly DataContractJsonSerializerSettings SerializerSettings = new DataContractJsonSerializerSettings
                                                                                          {
-                                                                                             IgnoreExtensionDataObject = false,
-                                                                                             EmitTypeInformation = EmitTypeInformation.AsNeeded,
-                                                                                             UseSimpleDictionaryFormat = true,
-                                                                                             SerializeReadOnlyTypes = true
+                                                                                             IgnoreExtensionDataObject = false, EmitTypeInformation = EmitTypeInformation.AsNeeded, UseSimpleDictionaryFormat = true, SerializeReadOnlyTypes = true
                                                                                          };
 
         static private readonly DataContractJsonSerializer MyPlayerSerializer = new DataContractJsonSerializer(typeof(MyPlayer), SerializerSettings);
@@ -76,7 +73,6 @@ namespace EW.Utility
         static public MyBotSettings BotSettings;
 
 
-
         static public void CreateDirectories()
         {
             Directory.CreateDirectory(SavePathPlayers);
@@ -108,83 +104,83 @@ namespace EW.Utility
                 Parallel.ForEach(files, File.Delete);
                 CreateDirectories();
                 Parallel.Invoke(() => Parallel.ForEach(Players, item =>
-                {
-                    using (StreamWriter stream = File.CreateText(SavePathPlayers + item.Name + ".json"))
-                    {
-                        MyPlayerSerializer.WriteObject(stream.BaseStream, item);
-                    }
-                }), () => Parallel.ForEach(Factions, item =>
-                {
-                    using (StreamWriter stream = File.CreateText(SavePathFactions + item.Tag + ".json"))
-                    {
-                        MyFactionSerializer.WriteObject(stream.BaseStream, item);
-                    }
-                }), () => Parallel.ForEach(Sectors, item =>
-                {
-                    using (StreamWriter stream = File.CreateText(SavePathSectors + item.Name + ".json"))
-                    {
-                        MySectorSerializer.WriteObject(stream.BaseStream, item);
-                    }
-                }), () => Parallel.ForEach(Politics, item =>
-                {
-                    using (StreamWriter stream = File.CreateText(SavePathPolitics + item.Id + ".json"))
-                    {
-                        MyPoliticSerializer.WriteObject(stream.BaseStream, item);
-                    }
-                }), () => Parallel.ForEach(Offers, item =>
-                {
-                    using (StreamWriter stream = File.CreateText(SavePathOffers + $"{item.CreateTime:yy\\-mm\\-dd\\_HH\\-mm\\-ss}^{item.Factions.Item1}-{item.Factions.Item2}" + ".json"))
-                    {
-                        MyOfferSerializer.WriteObject(stream.BaseStream, item);
-                    }
-                }), () => Parallel.ForEach(Fights, item =>
-                {
-                    string prefix;
-                    switch (item)
-                    {
-                        case MySectorFight _:
-                            prefix = "S";
-                            break;
-                        case MyTradeShipFight _:
-                            prefix = "T";
-                            break;
-                        case MyCustomFight _:
-                            prefix = "C";
-                            break;
-                        default:
-                            throw new InvalidDataException();
-                    }
+                                                                {
+                                                                    using (StreamWriter stream = File.CreateText(SavePathPlayers + item.Name + ".json"))
+                                                                    {
+                                                                        MyPlayerSerializer.WriteObject(stream.BaseStream, item);
+                                                                    }
+                                                                }), () => Parallel.ForEach(Factions, item =>
+                                                                                                     {
+                                                                                                         using (StreamWriter stream = File.CreateText(SavePathFactions + item.Tag + ".json"))
+                                                                                                         {
+                                                                                                             MyFactionSerializer.WriteObject(stream.BaseStream, item);
+                                                                                                         }
+                                                                                                     }), () => Parallel.ForEach(Sectors, item =>
+                                                                                                                                         {
+                                                                                                                                             using (StreamWriter stream = File.CreateText(SavePathSectors + item.Name + ".json"))
+                                                                                                                                             {
+                                                                                                                                                 MySectorSerializer.WriteObject(stream.BaseStream, item);
+                                                                                                                                             }
+                                                                                                                                         }), () => Parallel.ForEach(Politics, item =>
+                                                                                                                                                                              {
+                                                                                                                                                                                  using (StreamWriter stream = File.CreateText(SavePathPolitics + item.Id + ".json"))
+                                                                                                                                                                                  {
+                                                                                                                                                                                      MyPoliticSerializer.WriteObject(stream.BaseStream, item);
+                                                                                                                                                                                  }
+                                                                                                                                                                              }), () => Parallel.ForEach(Offers, item =>
+                                                                                                                                                                                                                 {
+                                                                                                                                                                                                                     using (StreamWriter stream = File.CreateText(SavePathOffers + $"{item.CreateTime:yy\\-mm\\-dd\\_HH\\-mm\\-ss}^{item.Factions.Item1}-{item.Factions.Item2}" + ".json"))
+                                                                                                                                                                                                                     {
+                                                                                                                                                                                                                         MyOfferSerializer.WriteObject(stream.BaseStream, item);
+                                                                                                                                                                                                                     }
+                                                                                                                                                                                                                 }), () => Parallel.ForEach(Fights, item =>
+                                                                                                                                                                                                                                                    {
+                                                                                                                                                                                                                                                        string prefix;
+                                                                                                                                                                                                                                                        switch (item)
+                                                                                                                                                                                                                                                        {
+                                                                                                                                                                                                                                                            case MySectorFight _:
+                                                                                                                                                                                                                                                                prefix = "S";
+                                                                                                                                                                                                                                                                break;
+                                                                                                                                                                                                                                                            case MyTradeShipFight _:
+                                                                                                                                                                                                                                                                prefix = "T";
+                                                                                                                                                                                                                                                                break;
+                                                                                                                                                                                                                                                            case MyCustomFight _:
+                                                                                                                                                                                                                                                                prefix = "C";
+                                                                                                                                                                                                                                                                break;
+                                                                                                                                                                                                                                                            default:
+                                                                                                                                                                                                                                                                throw new InvalidDataException();
+                                                                                                                                                                                                                                                        }
 
-                    using (StreamWriter stream = File.CreateText($"{SavePathOffers}{item.StartTime:yy\\-mm\\-dd\\_HH\\-mm\\-ss}^{item.AttackersTag}-{item.DefendersTag}@{prefix}.json"))
-                    {
-                        switch (prefix)
-                        {
-                            case "S":
-                                MySectorFightSerializer.WriteObject(stream.BaseStream, item);
-                                break;
-                            case "T":
-                                MyTradeShipFightSerializer.WriteObject(stream.BaseStream, item);
-                                break;
-                            case "C":
-                                MyCustomFightSerializer.WriteObject(stream.BaseStream, item);
-                                break;
-                            default:
-                                throw new ArgumentException("Неизвестный тип боя", nameof(item));
-                        }
-                    }
-                }), () => Parallel.ForEach(Scripts, item =>
-                {
-                    using (StreamWriter stream = File.CreateText(SavePathOffers + item.Name + ".json"))
-                    {
-                        MyScriptSerializer.WriteObject(stream.BaseStream, item);
-                    }
-                }), () => Parallel.ForEach(Timers, item =>
-                {
-                    using (StreamWriter stream = File.CreateText(SavePathOffers + item.Name + ".json"))
-                    {
-                        MyTimerSerializer.WriteObject(stream.BaseStream, item);
-                    }
-                }));
+                                                                                                                                                                                                                                                        using (StreamWriter stream = File.CreateText($"{SavePathOffers}{item.StartTime:yy\\-mm\\-dd\\_HH\\-mm\\-ss}^{item.AttackersTag}-{item.DefendersTag}@{prefix}.json"))
+                                                                                                                                                                                                                                                        {
+                                                                                                                                                                                                                                                            switch (prefix)
+                                                                                                                                                                                                                                                            {
+                                                                                                                                                                                                                                                                case "S":
+                                                                                                                                                                                                                                                                    MySectorFightSerializer.WriteObject(stream.BaseStream, item);
+                                                                                                                                                                                                                                                                    break;
+                                                                                                                                                                                                                                                                case "T":
+                                                                                                                                                                                                                                                                    MyTradeShipFightSerializer.WriteObject(stream.BaseStream, item);
+                                                                                                                                                                                                                                                                    break;
+                                                                                                                                                                                                                                                                case "C":
+                                                                                                                                                                                                                                                                    MyCustomFightSerializer.WriteObject(stream.BaseStream, item);
+                                                                                                                                                                                                                                                                    break;
+                                                                                                                                                                                                                                                                default:
+                                                                                                                                                                                                                                                                    throw new ArgumentException("Неизвестный тип боя", nameof(item));
+                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                                    }), () => Parallel.ForEach(Scripts, item =>
+                                                                                                                                                                                                                                                                                        {
+                                                                                                                                                                                                                                                                                            using (StreamWriter stream = File.CreateText(SavePathOffers + item.Name + ".json"))
+                                                                                                                                                                                                                                                                                            {
+                                                                                                                                                                                                                                                                                                MyScriptSerializer.WriteObject(stream.BaseStream, item);
+                                                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                                                        }), () => Parallel.ForEach(Timers, item =>
+                                                                                                                                                                                                                                                                                                                           {
+                                                                                                                                                                                                                                                                                                                               using (StreamWriter stream = File.CreateText(SavePathOffers + item.Name + ".json"))
+                                                                                                                                                                                                                                                                                                                               {
+                                                                                                                                                                                                                                                                                                                                   MyTimerSerializer.WriteObject(stream.BaseStream, item);
+                                                                                                                                                                                                                                                                                                                               }
+                                                                                                                                                                                                                                                                                                                           }));
 
                 Console.WriteLine($"{DateTime.Now}: Сохранение завершено");
             }
@@ -213,96 +209,95 @@ namespace EW.Utility
                 ImmutableList<MyTimer>.Builder timersBuilder = ImmutableList.CreateBuilder<MyTimer>();
 
                 Parallel.Invoke(() => Parallel.ForEach(Directory.GetFiles(SavePathPlayers), item =>
-                {
-                    using (FileStream stream = File.OpenRead(item))
-                    {
-                        MyPlayer player = (MyPlayer)MyPlayerSerializer.ReadObject(stream);
-                        lock (playersBuilder)
-                        {
-                            playersBuilder.Add(player);
-                        }
-                    }
-                }), () => Parallel.ForEach(Directory.GetFiles(SavePathFactions), item =>
-                {
-                    using (FileStream stream = File.OpenRead(item))
-                    {
-                        MyFaction faction = (MyFaction)MyFactionSerializer.ReadObject(stream);
-                        lock (factionsBuilder)
-                        {
-                            factionsBuilder.Add(faction);
-                        }
-                    }
-                }), () => Parallel.ForEach(Directory.GetFiles(SavePathSectors), item =>
-                {
-                    using (FileStream stream = File.OpenRead(item))
-                    {
-                        MySector sector = (MySector)MySectorSerializer.ReadObject(stream);
-                        lock (sectorsBuilder)
-                        {
-                            sectorsBuilder.Add(sector);
-                        }
-                    }
-                }), () => Parallel.ForEach(Directory.GetFiles(SavePathPolitics), item =>
-                {
-                    using (FileStream stream = File.OpenRead(item))
-                    {
-                        MyPolitic pol = (MyPolitic)MyPoliticSerializer.ReadObject(stream);
-                        lock (politicsBuilder)
-                        {
-                            politicsBuilder.Add(pol);
-                        }
-                    }
-                }), () => Parallel.ForEach(Directory.GetFiles(SavePathFights), item =>
-                {
-                    using (FileStream stream = File.OpenRead(item))
-                    {
-                        AMyFight fight;
-                        if (item.Contains("@S"))
-                            fight = (MySectorFight)MySectorFightSerializer.ReadObject(stream);
-                        else if (item.Contains("@T"))
-                            fight = (MyTradeShipFight)MyTradeShipFightSerializer.ReadObject(stream);
-                        else if (item.Contains("@C"))
-                            fight = (MyCustomFight)MyCustomFightSerializer.ReadObject(stream);
-                        else
-                            throw new FileLoadException("Неизвестный тип боя", item);
+                                                                                            {
+                                                                                                using (FileStream stream = File.OpenRead(item))
+                                                                                                {
+                                                                                                    MyPlayer player = (MyPlayer) MyPlayerSerializer.ReadObject(stream);
+                                                                                                    lock (playersBuilder)
+                                                                                                    {
+                                                                                                        playersBuilder.Add(player);
+                                                                                                    }
+                                                                                                }
+                                                                                            }), () => Parallel.ForEach(Directory.GetFiles(SavePathFactions), item =>
+                                                                                                                                                             {
+                                                                                                                                                                 using (FileStream stream = File.OpenRead(item))
+                                                                                                                                                                 {
+                                                                                                                                                                     MyFaction faction = (MyFaction) MyFactionSerializer.ReadObject(stream);
+                                                                                                                                                                     lock (factionsBuilder)
+                                                                                                                                                                     {
+                                                                                                                                                                         factionsBuilder.Add(faction);
+                                                                                                                                                                     }
+                                                                                                                                                                 }
+                                                                                                                                                             }), () => Parallel.ForEach(Directory.GetFiles(SavePathSectors), item =>
+                                                                                                                                                                                                                             {
+                                                                                                                                                                                                                                 using (FileStream stream = File.OpenRead(item))
+                                                                                                                                                                                                                                 {
+                                                                                                                                                                                                                                     MySector sector = (MySector) MySectorSerializer.ReadObject(stream);
+                                                                                                                                                                                                                                     lock (sectorsBuilder)
+                                                                                                                                                                                                                                     {
+                                                                                                                                                                                                                                         sectorsBuilder.Add(sector);
+                                                                                                                                                                                                                                     }
+                                                                                                                                                                                                                                 }
+                                                                                                                                                                                                                             }), () => Parallel.ForEach(Directory.GetFiles(SavePathPolitics), item =>
+                                                                                                                                                                                                                                                                                              {
+                                                                                                                                                                                                                                                                                                  using (FileStream stream = File.OpenRead(item))
+                                                                                                                                                                                                                                                                                                  {
+                                                                                                                                                                                                                                                                                                      MyPolitic pol = (MyPolitic) MyPoliticSerializer.ReadObject(stream);
+                                                                                                                                                                                                                                                                                                      lock (politicsBuilder)
+                                                                                                                                                                                                                                                                                                      {
+                                                                                                                                                                                                                                                                                                          politicsBuilder.Add(pol);
+                                                                                                                                                                                                                                                                                                      }
+                                                                                                                                                                                                                                                                                                  }
+                                                                                                                                                                                                                                                                                              }), () => Parallel.ForEach(Directory.GetFiles(SavePathFights), item =>
+                                                                                                                                                                                                                                                                                                                                                             {
+                                                                                                                                                                                                                                                                                                                                                                 using (FileStream stream = File.OpenRead(item))
+                                                                                                                                                                                                                                                                                                                                                                 {
+                                                                                                                                                                                                                                                                                                                                                                     AMyFight fight;
+                                                                                                                                                                                                                                                                                                                                                                     if (item.Contains("@S"))
+                                                                                                                                                                                                                                                                                                                                                                         fight = (MySectorFight) MySectorFightSerializer.ReadObject(stream);
+                                                                                                                                                                                                                                                                                                                                                                     else if (item.Contains("@T"))
+                                                                                                                                                                                                                                                                                                                                                                         fight = (MyTradeShipFight) MyTradeShipFightSerializer.ReadObject(stream);
+                                                                                                                                                                                                                                                                                                                                                                     else if (item.Contains("@C"))
+                                                                                                                                                                                                                                                                                                                                                                         fight = (MyCustomFight) MyCustomFightSerializer.ReadObject(stream);
+                                                                                                                                                                                                                                                                                                                                                                     else
+                                                                                                                                                                                                                                                                                                                                                                         throw new FileLoadException("Неизвестный тип боя", item);
 
-                        lock (fightsBuilder)
-                        {
-                            fightsBuilder.Add(fight);
-                        }
-                    }
-                }), () => Parallel.ForEach(Directory.GetFiles(SavePathOffers), item =>
-                {
-                    using (FileStream stream = File.OpenRead(item))
-                    {
-                        MyOffer offer = (MyOffer)MyOfferSerializer.ReadObject(stream);
-                        lock (offersBuilder)
-                        {
-                            offersBuilder.Add(offer);
-                        }
-                    }
-                }), () => Parallel.ForEach(Directory.GetFiles(SavePathScripts), item =>
-                {
-                    using (FileStream stream = File.OpenRead(item))
-                    {
-                        MyScript scr = (MyScript)MyScriptSerializer.ReadObject(stream);
-                        lock (scriptsBuilder)
-                        {
-                            scriptsBuilder.Add(scr);
-                        }
-                    }
-                }), () => Parallel.ForEach(Directory.GetFiles(SavePathTimers), item =>
-                {
-                    using (FileStream stream = File.OpenRead(item))
-                    {
-                        MyTimer timer = (MyTimer)MyTimerSerializer.ReadObject(stream);
-                        lock (timersBuilder)
-                        {
-                            timersBuilder.Add(timer);
-                        }
-                    }
-                }));
-
+                                                                                                                                                                                                                                                                                                                                                                     lock (fightsBuilder)
+                                                                                                                                                                                                                                                                                                                                                                     {
+                                                                                                                                                                                                                                                                                                                                                                         fightsBuilder.Add(fight);
+                                                                                                                                                                                                                                                                                                                                                                     }
+                                                                                                                                                                                                                                                                                                                                                                 }
+                                                                                                                                                                                                                                                                                                                                                             }), () => Parallel.ForEach(Directory.GetFiles(SavePathOffers), item =>
+                                                                                                                                                                                                                                                                                                                                                                                                                            {
+                                                                                                                                                                                                                                                                                                                                                                                                                                using (FileStream stream = File.OpenRead(item))
+                                                                                                                                                                                                                                                                                                                                                                                                                                {
+                                                                                                                                                                                                                                                                                                                                                                                                                                    MyOffer offer = (MyOffer) MyOfferSerializer.ReadObject(stream);
+                                                                                                                                                                                                                                                                                                                                                                                                                                    lock (offersBuilder)
+                                                                                                                                                                                                                                                                                                                                                                                                                                    {
+                                                                                                                                                                                                                                                                                                                                                                                                                                        offersBuilder.Add(offer);
+                                                                                                                                                                                                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                                                                                                                                                                                            }), () => Parallel.ForEach(Directory.GetFiles(SavePathScripts), item =>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                using (FileStream stream = File.OpenRead(item))
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    MyScript scr = (MyScript) MyScriptSerializer.ReadObject(stream);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    lock (scriptsBuilder)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        scriptsBuilder.Add(scr);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }), () => Parallel.ForEach(Directory.GetFiles(SavePathTimers), item =>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               using (FileStream stream = File.OpenRead(item))
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   MyTimer timer = (MyTimer) MyTimerSerializer.ReadObject(stream);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   lock (timersBuilder)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       timersBuilder.Add(timer);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           }));
 
 
                 Players = playersBuilder.ToImmutable();
@@ -357,7 +352,7 @@ namespace EW.Utility
                 {
                     using (FileStream stream = File.OpenRead(BotSettingsFile))
                     {
-                        BotSettings = (MyBotSettings)Serializer.ReadObject(stream);
+                        BotSettings = (MyBotSettings) Serializer.ReadObject(stream);
                     }
                 }
                 catch (FileNotFoundException)

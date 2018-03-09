@@ -8,17 +8,16 @@ namespace EW.ObjectModel
     [DataContract]
     public class MyTradeResourses
     {
-        [DataMember] public MyResourses Resourses;
-
         [DataMember] public readonly IReadOnlyCollection<string> Sectors;
 
         [DataMember] public readonly IReadOnlyDictionary<ShipType, int> Ships;
+        [DataMember] public MyResourses Resourses;
 
         public MyTradeResourses(MyResourses resourses, ICollection<string> sectors, IDictionary<ShipType, int> ships)
         {
             Resourses = resourses;
-            Sectors = (IReadOnlyCollection<string>)sectors ?? throw new ArgumentNullException(nameof(sectors));
-            Ships = (IReadOnlyDictionary<ShipType, int>)ships ?? throw new ArgumentNullException(nameof(ships));
+            Sectors = (IReadOnlyCollection<string>) sectors ?? throw new ArgumentNullException(nameof(sectors));
+            Ships = (IReadOnlyDictionary<ShipType, int>) ships ?? throw new ArgumentNullException(nameof(ships));
         }
     }
 }

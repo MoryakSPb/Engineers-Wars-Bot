@@ -57,7 +57,7 @@ namespace EW
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine(text.TrimEnd());
                 Console.ForegroundColor = ConsoleColor.Green;*/
-                MyVkApi.LastApi.SendMessage(0,text,default,title);
+                MyVkApi.LastApi.SendMessage(0, text, default, title);
             }
 
             // ReSharper disable once FunctionNeverReturns

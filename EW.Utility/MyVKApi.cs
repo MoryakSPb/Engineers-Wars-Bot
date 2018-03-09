@@ -29,7 +29,7 @@ namespace EW.Utility
 
         //private static readonly DataContractJsonSerializer CallbackSer = new DataContractJsonSerializer(typeof(MyCallbackStruct<MyMessageStruct>));
 
-        static private readonly byte[] OkArray = { 111, 107 };
+        static private readonly byte[] OkArray = {111, 107};
 
         static private int _avalableCalls = 20;
         private readonly HttpClient _httpClient = new HttpClient();
@@ -74,7 +74,7 @@ namespace EW.Utility
         {
             void Task1()
             {
-                context.Response.StatusCode = (int)HttpStatusCode.OK;
+                context.Response.StatusCode = (int) HttpStatusCode.OK;
                 context.Response.StatusDescription = HttpStatusCode.OK.ToString();
                 byte[] text = MySave.BotSettings.ConfirmMode ? Encoding.UTF8.GetBytes(MySave.BotSettings.ConfirmString) : OkArray;
                 context.Response.OutputStream.Write(text, 0, text.Length);
@@ -90,7 +90,7 @@ namespace EW.Utility
             void Task2()
             {
                 DateTime t1 = DateTime.Now;
-                MyCallbackStruct<MyMessageStruct> callback = (MyCallbackStruct<MyMessageStruct>)MyCallbackStruct<MyMessageStruct>.SerializerMessage.ReadObject(context.Request.InputStream);
+                MyCallbackStruct<MyMessageStruct> callback = (MyCallbackStruct<MyMessageStruct>) MyCallbackStruct<MyMessageStruct>.SerializerMessage.ReadObject(context.Request.InputStream);
                 if (callback.secret != MySave.BotSettings.SecretCode)
                 {
                     Console.WriteLine($"{DateTime.Now}: Неверный секретный код");
@@ -157,8 +157,10 @@ namespace EW.Utility
                     Console.WriteLine(message.TrimEnd());
                     Console.ForegroundColor = ConsoleColor.Green;
                 }
+
                 return;
             }
+
             if (message.Length >= 7500)
                 throw new ArgumentException("Слишком большая длина сообщения.", nameof(message));
             while (_avalableCalls <= 0)
@@ -174,8 +176,7 @@ namespace EW.Utility
                                                            {
                                                                "peer_id", vkId.ToString(CultureInfo.InvariantCulture)
                                                            },
-                                                           {"message", message},
-                                                           {"title", title},
+                                                           {"message", message}, {"title", title},
                                                            {
                                                                "random_id", vkId.ToString(CultureInfo.InvariantCulture) + messId.ToString(CultureInfo.InvariantCulture)
                                                            }
@@ -206,8 +207,7 @@ namespace EW.Utility
                                                                {
                                                                    "user_ids", string.Join(",", vkIDs.Skip(i).Take(100))
                                                                },
-                                                               {"message", message},
-                                                               {"title", title},
+                                                               {"message", message}, {"title", title},
                                                                {
                                                                    "random_id", vkIDs[0].ToString(CultureInfo.InvariantCulture) + messId.ToString(CultureInfo.InvariantCulture)
                                                                }
