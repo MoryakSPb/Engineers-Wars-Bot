@@ -87,6 +87,14 @@ namespace EW.ObjectModel
             Production = production;
         }
 
+        public MyResourses((int, int, int, int, int, int) tuple)
+        {
+            (Iron, Energy, Ammo, MonolithCharges, ShipSlots, Production) = tuple;
+        }
+
+        public (int Iron, int Energy, int Ammo, int MonolithCharges, int ShipSlots, int Production) ToValueTuple() => (Iron, Energy, Ammo, MonolithCharges, ShipSlots, Production);
+        public Tuple<int,int,int,int,int,int> ToTuple() => new Tuple<int, int, int, int, int, int>(Iron, Energy, Ammo, MonolithCharges, ShipSlots, Production);
+
         static public MyResourses operator -(MyResourses resourses) => Negate(resourses);
 
         static public MyResourses Negate(MyResourses resourses) =>

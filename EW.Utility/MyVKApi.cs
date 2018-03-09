@@ -42,16 +42,16 @@ namespace EW.Utility
         {
             _httpListener.Prefixes.Add(ListenUrl);
             // ReSharper disable once ObjectCreationAsStatement
-            new Timer(stateInfo => _avalableCalls = 20, null, 0, 1000);
-            new Thread(Refrhesh).Start();
+            //new Timer(stateInfo => _avalableCalls = 20, null, 0, 1000);
+            new Thread(Refresh).Start();
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "Engineers Wars Bot");
         }
 
-        static private void Refrhesh()
+        static private void Refresh()
         {
-            while (true)
+            while (LastApi != null)
             {
                 Thread.Sleep(1000);
                 _avalableCalls = 20;
@@ -131,9 +131,12 @@ namespace EW.Utility
             }
             catch (Exception)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($"{DateTime.Now}: Ошибка при отправке данных в ВК");
-                Console.ForegroundColor = ConsoleColor.Green;
+                lock (Console.Out)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"{DateTime.Now}: Ошибка при отправке данных в ВК");
+                    Console.ForegroundColor = ConsoleColor.Green;
+                }
             }
         }
 
@@ -178,7 +181,7 @@ namespace EW.Utility
                                                            }
                                                        };
             HttpContent content = new FormUrlEncodedContent(post);
-            _avalableCalls--;
+            --_avalableCalls;
             _httpClient.PostAsync(MessageSend, content);
         }
 

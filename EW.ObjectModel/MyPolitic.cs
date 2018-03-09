@@ -40,14 +40,14 @@ namespace EW.ObjectModel
             Status = MyPoliticStatus.Neutral;
         }
 
-        public void NextTurn()
+        /*public void NextTurn()
         {
             if (!Pact) return;
             --PactTurns;
             if (!((PactTurns <= 0) & (Status != MyPoliticStatus.Ally))) return;
             Pact = false;
             PactTurns = 0;
-        }
+        }*/
     }
 
 

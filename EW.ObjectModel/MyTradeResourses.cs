@@ -10,15 +10,15 @@ namespace EW.ObjectModel
     {
         [DataMember] public MyResourses Resourses;
 
-        [DataMember] public ICollection<string> Sectors;
+        [DataMember] public readonly IReadOnlyCollection<string> Sectors;
 
-        [DataMember] public IDictionary<ShipType, int> Ships;
+        [DataMember] public readonly IReadOnlyDictionary<ShipType, int> Ships;
 
         public MyTradeResourses(MyResourses resourses, ICollection<string> sectors, IDictionary<ShipType, int> ships)
         {
             Resourses = resourses;
-            Sectors = sectors ?? throw new ArgumentNullException(nameof(sectors));
-            Ships = ships ?? throw new ArgumentNullException(nameof(ships));
+            Sectors = (IReadOnlyCollection<string>)sectors ?? throw new ArgumentNullException(nameof(sectors));
+            Ships = (IReadOnlyDictionary<ShipType, int>)ships ?? throw new ArgumentNullException(nameof(ships));
         }
     }
 }

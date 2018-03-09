@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace EW.ObjectModel
@@ -24,7 +25,7 @@ namespace EW.ObjectModel
         [DataMember]
         public (bool?, bool?) Confirm { get; set; }
 
-        public MyOffer((string, string) factions, bool creator, (bool, bool) confirm, MyOfferType offerType, MyOfferOptions options, (MyTradeResourses, MyTradeResourses) deal, int pactTurns)
+        public MyOffer((string, string) factions, bool creator, (bool?, bool?) confirm, MyOfferType offerType, MyOfferOptions options, (MyTradeResourses, MyTradeResourses) deal, int pactTurns)
         {
             Factions = factions;
             Creator = creator;
@@ -33,8 +34,14 @@ namespace EW.ObjectModel
             Options = options;
             if (OfferType == MyOfferType.WarToNeutral || OfferType == MyOfferType.NeutralToAlly || OfferType == MyOfferType.Default) Deal = deal;
             else Deal = default;
-            PactTurns = pactTurns;
+            if (Options == MyOfferOptions.CreatePact) PactTurns = pactTurns;
+            if (OfferType != MyOfferType.NeutralToWar && OfferType != MyOfferType.AllyToNeutral) return;
+            Confirmed = true;
+            Confirm = (true, true);
         }
+
+        public MyOffer((string, string) factions, bool creator, (bool?, bool?) confirm, MyOfferType offerType, MyOfferOptions options, int pactTurns, (int,int,int,int,int, int) resourses1, ICollection<string> sectors1, IDictionary<ShipType, int> ships1, (int, int, int, int, int, int) resourses2, ICollection<string> sectors2, IDictionary<ShipType, int> ships2) 
+            : this(factions,creator,confirm,offerType,options,(new MyTradeResourses(new MyResourses(resourses1),sectors1,ships1 ),new MyTradeResourses(new MyResourses(resourses2), sectors2, ships2) ), pactTurns) {}
     }
 
     public enum MyOfferType
