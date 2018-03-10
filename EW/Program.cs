@@ -38,7 +38,16 @@ namespace EW
             {
                 Console.WriteLine($"{DateTime.Now}: Силы хаоса заблокировали возможность попищать! Бип!");
             }
-
+            Console.Write($"{DateTime.Now}: Автосохранение: ");
+            if (MySave.BotSettings.AutoSaveInterval == 0)
+            {
+                Console.WriteLine("ВЫКЛ");
+            }
+            else
+            {
+                Console.Write(MySave.BotSettings.AutoSaveInterval);
+                Console.WriteLine(" минут");
+            }
             vk.StartListen();
         }
 

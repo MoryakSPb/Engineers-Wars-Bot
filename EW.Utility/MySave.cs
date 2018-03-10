@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using EW.ObjectModel;
 using EW.Utility.ObjectModel;
@@ -21,6 +25,7 @@ namespace EW.Utility
         private const string SavePathOffers = "Save\\Offers\\";
         private const string SavePathScripts = "Save\\Scripts\\";
         private const string SavePathTimers = "Save\\Timers\\";
+        private const string BackupPath = "Backups\\";
 
         private const string BotSettingsFile = "BotSettings.json";
         /*
@@ -60,6 +65,9 @@ namespace EW.Utility
         static private readonly DataContractJsonSerializer MyScriptSerializer = new DataContractJsonSerializer(typeof(MyScript), SerializerSettings);
 
         static private readonly DataContractJsonSerializer MyTimerSerializer = new DataContractJsonSerializer(typeof(MyTimer), SerializerSettings);
+        
+
+        static private void AutoSaveMethod(object arg) => Save();
 
         static public ImmutableList<MyPlayer> Players;
         static internal ImmutableList<MyFaction> Factions;
@@ -72,6 +80,8 @@ namespace EW.Utility
 
         static public MyBotSettings BotSettings;
 
+        // ReSharper disable once UnusedMember.Local
+        static private Timer _autoSave;
 
         static public void CreateDirectories()
         {
@@ -83,14 +93,17 @@ namespace EW.Utility
             Directory.CreateDirectory(SavePathFights);
             Directory.CreateDirectory(SavePathScripts);
             Directory.CreateDirectory(SavePathTimers);
+            Directory.CreateDirectory(BackupPath);
         }
 
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         static public void Save()
         {
+            
             try
             {
                 Console.WriteLine($"{DateTime.Now}: Начат процесс сохранения…");
+                ZipFile.CreateFromDirectory("Save\\", BackupPath + DateTime.UtcNow.ToBinary().ToString(CultureInfo.InvariantCulture) + ".zip", CompressionLevel.Optimal, true, Encoding.UTF8);
                 MyBotSettings.Save();
                 List<string> files = new List<string>(64);
                 files.AddRange(Directory.GetFiles(SavePathPlayers));
@@ -331,10 +344,10 @@ namespace EW.Utility
             [DataMember] public readonly string VkToken;
             [DataMember] public bool EnableFights;
             [DataMember] public (TimeSpan, TimeSpan) ActivityTime;
-
+            [DataMember] public int AutoSaveInterval;
 
             // ReSharper disable once UnusedMember.Global
-            public MyBotSettings(bool unsafeMode, bool confirmMode, string confirmString, string secretCode, string vkToken, bool enableFights, (TimeSpan, TimeSpan) activityTime)
+            public MyBotSettings(bool unsafeMode, bool confirmMode, string confirmString, string secretCode, string vkToken, bool enableFights, (TimeSpan, TimeSpan) activityTime, int autosave)
             {
                 UnsafeMode = unsafeMode;
                 ConfirmMode = confirmMode;
@@ -343,6 +356,7 @@ namespace EW.Utility
                 VkToken = vkToken ?? throw new ArgumentNullException(nameof(vkToken));
                 EnableFights = enableFights;
                 ActivityTime = activityTime;
+                AutoSaveInterval = autosave;
             }
 
 
@@ -360,6 +374,9 @@ namespace EW.Utility
                     Save();
                     Load();
                 }
+
+                int interval = BotSettings.AutoSaveInterval == 0 ? Timeout.Infinite : BotSettings.AutoSaveInterval * 60000;
+                _autoSave = new Timer(AutoSaveMethod, null, interval, interval);
             }
 
             static internal void Save()

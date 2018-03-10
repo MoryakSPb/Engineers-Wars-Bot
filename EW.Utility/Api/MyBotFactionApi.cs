@@ -133,7 +133,7 @@ namespace EW.Utility.Api
             return false;
         }
 
-        internal List<MyOffer> Offers() => MySave.Offers.FindAll(x => !x.Confirmed && (x.Factions.Item1 == Faction.Tag) ^ (x.Factions.Item2 == Faction.Tag) && x.Confirm.Item1 is null || x.Confirm.Item2 is null).ToList();
+        internal List<MyOffer> Offers() => MySave.Offers.FindAll(x => !x.Confirmed && (x.Factions.Item1 == Faction.Tag) ^ (x.Factions.Item2 == Faction.Tag)).ToList();
 
         internal MyOffer Offer(int index) => Offers().ElementAtOrDefault(index);
 

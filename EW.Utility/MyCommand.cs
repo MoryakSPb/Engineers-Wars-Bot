@@ -399,7 +399,7 @@ namespace EW.Utility
                         case "политика":
                         {
                             if (arguments.Length < 4) return "Неверное количество аргументов";
-                            MyPolitic obj = MySave.Politics.Find(x => (x.Factions.Item1 == arguments[3] && x.Factions.Item2 == arguments[4]) ^ (x.Factions.Item2 == arguments[3] && x.Factions.Item1 == arguments[4]));
+                            MyPolitic obj = MySave.Politics.Find(x => (x.Factions.Item1 == arguments[2] && x.Factions.Item2 == arguments[3]) ^ (x.Factions.Item2 == arguments[2] && x.Factions.Item1 == arguments[3]));
                             if (obj is null) return "Запись не найдена. Проверте правильность тегов";
                             StringBuilder text = new StringBuilder(128);
                             title = obj.Factions.Item1 + " и " + obj.Factions.Item2;
@@ -677,7 +677,7 @@ namespace EW.Utility
                         case "договоры":
                         {
                             List<MyOffer> list = _factionApi.Offers();
-                            if (list.Count == 0) return "Нет нерассмотренных договоров";
+                            if (list.Count == 0) return "Нет не рассмотренных договоров";
                             title = "Текущие договоры";
                             StringBuilder text = new StringBuilder(16 * list.Count);
                             for (int i = 0; i < list.Count; i += 1)
@@ -737,10 +737,14 @@ namespace EW.Utility
                             text.AppendLine(Space + Space + $"Слоты для кораблей: {item.Deal.Item1.Resourses.ShipSlots}");
                             text.AppendLine(Space + Space + $"Производство: {item.Deal.Item1.Resourses.Production}");
                             text.AppendLine(Space + Space + "Корабли:");
-                            text.Append(Space + Space + Space + "Истребители: ");
-                            text.AppendLine(item.Deal.Item1.Ships[ShipType.Fighter].ToString(CultureInfo.InvariantCulture));
-                            text.Append(Space + Space + Space + "Корветы: ");
-                            text.AppendLine(item.Deal.Item1.Ships[ShipType.Corvette].ToString(CultureInfo.InvariantCulture));
+                            foreach (KeyValuePair<ShipType, int> i in item.Deal.Item1.Ships)
+                            {
+                                text.Append(Space + Space + Space);
+                                text.Append(MyStrings.GetShipNameMany(i.Key));
+                                text.Append(": ");
+                                text.Append(i.Value);
+                                text.AppendLine();
+                            }
                             text.AppendLine(Space + Space + "Сектора:");
                             if (item.Deal.Item1.Sectors.Count == 0) text.AppendLine(Space + Space + Space + "(нет)");
                             else
@@ -753,11 +757,15 @@ namespace EW.Utility
                             text.AppendLine(Space + Space + $"Слоты для кораблей: {item.Deal.Item2.Resourses.ShipSlots}");
                             text.AppendLine(Space + Space + $"Производство: {item.Deal.Item2.Resourses.Production}");
                             text.AppendLine(Space + Space + "Корабли:");
-                            text.Append(Space + Space + Space + "Истребители: ");
-                            text.AppendLine(item.Deal.Item2.Ships[ShipType.Fighter].ToString(CultureInfo.InvariantCulture));
-                            text.Append(Space + Space + Space + "Корветы: ");
-                            text.AppendLine(item.Deal.Item2.Ships[ShipType.Corvette].ToString(CultureInfo.InvariantCulture));
-                            text.AppendLine(Space + Space + "Сектора:");
+                            foreach (KeyValuePair<ShipType, int> i in item.Deal.Item2.Ships)
+                            {
+                                text.Append(Space + Space + Space);
+                                text.Append(MyStrings.GetShipNameMany(i.Key));
+                                text.Append(": ");
+                                text.Append(i.Value);
+                                text.AppendLine();
+                            }
+                                text.AppendLine(Space + Space + "Сектора:");
                             if (item.Deal.Item2.Sectors.Count == 0) text.AppendLine(Space + Space + Space + "(нет)");
                             else
                                 item.Deal.Item2.Sectors.ForEach(x => text.AppendLine(Space + Space + Space + x));
@@ -806,13 +814,13 @@ namespace EW.Utility
                             MyOffer offer;
                             try
                             {
-                                offer = _factionApi.Offers()[Convert.ToInt32(arguments[2])];
+                                offer = _factionApi.Offers()[Convert.ToInt32(arguments[2]) - 1];
                             }
                             catch (IndexOutOfRangeException)
                             {
                                 return "Неверный номер договора";
                             }
-                            catch (Exception)
+                            catch (Exception e)
                             {
                                 return "Неверный формат номера договора";
                             }
@@ -866,7 +874,7 @@ namespace EW.Utility
                         {
                             if (arguments.Length < 12) return "Неверное количество аргументов";
                             if (!MySave.Factions.Exists(x => x.Tag == arguments[2])) return "Фракция не найдена";
-                            MyPolitic obj = MySave.Politics.Find(x => (x.Factions.Item1 == _factionApi.Tag && x.Factions.Item2 == arguments[2]) ^ (x.Factions.Item2 == arguments[2] && x.Factions.Item1 == _factionApi.Tag));
+                            MyPolitic obj = MySave.Politics.Find(x => (x.Factions.Item1 == _factionApi.Tag && x.Factions.Item2 == arguments[2]) ^ (x.Factions.Item1 == arguments[2] && x.Factions.Item2 == _factionApi.Tag));
                             if (obj is null) return "Не найдена запись. Обратитесь к администрации";
                             MyResourses res1;
                             MyResourses res2;

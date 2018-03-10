@@ -6,6 +6,10 @@ namespace EW.ObjectModel
 {
     [Serializable]
     [DataContract]
+    [KnownType(typeof(MyTradeResourses))]
+    [KnownType(typeof(ShipType))]
+    [KnownType(typeof(bool?))]
+    [KnownType(typeof(List<string>))]
     public class MyOffer
     {
         [DataMember] public readonly DateTime CreateTime = DateTime.UtcNow;
