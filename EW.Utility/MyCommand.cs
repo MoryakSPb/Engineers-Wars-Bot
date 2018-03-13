@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using EW.ObjectModel;
 using EW.Utility.Api;
+// ReSharper disable AccessToModifiedClosure
 
 namespace EW.Utility
 {
@@ -392,7 +393,7 @@ namespace EW.Utility
                         }
                         case "version":
                         case "версия":
-                            return "Engineers Wars Bot\r\nВерсия: 0.0.4.0(DEBUG)-ALPHA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
+                            return "Engineers Wars Bot\r\nВерсия: 0.0.3.2-ALPHA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
                         case "время":
                         case "time": return DateTime.UtcNow.ToString(_russianCulture);
                         case "policy":
@@ -1000,11 +1001,12 @@ namespace EW.Utility
 [Ник] - Ваш псевдоним, под которым вас будут знать другие игроки. Если вы хотите использовать пробел в нике, используйте ""_"". Также избегайте использования специальных символов (*, \, / и др.)
 [SteamID64] - Уникальный номер вашего аккаунта в Steam. Можно узнать на сайте https://steamid.io/ (написать/вставить в поле ""input…"" ссылку на ваш профиль Steam)
 
-Пример: ботрегистрация EWBot 76561197960287930";
+Пример: ботрегистрация Console 76561197960287930";
 
                     if (arguments.Length != 3) return "Неверное количество аргументов";
                     try
                     {
+                        if (!ulong.TryParse(arguments[2],out _)) return "Проверьте правильность SteamID64 и повторите команду";
                         lock (RegApi)
                         {
                                 switch (RegApi.Register(arguments[1], _id, Convert.ToUInt64(arguments[2])))
@@ -1374,7 +1376,7 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                                         service[0] %= 100 + 15 * monoithSectors;
                                         break;
                                     case FactionType.Resettlement:
-                                        service[0] %= 100 + 2 * factionsSectors.Count;
+                                        service[0] %= 100 + 3 * factionsSectors.Count;
                                         break;
                                     case FactionType.Military:
                                         service[0].ShipSlots += 5;
@@ -1396,10 +1398,11 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                             {
                                 // ReSharper disable once PossibleInvalidOperationException
                                 // ReSharper disable once PossibleInvalidOperationException
-                                if (offer.Confirmed || !offer.Confirm.Item1.HasValue && !offer.Confirm.Item2.HasValue && !(offer.Confirm.Item1.Value && offer.Confirm.Item2.Value)) continue;
+                                if (offer.Confirmed || (offer.Confirm.Item1.HasValue ^ offer.Confirm.Item2.HasValue)) continue;
                                 offer.Confirmed = true;
                                 MyFaction faction1 = MySave.Factions.Find(x => x.Tag == offer.Factions.Item1);
                                 MyFaction faction2 = MySave.Factions.Find(x => x.Tag == offer.Factions.Item2);
+                                MyPolitic pol = MySave.Politics.Find(x => (x.Factions.Item1== faction1.Tag && x.Factions.Item2 == faction2.Tag) ^ (x.Factions.Item2 == faction1.Tag && x.Factions.Item1 == faction2.Tag));
 
                                 faction1.Resourses -= offer.Deal.Item1.Resourses;
                                 faction2.Resourses += offer.Deal.Item1.Resourses;
@@ -1428,9 +1431,35 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                                                                    faction2.Ships[x.Key] -= x.Value;
                                                                    faction1.Ships[x.Key] += x.Value;
                                                                });
+                                        switch (offer.OfferType)
+                                        {
+                                            case MyOfferType.Default:
+                                                break;
+                                            case MyOfferType.WarToNeutral:
+                                                pol.Status = MyPoliticStatus.Neutral;
+                                                break;
+                                            case MyOfferType.NeutralToAlly:
+                                                pol.Status = MyPoliticStatus.Ally;
+                                                break;
+                                            case MyOfferType.AllyToNeutral:
+                                                pol.Union = false;
+                                                pol.Status = MyPoliticStatus.Neutral;
+                                                break;
+                                            case MyOfferType.NeutralToWar:
+                                                pol.Status = MyPoliticStatus.War;
+                                                break;
+                                            default:
+                                                throw new ArgumentOutOfRangeException();
+                                        }
+
+                                if (offer.Options == MyOfferOptions.ChangeUnion) pol.Union = !pol.Union;
+                                else if (offer.Options == MyOfferOptions.CreatePact)
+                                { pol.Pact = true;
+                                    pol.PactTurns = offer.PactTurns;
+                                }
                             }
 
-                            foreach (MyPolitic p in MySave.Politics)
+                                    foreach (MyPolitic p in MySave.Politics)
                             {
                                 if (!p.Pact || p.Status == MyPoliticStatus.Ally) continue;
                                 --p.PactTurns;
@@ -1438,8 +1467,8 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                             }
 
                             return "Ход завершен";
-                        }
-                        case "send":
+                                }
+                            case "send":
                         {
                             if (arguments.Length < 4) return "Неверное количество аргументов";
 
@@ -1460,8 +1489,8 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                         //case "interned": return arguments.Length < 3 ? "Неверное количество аргументов" : (string.IsInterned(arguments[2]) != null).ToString();
                         default:
                             return "Неизвестная команда. Используйте команду \"botadmin help\" для получения справки";
+                        }
                     }
-                }
                 case "botconsole":
                 {
                     arguments[1] = arguments[1].ToLowerInvariant();
