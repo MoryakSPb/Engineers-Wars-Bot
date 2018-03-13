@@ -31,7 +31,8 @@ namespace EW.Utility
 
         static private readonly byte[] OkArray = {111, 107};
 
-        static private int _avalableCalls = 20;
+        static public int Calls { get; private set; } = 20;
+
         private readonly HttpClient _httpClient = new HttpClient();
         private readonly HttpListener _httpListener = new HttpListener();
         static public MyVkApi LastApi { get; private set; }
@@ -42,7 +43,7 @@ namespace EW.Utility
         {
             _httpListener.Prefixes.Add(ListenUrl);
             // ReSharper disable once ObjectCreationAsStatement
-            //new Timer(stateInfo => _avalableCalls = 20, null, 0, 1000);
+            new Timer(stateInfo => Calls = 20, null, 1, 1000);
             new Thread(Refresh).Start();
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -54,7 +55,7 @@ namespace EW.Utility
             while (LastApi != null)
             {
                 Thread.Sleep(1000);
-                _avalableCalls = 20;
+                Calls = 20;
             }
         }
 
@@ -163,7 +164,7 @@ namespace EW.Utility
 
             if (message.Length >= 7500)
                 throw new ArgumentException("Слишком большая длина сообщения.", nameof(message));
-            while (_avalableCalls <= 0)
+            while (Calls <= 0)
             {
             }
 
@@ -182,7 +183,7 @@ namespace EW.Utility
                                                            }
                                                        };
             HttpContent content = new FormUrlEncodedContent(post);
-            --_avalableCalls;
+            --Calls;
             _httpClient.PostAsync(MessageSend, content);
         }
 
@@ -194,7 +195,7 @@ namespace EW.Utility
             if (vkIDs.Length == 0) return;
             for (int i = 0; i < vkIDs.Length; i += 100)
             {
-                while (_avalableCalls <= 0)
+                while (Calls <= 0)
                 {
                 }
 
@@ -213,7 +214,7 @@ namespace EW.Utility
                                                                }
                                                            };
                 HttpContent content = new FormUrlEncodedContent(post);
-                _avalableCalls--;
+                Calls--;
                 _httpClient.PostAsync(MessageSend, content);
             }
         }

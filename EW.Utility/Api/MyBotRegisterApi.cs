@@ -14,6 +14,7 @@ namespace EW.Utility.Api
         public BotRegiserResult Register(string name, int vkId, ulong steamId)
         {
             if (vkId == 0) return BotRegiserResult.ConsoleNotAllowed;
+            if (steamId == 76561197960287930ul) return BotRegiserResult.GabeSteam;
             try
             {
                 if (MySave.Players.Exists(x => x.Vk == vkId)) return BotRegiserResult.IsRegistered;
@@ -24,7 +25,7 @@ namespace EW.Utility.Api
                         return BotRegiserResult.InvalidName;
                 if (long.TryParse(name, out var _)) return BotRegiserResult.InvalidName;
                 MySave.Players = MySave.Players.Add(new MyPlayer(name, vkId, steamId));
-                return 0;
+                return BotRegiserResult.Ok;
             }
             catch (Exception)
             {
@@ -42,6 +43,7 @@ namespace EW.Utility.Api
             InvalidVk = -5,
             InvalidSteam64 = -6,
             ConsoleNotAllowed = -7,
+            GabeSteam = -8,
             Error = int.MinValue
         }
     }

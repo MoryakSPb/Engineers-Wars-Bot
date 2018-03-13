@@ -1,5 +1,8 @@
-﻿namespace EW.ObjectModel
+﻿using System;
+
+namespace EW.ObjectModel
 {
+    [Obsolete]
     public sealed class MyNewsFactionRelationsChanged : AMyNews
     {
         public readonly bool Faction2Iniciator;

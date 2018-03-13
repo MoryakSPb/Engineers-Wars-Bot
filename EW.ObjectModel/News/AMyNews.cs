@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 namespace EW.ObjectModel
 {
     [DataContract]
+    [Obsolete]
     public abstract class AMyNews
     {
         public readonly DateTime CreateTime;

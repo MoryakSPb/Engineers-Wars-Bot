@@ -11,6 +11,8 @@ namespace EW.ObjectModel
 
         [DataMember] protected bool MIsFactionLeader;
 
+        [DataMember] public MessagesType AllowedMessages;
+
         /// <summary>
         ///     ID страницы ВКонтакте
         /// </summary>
@@ -81,5 +83,18 @@ namespace EW.ObjectModel
         Guest,
         Mercenary,
         FactionMember
+    }
+    [Flags]
+    public enum MessagesType : byte
+    {
+        None = 0,
+        Default = 1,
+        Mercenaries = 2,
+        FactionMembers = 4,
+        FactionLeaders = 8,
+        Admninstarators = 16,
+        Reserve1 = 32,
+        Reserve2 = 64,
+        DailySummary = 128
     }
 }

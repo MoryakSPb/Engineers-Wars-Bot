@@ -312,7 +312,9 @@ namespace EW.Utility
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }));
 
-
+                playersBuilder.Sort();
+                factionsBuilder.Sort();
+                sectorsBuilder.Sort();
                 Players = playersBuilder.ToImmutable();
                 Factions = factionsBuilder.ToImmutable();
                 Sectors = sectorsBuilder.ToImmutable();

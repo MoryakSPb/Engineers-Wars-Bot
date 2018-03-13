@@ -392,7 +392,7 @@ namespace EW.Utility
                         }
                         case "version":
                         case "версия":
-                            return "Engineers Wars Bot\r\nВерсия: 0.0.3.1-ALPHA\r\nАвтор: MoryakSPb (https://vk.com/moryakspb)";
+                            return "Engineers Wars Bot\r\nВерсия: 0.0.4.0(DEBUG)-ALPHA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
                         case "время":
                         case "time": return DateTime.UtcNow.ToString(_russianCulture);
                         case "policy":
@@ -820,7 +820,7 @@ namespace EW.Utility
                             {
                                 return "Неверный номер договора";
                             }
-                            catch (Exception e)
+                            catch (Exception)
                             {
                                 return "Неверный формат номера договора";
                             }
@@ -998,41 +998,46 @@ namespace EW.Utility
                         return @"Для регистрации введите команду ""ботрегистрация [Ник] [SteamID64]""
 
 [Ник] - Ваш псевдоним, под которым вас будут знать другие игроки. Если вы хотите использовать пробел в нике, используйте ""_"". Также избегайте использования специальных символов (*, \, / и др.)
-[SteamID64] - Уникальный номер вашего аккаунта в Steam. Можно узнать на сайте https://steamid.io/
-Во время тестирования можно указывать случайное число";
+[SteamID64] - Уникальный номер вашего аккаунта в Steam. Можно узнать на сайте https://steamid.io/ (написать/вставить в поле ""input…"" ссылку на ваш профиль Steam)
+
+Пример: ботрегистрация EWBot 76561197960287930";
 
                     if (arguments.Length != 3) return "Неверное количество аргументов";
                     try
                     {
                         lock (RegApi)
                         {
-                            switch (RegApi.Register(arguments[1], _id, Convert.ToUInt64(arguments[2])))
-                            {
-                                case MyBotRegisterApi.BotRegiserResult.Ok:
-                                    _api = new MyBotApi(_id);
-                                    _player = MySave.Players.Find(x => x.Vk == _id);
-                                    return "Вы успешно зарегистрированы";
-                                case MyBotRegisterApi.BotRegiserResult.InvalidName:
-                                    return "Неверный ник. Удалите все специальные символы. Также недопустимы никнеймы, содержащие только цифры";
-                                case MyBotRegisterApi.BotRegiserResult.NameIsBusy: return "Ник уже занят";
-                                case MyBotRegisterApi.BotRegiserResult.SteamIsBusy: return "Steam уже занят";
-                                case MyBotRegisterApi.BotRegiserResult.IsRegistered: return "Вы уже зарегистрированы";
-                                case MyBotRegisterApi.BotRegiserResult.InvalidVk:
-                                    return "Неверный ВК. Обратитесть к администрации";
-                                case MyBotRegisterApi.BotRegiserResult.InvalidSteam64:
-                                    return "Неверный Steam. Обратитесть к администрации";
-                                case MyBotRegisterApi.BotRegiserResult.ConsoleNotAllowed:
-                                    return "Невозможно выполнить команду из консоли";
+                                switch (RegApi.Register(arguments[1], _id, Convert.ToUInt64(arguments[2])))
+                                {
+                                    case MyBotRegisterApi.BotRegiserResult.Ok:
+                                        _api = new MyBotApi(_id);
+                                        _player = MySave.Players.Find(x => x.Vk == _id);
+                                        return "Вы успешно зарегистрированы";
+                                    case MyBotRegisterApi.BotRegiserResult.InvalidName:
+                                        return "Неверный ник. Удалите все специальные символы. Также недопустимы никнеймы, содержащие только цифры";
+                                    case MyBotRegisterApi.BotRegiserResult.NameIsBusy: return "Ник уже занят";
+                                    case MyBotRegisterApi.BotRegiserResult.SteamIsBusy: return "Steam уже занят";
+                                    case MyBotRegisterApi.BotRegiserResult.IsRegistered: return "Вы уже зарегистрированы";
+                                    case MyBotRegisterApi.BotRegiserResult.InvalidVk:
+                                        return "Неверный ВК. Обратитесть к администрации";
+                                    case MyBotRegisterApi.BotRegiserResult.InvalidSteam64:
+                                        return "Неверный Steam. Обратитесть к администрации";
+                                    case MyBotRegisterApi.BotRegiserResult.ConsoleNotAllowed:
+                                        return "Невозможно выполнить команду из консоли";
+                                    case MyBotRegisterApi.BotRegiserResult.GabeSteam:
+                                        return "Использование данного SteamID64 заблокировано";
+                                    default:
+                                        return "Ошибка во время регистрации";
+                                }
                             }
                         }
-                    }
-                    catch (Exception)
+                        catch (Exception)
                     {
                         return "Проверьте правильность SteamID64 и повторите команду";
                     }
 
-                    return "Неизвестная ошибка! Обратитесть к администрации";
-                }
+                    //return "Неизвестная ошибка! Обратитесть к администрации";
+                    }
                 case "botadmin":
                 {
                     try
@@ -1491,6 +1496,7 @@ clear - отчищает консоль.";
                             Console.Clear();
                             return string.Empty;
                         }
+                            case "calls": return MyVkApi.Calls.ToString(CultureInfo.InvariantCulture);
                         /*case "disableconsole":
                         {
                             MyExtensions.FreeConsole();

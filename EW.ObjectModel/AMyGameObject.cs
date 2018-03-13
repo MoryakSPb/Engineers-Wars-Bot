@@ -44,6 +44,6 @@ namespace EW.ObjectModel
 
         public override string ToString() => string.IsNullOrWhiteSpace(MTag) ? Name : MTag + "." + Name;
 
-        public virtual int CompareTo(AMyGameObject other) => string.Compare(Name, other.Name, StringComparison.Ordinal);
+        public virtual int CompareTo(AMyGameObject other) => string.Compare(Name, other.Name, StringComparison.CurrentCultureIgnoreCase);
     }
 }
