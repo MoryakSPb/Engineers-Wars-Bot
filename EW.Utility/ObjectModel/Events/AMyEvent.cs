@@ -8,10 +8,22 @@ namespace EW.Utility.ObjectModel.Events
     {
         internal readonly DateTime Created = DateTime.UtcNow;
         internal bool Sended;
+
+        protected AMyEvent(bool sended)
+        {
+            Sended = sended;
+        }
+
         internal abstract int[] Destination { get; }
 
         public abstract override string ToString();
-        public abstract void Send();
+        public virtual void Send()
+        {
+            if (Sended) return;
+            MyVkApi.LastApi.SendMessage(Destination, ToString(), GetHashCode(), string.Empty);
+            Sended = true;
+        }
+
 
         public override bool Equals(object obj)
         {

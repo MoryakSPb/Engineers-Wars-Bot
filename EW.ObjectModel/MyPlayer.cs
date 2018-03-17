@@ -88,13 +88,6 @@ namespace EW.ObjectModel
     public enum MessagesType : byte
     {
         None = 0,
-        Default = 1,
-        Mercenaries = 2,
-        FactionMembers = 4,
-        FactionLeaders = 8,
-        Admninstarators = 16,
-        Reserve1 = 32,
-        Reserve2 = 64,
-        DailySummary = 128
+        All = 1,
     }
 }

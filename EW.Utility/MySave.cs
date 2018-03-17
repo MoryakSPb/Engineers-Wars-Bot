@@ -69,14 +69,14 @@ namespace EW.Utility
 
         static private void AutoSaveMethod(object arg) => Save();
 
-        static public ImmutableList<MyPlayer> Players;
-        static internal ImmutableList<MyFaction> Factions;
-        static internal ImmutableList<MySector> Sectors;
-        static internal ImmutableList<MyPolitic> Politics;
-        static internal ImmutableList<AMyFight> Fights;
-        static internal ImmutableList<MyOffer> Offers;
-        static internal ImmutableList<MyScript> Scripts;
-        static internal ImmutableList<MyTimer> Timers;
+        static public volatile ImmutableList<MyPlayer> Players;
+        static internal volatile ImmutableList<MyFaction> Factions;
+        static internal volatile ImmutableList<MySector> Sectors;
+        static internal volatile ImmutableList<MyPolitic> Politics;
+        static internal volatile ImmutableList<AMyFight> Fights;
+        static internal volatile ImmutableList<MyOffer> Offers;
+        static internal volatile ImmutableList<MyScript> Scripts;
+        static internal volatile ImmutableList<MyTimer> Timers;
 
         static public MyBotSettings BotSettings;
 

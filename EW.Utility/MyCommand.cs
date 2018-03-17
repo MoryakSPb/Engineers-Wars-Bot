@@ -22,8 +22,8 @@ namespace EW.Utility
 
         private readonly CultureInfo _russianCulture = CultureInfo.CreateSpecificCulture("ru-RU");
 
-        private MyBotApi _api;
-        private MyPlayer _player;
+        private volatile MyBotApi _api;
+        private volatile MyPlayer _player;
 
         public MyCommand(int id)
         {
@@ -393,7 +393,7 @@ namespace EW.Utility
                         }
                         case "version":
                         case "версия":
-                            return "Engineers Wars Bot\r\nВерсия: 0.0.3.2-ALPHA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
+                            return "Engineers Wars Bot\r\nВерсия: 0.0.4.0-ALPHA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
                         case "время":
                         case "time": return DateTime.UtcNow.ToString(_russianCulture);
                         case "policy":

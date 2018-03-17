@@ -33,6 +33,8 @@ namespace EW.Utility
 
         static public int Calls { get; private set; } = 20;
 
+        static private Timer _timer = new Timer(stateInfo => Calls = 20, null, 1, 1000);
+
         private readonly HttpClient _httpClient = new HttpClient();
         private readonly HttpListener _httpListener = new HttpListener();
         static public MyVkApi LastApi { get; private set; }
@@ -43,21 +45,14 @@ namespace EW.Utility
         {
             _httpListener.Prefixes.Add(ListenUrl);
             // ReSharper disable once ObjectCreationAsStatement
-            new Timer(stateInfo => Calls = 20, null, 1, 1000);
-            new Thread(Refresh).Start();
+
+            //new Thread(Refresh).Start();
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "Engineers Wars Bot");
         }
 
-        static private void Refresh()
-        {
-            while (LastApi != null)
-            {
-                Thread.Sleep(1000);
-                Calls = 20;
-            }
-        }
+
 
         public void SetLastApi() => LastApi = this;
 

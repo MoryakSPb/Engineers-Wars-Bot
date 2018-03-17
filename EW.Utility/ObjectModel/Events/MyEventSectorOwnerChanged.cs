@@ -9,13 +9,13 @@ namespace EW.Utility.ObjectModel.Events
 {
     class MyEventSectorOwnerChanged : AMyEvent
     {
-        internal override int[] Destination => MySave.Players.FindAll(x => x.AllowedMessages == (x.AllowedMessages & MessagesType.DailySummary)).Select(x => x.Vk).ToArray();
+        internal override int[] Destination => MySave.Players.FindAll(x => x.AllowedMessages == MessagesType.All).Select(x => x.Vk).ToArray();
         internal readonly MyFaction OldOwner;
         internal readonly MyFaction NewOwner;
         internal readonly MySector Sector;
         private readonly ReasonEnum _reason;
 
-        public MyEventSectorOwnerChanged(MyFaction oldOwner, MyFaction newOwner, MySector sector, ReasonEnum reason)
+        public MyEventSectorOwnerChanged(MyFaction oldOwner, MyFaction newOwner, MySector sector, ReasonEnum reason) : base(false)
         {
             OldOwner = oldOwner;
             NewOwner = newOwner ?? throw new ArgumentNullException(nameof(newOwner));
@@ -39,12 +39,6 @@ namespace EW.Utility.ObjectModel.Events
             }
         }
 
-        public override void Send()
-        {
-            if (Sended) return;
-            MyVkApi.LastApi.SendMessage(Destination, ToString(),GetHashCode(), string.Empty);
-            Sended = true;
-        }
 
         public override bool Equals(object obj)
         {
