@@ -91,7 +91,7 @@ namespace EW.Utility
 ""Sector [Название]"" или ""Сектор [Название]"" - Отображает данные сектора.
 
 ""Fights"" или ""Битвы"" - Показывает список битв, на которые можно записатся.
-""AllFights"" или ""ВсеБитвы"" - Показывает список битв, на которые можно записатся.
+""AllFights"" или ""ВсеБитвы"" - Показывает список битв.
 ""MyFights"" или ""МоиБитвы"" - Показывает список битв, на которые вы записаны.
 
 ""Policy [Тег 1] [Тег 2]"" или ""Политика [Тег 1] [Тег 2]"" - Отображает взаимоотношения между двумя фракциями.
@@ -263,6 +263,11 @@ namespace EW.Utility
 
                             return "Неверный аргумент начала активности";
                         }
+                        case "fight":
+                        case "битва":
+                        {
+
+                        }
                         case "битвы":
                         case "fights":
                         {
@@ -291,10 +296,10 @@ namespace EW.Utility
                                 }
 
                                 if (x.ResultRegistered || x.StartTime > DateTime.UtcNow) continue;
-                                text.AppendLine($"　[{i + 1}]　{MyStrings.GetFightType(x)}　({x.StartTime.ToString("yy-MM-dd_HH:mm", new CultureInfo("ru-ru"))})　{x.AttackersTag} vs {x.DefendersTag}");
+                                text.AppendLine($"　[{i + 1}]　{MyStrings.GetFightType(x)}　({x.StartTime.ToString("yy-MM-dd_HH:mm", _russianCulture)})　{x.AttackersTag} vs {x.DefendersTag}");
                             }
 
-                            return text.Length == 0 ? "Нет битв, в которых вы можете участвовать" : text.ToString();
+                            return text.Length == 0 ? "Нет битв, в которых вы можете участвовать" : text + "\r\n\r\nДля присоеденения к юитве введите \"bot join (номер_битвы)\"";
                         }
                         case "всебитвы":
                         case "allfights":

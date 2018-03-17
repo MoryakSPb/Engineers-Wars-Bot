@@ -2,17 +2,27 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using EW.ObjectModel;
 
 namespace EW.Utility.ObjectModel.Events
 {
+    [DataContract]
     class MyEventSectorOwnerChanged : AMyEvent
     {
+
+        static public new DataContractJsonSerializer Serializer = new DataContractJsonSerializer(typeof(MyEventSectorOwnerChanged), MySave.SerializerSettings);
+        [DataMember]
         internal override int[] Destination => MySave.Players.FindAll(x => x.AllowedMessages == MessagesType.All).Select(x => x.Vk).ToArray();
+        [DataMember]
         internal readonly MyFaction OldOwner;
+        [DataMember]
         internal readonly MyFaction NewOwner;
+        [DataMember]
         internal readonly MySector Sector;
+        [DataMember]
         private readonly ReasonEnum _reason;
 
         public MyEventSectorOwnerChanged(MyFaction oldOwner, MyFaction newOwner, MySector sector, ReasonEnum reason) : base(false)

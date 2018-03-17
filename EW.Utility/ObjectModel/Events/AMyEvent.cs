@@ -1,12 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 using EW.ObjectModel;
 
 namespace EW.Utility.ObjectModel.Events
 {
+    [DataContract]
     internal abstract class AMyEvent : IEquatable<AMyEvent>
     {
+        [IgnoreDataMember]
+        static public DataContractJsonSerializer Serializer = new DataContractJsonSerializer(typeof(AMyEvent), MySave.SerializerSettings);
+
+        [DataMember]
         internal readonly DateTime Created = DateTime.UtcNow;
+        [DataMember]
         internal bool Sended;
 
         protected AMyEvent(bool sended)
@@ -14,6 +22,7 @@ namespace EW.Utility.ObjectModel.Events
             Sended = sended;
         }
 
+        [DataMember]
         internal abstract int[] Destination { get; }
 
         public abstract override string ToString();

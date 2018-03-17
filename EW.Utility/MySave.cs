@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EW.ObjectModel;
 using EW.Utility.ObjectModel;
+using EW.Utility.ObjectModel.Events;
 
 namespace EW.Utility
 {
