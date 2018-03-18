@@ -1,29 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-using System.Text;
 using EW.ObjectModel;
 
 namespace EW.Utility.ObjectModel.Events
 {
     [DataContract]
-    class MyEventSectorOwnerChanged : AMyEvent
+    internal class MyEventSectorOwnerChanged : AMyEvent
     {
-
         static public new DataContractJsonSerializer Serializer = new DataContractJsonSerializer(typeof(MyEventSectorOwnerChanged), MySave.SerializerSettings);
+
+        [DataMember] private readonly ReasonEnum _reason;
+
+        [DataMember] internal readonly MyFaction NewOwner;
+
+        [DataMember] internal readonly MyFaction OldOwner;
+
+        [DataMember] internal readonly MySector Sector;
+
         [DataMember]
         internal override int[] Destination => MySave.Players.FindAll(x => x.AllowedMessages == MessagesType.All).Select(x => x.Vk).ToArray();
-        [DataMember]
-        internal readonly MyFaction OldOwner;
-        [DataMember]
-        internal readonly MyFaction NewOwner;
-        [DataMember]
-        internal readonly MySector Sector;
-        [DataMember]
-        private readonly ReasonEnum _reason;
+
+        public ReasonEnum Reason => OldOwner is null ? ReasonEnum.Nobody : _reason;
 
         public MyEventSectorOwnerChanged(MyFaction oldOwner, MyFaction newOwner, MySector sector, ReasonEnum reason) : base(false)
         {
@@ -32,8 +32,6 @@ namespace EW.Utility.ObjectModel.Events
             Sector = sector ?? throw new ArgumentNullException(nameof(sector));
             _reason = reason;
         }
-
-        public ReasonEnum Reason => OldOwner is null ? ReasonEnum.Nobody : _reason;
 
 
         public override string ToString()
@@ -53,12 +51,7 @@ namespace EW.Utility.ObjectModel.Events
         public override bool Equals(object obj)
         {
             MyEventSectorOwnerChanged changed = obj as MyEventSectorOwnerChanged;
-            return changed != null &&
-                   EqualityComparer<int[]>.Default.Equals(Destination, changed.Destination) &&
-                   EqualityComparer<MyFaction>.Default.Equals(OldOwner, changed.OldOwner) &&
-                   EqualityComparer<MyFaction>.Default.Equals(NewOwner, changed.NewOwner) &&
-                   EqualityComparer<MySector>.Default.Equals(Sector, changed.Sector) &&
-                   Reason == changed.Reason;
+            return changed != null && EqualityComparer<int[]>.Default.Equals(Destination, changed.Destination) && EqualityComparer<MyFaction>.Default.Equals(OldOwner, changed.OldOwner) && EqualityComparer<MyFaction>.Default.Equals(NewOwner, changed.NewOwner) && EqualityComparer<MySector>.Default.Equals(Sector, changed.Sector) && Reason == changed.Reason;
         }
 
         public override int GetHashCode()
@@ -72,22 +65,16 @@ namespace EW.Utility.ObjectModel.Events
             return hashCode;
         }
 
+        static public bool operator ==(MyEventSectorOwnerChanged changed1, MyEventSectorOwnerChanged changed2) => EqualityComparer<MyEventSectorOwnerChanged>.Default.Equals(changed1, changed2);
+
+        static public bool operator !=(MyEventSectorOwnerChanged changed1, MyEventSectorOwnerChanged changed2) => !(changed1 == changed2);
+
         internal enum ReasonEnum
         {
             Default,
             Fight,
             Offer,
-            Nobody = -1,
-        }
-
-        public static bool operator ==(MyEventSectorOwnerChanged changed1, MyEventSectorOwnerChanged changed2)
-        {
-            return EqualityComparer<MyEventSectorOwnerChanged>.Default.Equals(changed1, changed2);
-        }
-
-        public static bool operator !=(MyEventSectorOwnerChanged changed1, MyEventSectorOwnerChanged changed2)
-        {
-            return !(changed1 == changed2);
+            Nobody = -1
         }
     }
 }

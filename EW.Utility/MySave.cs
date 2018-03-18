@@ -12,7 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using EW.ObjectModel;
 using EW.Utility.ObjectModel;
-using EW.Utility.ObjectModel.Events;
 
 namespace EW.Utility
 {
@@ -66,9 +65,6 @@ namespace EW.Utility
         static private readonly DataContractJsonSerializer MyScriptSerializer = new DataContractJsonSerializer(typeof(MyScript), SerializerSettings);
 
         static private readonly DataContractJsonSerializer MyTimerSerializer = new DataContractJsonSerializer(typeof(MyTimer), SerializerSettings);
-        
-
-        static private void AutoSaveMethod(object arg) => Save();
 
         static public volatile ImmutableList<MyPlayer> Players;
         static internal volatile ImmutableList<MyFaction> Factions;
@@ -83,6 +79,9 @@ namespace EW.Utility
 
         // ReSharper disable once UnusedMember.Local
         static private Timer _autoSave;
+
+
+        static private void AutoSaveMethod(object arg) => Save();
 
         static public void CreateDirectories()
         {
@@ -100,7 +99,6 @@ namespace EW.Utility
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         static public void Save()
         {
-            
             try
             {
                 Console.WriteLine($"{DateTime.Now}: Начат процесс сохранения…");

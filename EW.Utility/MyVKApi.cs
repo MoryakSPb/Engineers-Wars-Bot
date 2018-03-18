@@ -31,12 +31,12 @@ namespace EW.Utility
 
         static private readonly byte[] OkArray = {111, 107};
 
-        static public int Calls { get; private set; } = 20;
-
         static private Timer _timer = new Timer(stateInfo => Calls = 20, null, 1, 1000);
 
         private readonly HttpClient _httpClient = new HttpClient();
         private readonly HttpListener _httpListener = new HttpListener();
+
+        static public int Calls { get; private set; } = 20;
         static public MyVkApi LastApi { get; private set; }
 
         internal bool IsListening => _httpListener.IsListening;
@@ -51,7 +51,6 @@ namespace EW.Utility
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "Engineers Wars Bot");
         }
-
 
 
         public void SetLastApi() => LastApi = this;

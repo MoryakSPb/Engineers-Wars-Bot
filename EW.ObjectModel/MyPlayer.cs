@@ -9,9 +9,9 @@ namespace EW.ObjectModel
     {
         [DataMember] public (TimeSpan, TimeSpan) Activity;
 
-        [DataMember] protected bool MIsFactionLeader;
-
         [DataMember] public MessagesType AllowedMessages;
+
+        [DataMember] protected bool MIsFactionLeader;
 
         /// <summary>
         ///     ID страницы ВКонтакте
@@ -84,10 +84,11 @@ namespace EW.ObjectModel
         Mercenary,
         FactionMember
     }
+
     [Flags]
     public enum MessagesType : byte
     {
         None = 0,
-        All = 1,
+        All = 1
     }
 }

@@ -4,8 +4,11 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using EW.ObjectModel;
 using EW.Utility.Api;
+using EW.Utility.ObjectModel.Events;
+
 // ReSharper disable AccessToModifiedClosure
 
 namespace EW.Utility
@@ -603,6 +606,7 @@ namespace EW.Utility
                                 case MyBotFactionApi.MySectorAttackResult.Ok:
                                 {
                                     MySave.Fights = MySave.Fights.Add(fight);
+                                    new Task(new MyEventFightCreated(fight).Send).Start();
                                     return "Битва запланированна";
                                 }
                                 case MyBotFactionApi.MySectorAttackResult.OkNoFight: return "Сектор был взят без боя";
@@ -751,6 +755,7 @@ namespace EW.Utility
                                 text.Append(i.Value);
                                 text.AppendLine();
                             }
+
                             text.AppendLine(Space + Space + "Сектора:");
                             if (item.Deal.Item1.Sectors.Count == 0) text.AppendLine(Space + Space + Space + "(нет)");
                             else
@@ -771,7 +776,8 @@ namespace EW.Utility
                                 text.Append(i.Value);
                                 text.AppendLine();
                             }
-                                text.AppendLine(Space + Space + "Сектора:");
+
+                            text.AppendLine(Space + Space + "Сектора:");
                             if (item.Deal.Item2.Sectors.Count == 0) text.AppendLine(Space + Space + Space + "(нет)");
                             else
                                 item.Deal.Item2.Sectors.ForEach(x => text.AppendLine(Space + Space + Space + x));
@@ -1011,40 +1017,40 @@ namespace EW.Utility
                     if (arguments.Length != 3) return "Неверное количество аргументов";
                     try
                     {
-                        if (!ulong.TryParse(arguments[2],out _)) return "Проверьте правильность SteamID64 и повторите команду";
+                        if (!ulong.TryParse(arguments[2], out _)) return "Проверьте правильность SteamID64 и повторите команду";
                         lock (RegApi)
                         {
-                                switch (RegApi.Register(arguments[1], _id, Convert.ToUInt64(arguments[2])))
-                                {
-                                    case MyBotRegisterApi.BotRegiserResult.Ok:
-                                        _api = new MyBotApi(_id);
-                                        _player = MySave.Players.Find(x => x.Vk == _id);
-                                        return "Вы успешно зарегистрированы";
-                                    case MyBotRegisterApi.BotRegiserResult.InvalidName:
-                                        return "Неверный ник. Удалите все специальные символы. Также недопустимы никнеймы, содержащие только цифры";
-                                    case MyBotRegisterApi.BotRegiserResult.NameIsBusy: return "Ник уже занят";
-                                    case MyBotRegisterApi.BotRegiserResult.SteamIsBusy: return "Steam уже занят";
-                                    case MyBotRegisterApi.BotRegiserResult.IsRegistered: return "Вы уже зарегистрированы";
-                                    case MyBotRegisterApi.BotRegiserResult.InvalidVk:
-                                        return "Неверный ВК. Обратитесть к администрации";
-                                    case MyBotRegisterApi.BotRegiserResult.InvalidSteam64:
-                                        return "Неверный Steam. Обратитесть к администрации";
-                                    case MyBotRegisterApi.BotRegiserResult.ConsoleNotAllowed:
-                                        return "Невозможно выполнить команду из консоли";
-                                    case MyBotRegisterApi.BotRegiserResult.GabeSteam:
-                                        return "Использование данного SteamID64 заблокировано";
-                                    default:
-                                        return "Ошибка во время регистрации";
-                                }
+                            switch (RegApi.Register(arguments[1], _id, Convert.ToUInt64(arguments[2])))
+                            {
+                                case MyBotRegisterApi.BotRegiserResult.Ok:
+                                    _api = new MyBotApi(_id);
+                                    _player = MySave.Players.Find(x => x.Vk == _id);
+                                    return "Вы успешно зарегистрированы";
+                                case MyBotRegisterApi.BotRegiserResult.InvalidName:
+                                    return "Неверный ник. Удалите все специальные символы. Также недопустимы никнеймы, содержащие только цифры";
+                                case MyBotRegisterApi.BotRegiserResult.NameIsBusy: return "Ник уже занят";
+                                case MyBotRegisterApi.BotRegiserResult.SteamIsBusy: return "Steam уже занят";
+                                case MyBotRegisterApi.BotRegiserResult.IsRegistered: return "Вы уже зарегистрированы";
+                                case MyBotRegisterApi.BotRegiserResult.InvalidVk:
+                                    return "Неверный ВК. Обратитесть к администрации";
+                                case MyBotRegisterApi.BotRegiserResult.InvalidSteam64:
+                                    return "Неверный Steam. Обратитесть к администрации";
+                                case MyBotRegisterApi.BotRegiserResult.ConsoleNotAllowed:
+                                    return "Невозможно выполнить команду из консоли";
+                                case MyBotRegisterApi.BotRegiserResult.GabeSteam:
+                                    return "Использование данного SteamID64 заблокировано";
+                                default:
+                                    return "Ошибка во время регистрации";
                             }
                         }
-                        catch (Exception)
+                    }
+                    catch (Exception)
                     {
                         return "Проверьте правильность SteamID64 и повторите команду";
                     }
 
                     //return "Неизвестная ошибка! Обратитесть к администрации";
-                    }
+                }
                 case "botadmin":
                 {
                     try
@@ -1308,6 +1314,7 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                             {
                                 case FightResult.NoResult: return "Необходим иной результат битвы";
                                 case FightResult.AttackersWin:
+                                    new Task(new MyEventSectorOwnerChanged(def, attack, sector, MyEventSectorOwnerChanged.ReasonEnum.Fight).Send).Start();
                                     sector.Tag = attack.Tag;
                                     break;
                                 case FightResult.DefendersWin: break;
@@ -1403,11 +1410,11 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                             {
                                 // ReSharper disable once PossibleInvalidOperationException
                                 // ReSharper disable once PossibleInvalidOperationException
-                                if (offer.Confirmed || (offer.Confirm.Item1.HasValue ^ offer.Confirm.Item2.HasValue)) continue;
+                                if (offer.Confirmed || offer.Confirm.Item1.HasValue ^ offer.Confirm.Item2.HasValue) continue;
                                 offer.Confirmed = true;
                                 MyFaction faction1 = MySave.Factions.Find(x => x.Tag == offer.Factions.Item1);
                                 MyFaction faction2 = MySave.Factions.Find(x => x.Tag == offer.Factions.Item2);
-                                MyPolitic pol = MySave.Politics.Find(x => (x.Factions.Item1== faction1.Tag && x.Factions.Item2 == faction2.Tag) ^ (x.Factions.Item2 == faction1.Tag && x.Factions.Item1 == faction2.Tag));
+                                MyPolitic pol = MySave.Politics.Find(x => (x.Factions.Item1 == faction1.Tag && x.Factions.Item2 == faction2.Tag) ^ (x.Factions.Item2 == faction1.Tag && x.Factions.Item1 == faction2.Tag));
 
                                 faction1.Resourses -= offer.Deal.Item1.Resourses;
                                 faction2.Resourses += offer.Deal.Item1.Resourses;
@@ -1436,35 +1443,36 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                                                                    faction2.Ships[x.Key] -= x.Value;
                                                                    faction1.Ships[x.Key] += x.Value;
                                                                });
-                                        switch (offer.OfferType)
-                                        {
-                                            case MyOfferType.Default:
-                                                break;
-                                            case MyOfferType.WarToNeutral:
-                                                pol.Status = MyPoliticStatus.Neutral;
-                                                break;
-                                            case MyOfferType.NeutralToAlly:
-                                                pol.Status = MyPoliticStatus.Ally;
-                                                break;
-                                            case MyOfferType.AllyToNeutral:
-                                                pol.Union = false;
-                                                pol.Status = MyPoliticStatus.Neutral;
-                                                break;
-                                            case MyOfferType.NeutralToWar:
-                                                pol.Status = MyPoliticStatus.War;
-                                                break;
-                                            default:
-                                                throw new ArgumentOutOfRangeException();
-                                        }
+                                switch (offer.OfferType)
+                                {
+                                    case MyOfferType.Default:
+                                        break;
+                                    case MyOfferType.WarToNeutral:
+                                        pol.Status = MyPoliticStatus.Neutral;
+                                        break;
+                                    case MyOfferType.NeutralToAlly:
+                                        pol.Status = MyPoliticStatus.Ally;
+                                        break;
+                                    case MyOfferType.AllyToNeutral:
+                                        pol.Union = false;
+                                        pol.Status = MyPoliticStatus.Neutral;
+                                        break;
+                                    case MyOfferType.NeutralToWar:
+                                        pol.Status = MyPoliticStatus.War;
+                                        break;
+                                    default:
+                                        throw new ArgumentOutOfRangeException();
+                                }
 
                                 if (offer.Options == MyOfferOptions.ChangeUnion) pol.Union = !pol.Union;
                                 else if (offer.Options == MyOfferOptions.CreatePact)
-                                { pol.Pact = true;
+                                {
+                                    pol.Pact = true;
                                     pol.PactTurns = offer.PactTurns;
                                 }
                             }
 
-                                    foreach (MyPolitic p in MySave.Politics)
+                            foreach (MyPolitic p in MySave.Politics)
                             {
                                 if (!p.Pact || p.Status == MyPoliticStatus.Ally) continue;
                                 --p.PactTurns;
@@ -1472,8 +1480,8 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                             }
 
                             return "Ход завершен";
-                                }
-                            case "send":
+                        }
+                        case "send":
                         {
                             if (arguments.Length < 4) return "Неверное количество аргументов";
 
@@ -1494,8 +1502,8 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                         //case "interned": return arguments.Length < 3 ? "Неверное количество аргументов" : (string.IsInterned(arguments[2]) != null).ToString();
                         default:
                             return "Неизвестная команда. Используйте команду \"botadmin help\" для получения справки";
-                        }
                     }
+                }
                 case "botconsole":
                 {
                     arguments[1] = arguments[1].ToLowerInvariant();
@@ -1530,7 +1538,7 @@ clear - отчищает консоль.";
                             Console.Clear();
                             return string.Empty;
                         }
-                            case "calls": return MyVkApi.Calls.ToString(CultureInfo.InvariantCulture);
+                        case "calls": return MyVkApi.Calls.ToString(CultureInfo.InvariantCulture);
                         /*case "disableconsole":
                         {
                             MyExtensions.FreeConsole();

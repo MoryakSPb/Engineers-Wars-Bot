@@ -1,25 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-using System.Text;
 using EW.ObjectModel;
 
 namespace EW.Utility.ObjectModel.Events
 {
     [DataContract]
-    class MyEventRelationsChanged : AMyEvent
+    internal class MyEventRelationsChanged : AMyEvent
     {
         static public new DataContractJsonSerializer Serializer = new DataContractJsonSerializer(typeof(MyEventRelationsChanged), MySave.SerializerSettings);
+
+        [DataMember] internal readonly MyFaction Faction1;
+
+        [DataMember] internal readonly MyFaction Faction2;
+
+        [DataMember] internal readonly MyOfferType Relations;
+
         [DataMember]
         internal override int[] Destination => MySave.Players.FindAll(x => x.AllowedMessages == MessagesType.All).Select(x => x.Vk).ToArray();
-        [DataMember]
-        internal readonly MyFaction Faction1;
-        [DataMember]
-        internal readonly MyFaction Faction2;
-        [DataMember]
-        internal readonly MyOfferType Relations;
 
         public MyEventRelationsChanged(MyFaction faction1, MyFaction faction2, MyOfferType relations) : base(false)
         {
