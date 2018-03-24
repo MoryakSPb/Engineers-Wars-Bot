@@ -21,7 +21,7 @@ namespace EW.Utility.ObjectModel.Events
         [DataMember] internal readonly MySector Sector;
 
         [DataMember]
-        internal override int[] Destination => MySave.Players.FindAll(x => x.AllowedMessages == MessagesType.All).Select(x => x.Vk).ToArray();
+        protected override int[] Destination => MySave.Players.FindAll(x => x.AllowedMessages == MessagesType.All).Select(x => x.Vk).ToArray();
 
         public ReasonEnum Reason => OldOwner is null ? ReasonEnum.Nobody : _reason;
 

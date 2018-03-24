@@ -269,7 +269,54 @@ namespace EW.Utility
                         case "fight":
                         case "битва":
                         {
+                            if (arguments.Length < 3) return "Неверное количество аргументов";
+                            int index;
+                            try
+                            {
+                                index = Convert.ToInt32(arguments[3]);
+                            }
+                            catch (Exception)
+                            {
+                                return "Неверный формат аргумента";
+                            }
 
+                            AMyFight fight;
+                            try
+                            {
+                                fight = _api.AllFights().ToList()[index];
+                                }
+                            catch (Exception )
+                            {
+                                return "Битва не найдена";
+                            }
+                            StringBuilder text = new StringBuilder(512);
+                            text.Append("Битва между фракциями «");
+                            text.Append(MySave.Factions.Find(x => x.Tag == fight.AttackersTag).Name);
+                            text.Append("» и «");
+                            text.Append(MySave.Factions.Find(x => x.Tag == fight.DefendersTag).Name);
+                            text.Append("»\u00AD");
+                            switch (fight)
+                            {
+                                    case MySectorFight _:
+                                        text.Append("за сектор ");
+                                        text.AppendLine(((MySectorFight) fight).Sector);
+                                        break;
+                                    case MyTradeShipFight _:
+                                        text.Append("за торговый корабль фракции «");
+                                        text.Append(MySave.Factions.Find(x => x.Tag == fight.DefendersTag).Name);
+                                        text.AppendLine("»");
+                                        break;
+                                    default:
+                                        text.AppendLine();
+                                        break;
+                            }
+
+                            text.Append("Время начала (UTC): ");
+                            text.AppendLine(fight.StartTime.ToString(_russianCulture));
+                            text.Append("Статус: ");
+                            text.AppendLine(fight.ResultRegistered ? MyStrings.GetFightStatus(fight.Result) : "Бой не закончен");
+
+                            return text.ToString();
                         }
                         case "битвы":
                         case "fights":

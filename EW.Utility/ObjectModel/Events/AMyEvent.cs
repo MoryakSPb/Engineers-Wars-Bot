@@ -15,7 +15,7 @@ namespace EW.Utility.ObjectModel.Events
         [DataMember] internal bool Sended;
 
         [DataMember]
-        internal abstract int[] Destination { get; }
+        protected abstract int[] Destination { get; }
 
         protected AMyEvent(bool sended) => Sended = sended;
 

@@ -129,8 +129,23 @@ namespace EW.Utility
             }
         }
 
-        static internal string GetBoolOnOff(bool logic) => logic ? "включено" : "выключено";
-
         static internal string GetBoolYesNo(bool logic) => logic ? "🗹" : "🗷";
+
+        static internal string GetFightStatus(FightResult result)
+        {
+            switch (result)
+            {
+                case FightResult.NoResult:
+                    return "(Н/Д)";
+                case FightResult.AttackersWin:
+                    return "Победа атакующих";
+                case FightResult.DefendersWin:
+                    return "Победа обороняющихся";
+                case FightResult.Stalemate:
+                    return "Пат";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(result), result, null);
+            }
+        }
     }
 }

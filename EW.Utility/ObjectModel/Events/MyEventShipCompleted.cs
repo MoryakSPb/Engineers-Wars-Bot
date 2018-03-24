@@ -14,7 +14,7 @@ namespace EW.Utility.ObjectModel.Events
 
         [DataMember] public readonly ShipType Ship;
 
-        internal override int[] Destination => MySave.Players.FindAll(x => x.AllowedMessages == MessagesType.All).Select(x => x.Vk).ToArray();
+        protected override int[] Destination => MySave.Players.FindAll(x => x.AllowedMessages == MessagesType.All).Select(x => x.Vk).ToArray();
 
         public MyEventShipCompleted(MyFaction faction, ShipType ship) : base(false)
         {

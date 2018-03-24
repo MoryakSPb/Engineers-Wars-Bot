@@ -18,7 +18,7 @@ namespace EW.Utility.ObjectModel.Events
         [DataMember] internal readonly MyOfferType Relations;
 
         [DataMember]
-        internal override int[] Destination => MySave.Players.FindAll(x => x.AllowedMessages == MessagesType.All).Select(x => x.Vk).ToArray();
+        protected override int[] Destination => MySave.Players.FindAll(x => x.AllowedMessages == MessagesType.All).Select(x => x.Vk).ToArray();
 
         public MyEventRelationsChanged(MyFaction faction1, MyFaction faction2, MyOfferType relations) : base(false)
         {

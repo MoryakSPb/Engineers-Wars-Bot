@@ -2,7 +2,7 @@
 {
     public class MyScript
     {
-        public string Body;
+        public string[] Body;
         public string Name;
     }
 }
