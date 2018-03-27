@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using EW.ObjectModel;
 
 namespace EW.Utility.ObjectModel.Events
 {
     [DataContract]
-    internal abstract class AMyEvent : IEquatable<AMyEvent>
+    public abstract class AMyEvent : IEquatable<AMyEvent>
     {
         [IgnoreDataMember] static public DataContractJsonSerializer Serializer = new DataContractJsonSerializer(typeof(AMyEvent), MySave.SerializerSettings);
 
@@ -15,7 +17,7 @@ namespace EW.Utility.ObjectModel.Events
         [DataMember] internal bool Sended;
 
         [DataMember]
-        protected abstract int[] Destination { get; }
+        protected virtual int[] Destination => MySave.Players.FindAll(x => x.AllowedMessages == MessagesType.All).Select(x => x.Vk).ToArray();
 
         protected AMyEvent(bool sended) => Sended = sended;
 

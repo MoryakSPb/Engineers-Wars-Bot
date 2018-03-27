@@ -155,7 +155,7 @@ namespace EW.Utility
                                 // ReSharper disable once PossibleInvalidOperationException
                                 text.AppendLine($"　　Текущий проект: {(faction.ShipBuild.HasValue ? MyStrings.GetShipNameOnce(faction.ShipBuild.Value) : Nd)}");
                                 text.AppendLine($"　　Стадия строительства: {faction.CurrentShipBuild} / {faction.TotalShipBuild}");
-                                text.AppendLine($"　　Осталось ходов: {(faction.TotalShipBuild != 0 ? (faction.TotalShipBuild / faction.MaxResourses.Production).ToString() : "∞")}");
+                                text.AppendLine($"　　Осталось ходов: {(faction.MaxResourses.Production != 0 ? (faction.TotalShipBuild / faction.MaxResourses.Production).ToString() : "∞")}");
                             }
 
                             text.AppendLine("Игроки:");
@@ -193,7 +193,7 @@ namespace EW.Utility
                         case "players":
                         {
                             title = "Игроки";
-                            StringBuilder text = new StringBuilder(128);
+                            StringBuilder text = new StringBuilder(512);
                             MySave.Players.ForEach(x => text.AppendLine(x.Name));
                             return text.ToString();
                         }
@@ -315,6 +315,11 @@ namespace EW.Utility
                             text.AppendLine(fight.StartTime.ToString(_russianCulture));
                             text.Append("Статус: ");
                             text.AppendLine(fight.ResultRegistered ? MyStrings.GetFightStatus(fight.Result) : "Бой не закончен");
+                            text.AppendLine("Игроки:");
+
+                                text.AppendLine("Потери:");
+                            text.AppendLine("\u3000Атакующие:");
+                            //fight.AttackersСasualties
 
                             return text.ToString();
                         }
@@ -556,7 +561,11 @@ namespace EW.Utility
                             {
                                 case MyBotFactionApi.MySetBuildResult.Ok:
                                     return "Корабль находится в очереди на строительство";
-                                case MyBotFactionApi.MySetBuildResult.Built: return "Корабль был построен";
+                                case MyBotFactionApi.MySetBuildResult.Built:
+                                {
+                                    new Task(new MyEventShipCompleted(_factionApi.Faction, (ShipType)Convert.ToInt32(arguments[2])).Send).Start();
+                                            return "Корабль был построен";
+                                }
                                 case MyBotFactionApi.MySetBuildResult.QueueIsBusy:
                                     return "В очереди уже находится корабль";
                                 default: throw new ArgumentOutOfRangeException();
@@ -576,12 +585,14 @@ namespace EW.Utility
                                 Enum.IsDefined(typeof(SectorImprovementType), Convert.ToInt32(arguments[3]));
                                 switch (_factionApi.BuildImprovement(sector, (SectorImprovementType) Convert.ToInt32(arguments[3])))
                                 {
-                                    case MyBotFactionApi.MyBuildImprovementResult.Ok: return "Улучшение построено";
+                                    case MyBotFactionApi.MyBuildImprovementResult.Ok:
+                                        new Task(new MyEventImprovementBuilded(sector, (SectorImprovementType)Convert.ToInt32(arguments[3])).Send).Start();
+                                        return "Улучшение построено";
                                     case MyBotFactionApi.MyBuildImprovementResult.NoResourses: return "Недостаточно ресурсов";
                                     case MyBotFactionApi.MyBuildImprovementResult.NotOwner: return "Только владелец сектора может строить улучшения";
                                     case MyBotFactionApi.MyBuildImprovementResult.NoPoint: return "Нет очков строительства";
                                     case MyBotFactionApi.MyBuildImprovementResult.NotAvalable: return "Данное улучшение нельзя построить";
-                                    case MyBotFactionApi.MyBuildImprovementResult.UseDestroyImprovement: return "Для продажи улучшений используйте botfaction ";
+                                    case MyBotFactionApi.MyBuildImprovementResult.UseDestroyImprovement: return "Для продажи улучшений используйте команду «botfaction destroyimprovement»";
                                     case MyBotFactionApi.MyBuildImprovementResult.SectorImproved: return "Сектор уже улучшен";
                                     default: throw new ArgumentOutOfRangeException();
                                 }
@@ -599,7 +610,9 @@ namespace EW.Utility
                             if (sector is null) return "Сектор не найден";
                             switch (_factionApi.UpgrateImprovement(sector))
                             {
-                                case MyBotFactionApi.MySectorUpdateResult.Ok: return "Уровень улучшения повышен";
+                                case MyBotFactionApi.MySectorUpdateResult.Ok:
+                                    new Task(new MyEventImprovementUpgrated(sector, sector.Improvement.Type).Send).Start();
+                                    return "Уровень улучшения повышен";
                                 case MyBotFactionApi.MySectorUpdateResult.EmptySector: return "Сектор не имеет улучшений";
                                 case MyBotFactionApi.MySectorUpdateResult.NotOwner: return "Вы не являеетесь владельцем сектора";
                                 case MyBotFactionApi.MySectorUpdateResult.NoResourses: return "Недостаточно ресурсов";
@@ -616,7 +629,9 @@ namespace EW.Utility
                             if (sector is null) return "Сектор не найден";
                             switch (_factionApi.DestroyImprovement(sector))
                             {
-                                case MyBotFactionApi.MyDestroyImprovementResult.Ok: return "Улучшение уничтожено";
+                                case MyBotFactionApi.MyDestroyImprovementResult.Ok:
+                                    new Task(new MyEventImprovementBuilded(sector, SectorImprovementType.None).Send).Start();
+                                        return "Улучшение уничтожено";
                                 case MyBotFactionApi.MyDestroyImprovementResult.EmptySector: return "В секторе нет улучшения";
                                 case MyBotFactionApi.MyDestroyImprovementResult.NotOwner: return "Вы не являетесь владельцем этого сектора";
                                 case MyBotFactionApi.MyDestroyImprovementResult.NotAvalable: return "Данное действие невозможно";
@@ -632,7 +647,11 @@ namespace EW.Utility
                             if (sector is null) return "Сектор не найден";
                             switch (_factionApi.Go(sector))
                             {
-                                case MyBotFactionApi.MySectorGoResult.Ok: return "Сектор теперь под вашим контролем";
+                                case MyBotFactionApi.MySectorGoResult.Ok:
+                                {
+                                    new Task(new MyEventSectorOwnerChanged(null, _factionApi.Faction, sector, MyEventSectorOwnerChanged.ReasonEnum.Nobody).Send).Start();
+                                            return "Сектор теперь под вашим контролем";
+                                }
                                 case MyBotFactionApi.MySectorGoResult.YourSector: return "Сектор уже под вашим контролем";
                                 case MyBotFactionApi.MySectorGoResult.NoContacts: return "Нет прямого пути к сектору";
                                 case MyBotFactionApi.MySectorGoResult.OtherFaction: return "Сектор контролируется другой фракцией. Используйте команду \"botfaction attack\"";
@@ -1429,10 +1448,27 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                                 faction.MaxResourses.MonolithCharges = service[0].MonolithCharges;
                                 faction.MaxResourses.ShipSlots = service[0].ShipSlots;
                                 faction.MaxResourses.Production = service[0].Production;
+                                if (faction.ShipBuild.HasValue)
+                                {
+                                    if (faction.TotalShipBuild <= faction.CurrentShipBuild + service[0].Production)
+                                    {
+                                        // ReSharper disable once PossibleInvalidOperationException
+                                        faction.Ships[faction.ShipBuild.Value] += 1;
+                                        // ReSharper disable once PossibleInvalidOperationException
+                                        new Task(new MyEventShipCompleted(faction, faction.ShipBuild.Value).Send).Start();
+                                        faction.Resourses.Production = faction.CurrentShipBuild + service[0].Production;
+                                        faction.ShipBuild = null;
+                                    }
+                                    else
+                                    {
+                                        faction.CurrentShipBuild += faction.Resourses.Production;
+                                        faction.Resourses.Production = 0;
+                                    }
+                                }
                                 switch (faction.FactionType)
                                 {
                                     case FactionType.Research:
-                                        service[0] %= 100 + 15 * monoithSectors;
+                                        service[0].Production += monoithSectors;
                                         break;
                                     case FactionType.Resettlement:
                                         service[0] %= 100 + 3 * factionsSectors.Count;
@@ -1496,16 +1532,20 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                                         break;
                                     case MyOfferType.WarToNeutral:
                                         pol.Status = MyPoliticStatus.Neutral;
-                                        break;
+                                        new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
+                                                break;
                                     case MyOfferType.NeutralToAlly:
                                         pol.Status = MyPoliticStatus.Ally;
-                                        break;
+                                        new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
+                                                break;
                                     case MyOfferType.AllyToNeutral:
-                                        pol.Union = false;
+                                        new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
+                                                pol.Union = false;
                                         pol.Status = MyPoliticStatus.Neutral;
                                         break;
                                     case MyOfferType.NeutralToWar:
-                                        pol.Status = MyPoliticStatus.War;
+                                        new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
+                                                pol.Status = MyPoliticStatus.War;
                                         break;
                                     default:
                                         throw new ArgumentOutOfRangeException();
@@ -1523,9 +1563,13 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                             {
                                 if (!p.Pact || p.Status == MyPoliticStatus.Ally) continue;
                                 --p.PactTurns;
-                                if (p.PactTurns <= 0) p.Pact = false;
+                                if (p.PactTurns <= 0)
+                                {
+                                    p.Pact = false;
+                                    new Task(new MyEventPactEnded(p).Send).Start();
+                                }
                             }
-
+                            new Task(new MyEventNextTurn().Send).Start();
                             return "Ход завершен";
                         }
                         case "send":
