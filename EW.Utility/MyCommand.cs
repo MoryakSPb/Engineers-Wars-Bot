@@ -284,11 +284,12 @@ namespace EW.Utility
                             try
                             {
                                 fight = _api.AllFights().ToList()[index];
-                                }
-                            catch (Exception )
+                            }
+                            catch (Exception)
                             {
                                 return "Битва не найдена";
                             }
+
                             StringBuilder text = new StringBuilder(512);
                             text.Append("Битва между фракциями «");
                             text.Append(MySave.Factions.Find(x => x.Tag == fight.AttackersTag).Name);
@@ -297,18 +298,18 @@ namespace EW.Utility
                             text.Append("»\u00AD");
                             switch (fight)
                             {
-                                    case MySectorFight _:
-                                        text.Append("за сектор ");
-                                        text.AppendLine(((MySectorFight) fight).Sector);
-                                        break;
-                                    case MyTradeShipFight _:
-                                        text.Append("за торговый корабль фракции «");
-                                        text.Append(MySave.Factions.Find(x => x.Tag == fight.DefendersTag).Name);
-                                        text.AppendLine("»");
-                                        break;
-                                    default:
-                                        text.AppendLine();
-                                        break;
+                                case MySectorFight _:
+                                    text.Append("за сектор ");
+                                    text.AppendLine(((MySectorFight) fight).Sector);
+                                    break;
+                                case MyTradeShipFight _:
+                                    text.Append("за торговый корабль фракции «");
+                                    text.Append(MySave.Factions.Find(x => x.Tag == fight.DefendersTag).Name);
+                                    text.AppendLine("»");
+                                    break;
+                                default:
+                                    text.AppendLine();
+                                    break;
                             }
 
                             text.Append("Время начала (UTC): ");
@@ -317,7 +318,7 @@ namespace EW.Utility
                             text.AppendLine(fight.ResultRegistered ? MyStrings.GetFightStatus(fight.Result) : "Бой не закончен");
                             text.AppendLine("Игроки:");
 
-                                text.AppendLine("Потери:");
+                            text.AppendLine("Потери:");
                             text.AppendLine("\u3000Атакующие:");
                             //fight.AttackersСasualties
 
@@ -563,8 +564,8 @@ namespace EW.Utility
                                     return "Корабль находится в очереди на строительство";
                                 case MyBotFactionApi.MySetBuildResult.Built:
                                 {
-                                    new Task(new MyEventShipCompleted(_factionApi.Faction, (ShipType)Convert.ToInt32(arguments[2])).Send).Start();
-                                            return "Корабль был построен";
+                                    new Task(new MyEventShipCompleted(_factionApi.Faction, (ShipType) Convert.ToInt32(arguments[2])).Send).Start();
+                                    return "Корабль был построен";
                                 }
                                 case MyBotFactionApi.MySetBuildResult.QueueIsBusy:
                                     return "В очереди уже находится корабль";
@@ -586,7 +587,7 @@ namespace EW.Utility
                                 switch (_factionApi.BuildImprovement(sector, (SectorImprovementType) Convert.ToInt32(arguments[3])))
                                 {
                                     case MyBotFactionApi.MyBuildImprovementResult.Ok:
-                                        new Task(new MyEventImprovementBuilded(sector, (SectorImprovementType)Convert.ToInt32(arguments[3])).Send).Start();
+                                        new Task(new MyEventImprovementBuilded(sector, (SectorImprovementType) Convert.ToInt32(arguments[3])).Send).Start();
                                         return "Улучшение построено";
                                     case MyBotFactionApi.MyBuildImprovementResult.NoResourses: return "Недостаточно ресурсов";
                                     case MyBotFactionApi.MyBuildImprovementResult.NotOwner: return "Только владелец сектора может строить улучшения";
@@ -631,7 +632,7 @@ namespace EW.Utility
                             {
                                 case MyBotFactionApi.MyDestroyImprovementResult.Ok:
                                     new Task(new MyEventImprovementBuilded(sector, SectorImprovementType.None).Send).Start();
-                                        return "Улучшение уничтожено";
+                                    return "Улучшение уничтожено";
                                 case MyBotFactionApi.MyDestroyImprovementResult.EmptySector: return "В секторе нет улучшения";
                                 case MyBotFactionApi.MyDestroyImprovementResult.NotOwner: return "Вы не являетесь владельцем этого сектора";
                                 case MyBotFactionApi.MyDestroyImprovementResult.NotAvalable: return "Данное действие невозможно";
@@ -650,7 +651,7 @@ namespace EW.Utility
                                 case MyBotFactionApi.MySectorGoResult.Ok:
                                 {
                                     new Task(new MyEventSectorOwnerChanged(null, _factionApi.Faction, sector, MyEventSectorOwnerChanged.ReasonEnum.Nobody).Send).Start();
-                                            return "Сектор теперь под вашим контролем";
+                                    return "Сектор теперь под вашим контролем";
                                 }
                                 case MyBotFactionApi.MySectorGoResult.YourSector: return "Сектор уже под вашим контролем";
                                 case MyBotFactionApi.MySectorGoResult.NoContacts: return "Нет прямого пути к сектору";
@@ -1073,12 +1074,14 @@ namespace EW.Utility
                     if (arguments.Length < 2) return "Неверное количество аргументов. Введите \"ботрегистрация помощь\" для получения справки";
 
                     if (arguments[1].ToLowerInvariant() == "помощь" || arguments[1].ToLowerInvariant() == "help" || arguments[1].ToLowerInvariant() == "?")
+                    {
                         return @"Для регистрации введите команду ""ботрегистрация [Ник] [SteamID64]""
 
 [Ник] - Ваш псевдоним, под которым вас будут знать другие игроки. Если вы хотите использовать пробел в нике, используйте ""_"". Также избегайте использования специальных символов (*, \, / и др.)
 [SteamID64] - Уникальный номер вашего аккаунта в Steam. Можно узнать на сайте https://steamid.io/ (написать/вставить в поле ""input…"" ссылку на ваш профиль Steam)
 
 Пример: ботрегистрация Console 76561197960287930";
+                    }
 
                     if (arguments.Length != 3) return "Неверное количество аргументов";
                     try
@@ -1465,6 +1468,7 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                                         faction.Resourses.Production = 0;
                                     }
                                 }
+
                                 switch (faction.FactionType)
                                 {
                                     case FactionType.Research:
@@ -1533,19 +1537,19 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                                     case MyOfferType.WarToNeutral:
                                         pol.Status = MyPoliticStatus.Neutral;
                                         new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
-                                                break;
+                                        break;
                                     case MyOfferType.NeutralToAlly:
                                         pol.Status = MyPoliticStatus.Ally;
                                         new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
-                                                break;
+                                        break;
                                     case MyOfferType.AllyToNeutral:
                                         new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
-                                                pol.Union = false;
+                                        pol.Union = false;
                                         pol.Status = MyPoliticStatus.Neutral;
                                         break;
                                     case MyOfferType.NeutralToWar:
                                         new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
-                                                pol.Status = MyPoliticStatus.War;
+                                        pol.Status = MyPoliticStatus.War;
                                         break;
                                     default:
                                         throw new ArgumentOutOfRangeException();
@@ -1569,6 +1573,7 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                                     new Task(new MyEventPactEnded(p).Send).Start();
                                 }
                             }
+
                             new Task(new MyEventNextTurn().Send).Start();
                             return "Ход завершен";
                         }
