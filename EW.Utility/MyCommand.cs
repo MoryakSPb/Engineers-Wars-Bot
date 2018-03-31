@@ -653,7 +653,7 @@ namespace EW.Utility
                             if (arguments.Length < 3) return "Неверное количество аргументов";
                             if (!MySave.BotSettings.EnableFights) return "Битвы отключены";
                             MySector sector = MySave.Sectors.Find(x => x.Name == arguments[2]);
-                            if (sector is null) return "Сектор не найден";
+                            if (sector is null) return "Сектор не найден или переход в него заблокирован";
                             switch (_factionApi.Go(sector))
                             {
                                 case MyBotFactionApi.MySectorGoResult.Ok:
@@ -674,7 +674,7 @@ namespace EW.Utility
                             if (arguments.Length < 4) return "Неверное количество аргументов";
                             if (!MySave.BotSettings.EnableFights) return "Битвы отключены";
                             MySector sector = MySave.Sectors.Find(x => x.Name == arguments[2]);
-                            if (sector is null) return "Сектор не найден";
+                            if (sector is null) return "Сектор не найденили переход в него заблокирован";
                             if (!TimeSpan.TryParse(arguments[3], out TimeSpan time)) return "Неверный формат времени";
                             switch (_factionApi.Attack(sector, time, out MySectorFight fight))
                             {
@@ -1540,6 +1540,15 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                         case MyOfferType.NeutralToWar:
                                             new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
                                             pol.Status = MyPoliticStatus.War;
+                                            string enemy = faction1 == _factionApi.Faction ? faction2.Tag : faction1.Tag;
+                                            var pols = MySave.Politics.Where(x => x.Factions.Item1 == enemy ^ x.Factions.Item2 == enemy && x.Union);
+                                            List<MyFaction> factions = new List<MyFaction>();
+                                            pols.ForEach(x =>
+                                                         {
+                                                             if (x.Factions.Item1 == enemy) factions.Add(MySave.Factions.Find(y => y.Tag == x.Factions.Item2));
+                                                             else factions.Add(MySave.Factions.Find(y => y.Tag == x.Factions.Item1));
+                                                         });
+                                            factions.ForEach(y => MySave.Politics.Find(x=> x.Factions.Item1 == enemy ^ x.Factions.Item2 == enemy && x.Factions.Item1 == _factionApi.Faction.Tag ^ x.Factions.Item2 == _factionApi.Faction.Tag).Status = MyPoliticStatus.War);
                                             break;
                                         default:
                                             throw new ArgumentOutOfRangeException();
