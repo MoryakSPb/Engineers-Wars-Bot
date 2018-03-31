@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using EW.ObjectModel;
@@ -137,6 +138,7 @@ namespace EW.Utility
                             text.AppendLine($"Тег: {faction.Tag}");
                             text.AppendLine($"Тип: {MyStrings.GetFactionStatusDescription(faction.FactionType)}");
                             text.AppendLine($"Активность: с {faction.ActiveInterval.start:hh\\:mm} по {faction.ActiveInterval.finish:hh\\:mm} (UTC)\r\n");
+                            text.AppendLine($"Группа ВК: {faction.VkUrl}");
                             text.AppendLine("Корабли:");
                             foreach (KeyValuePair<ShipType, int> item in faction.Ships)
                                 text.AppendLine($"　{MyStrings.GetShipNameMany(item.Key)}: {item.Value}");
@@ -454,9 +456,10 @@ namespace EW.Utility
                         }
                         case "version":
                         case "версия":
-                            return "Engineers Wars Bot\r\nВерсия: 0.0.4.0-ALPHA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
+                            return "Engineers Wars Bot\r\nВерсия: 0.0.5.1-ALPHA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
                         case "время":
-                        case "time": return DateTime.UtcNow.ToString(_russianCulture);
+                        case "time":
+                            return DateTime.UtcNow.ToString(_russianCulture);
                         case "policy":
                         case "политика":
                         {
@@ -486,7 +489,12 @@ namespace EW.Utility
 
                             return text.ToString();
                         }
-
+                        case "setmessages":
+                        case "установитьсообщения":
+                        {
+                            _player.AllowedMessages = _player.AllowedMessages == MessagesType.All ? MessagesType.None : MessagesType.All;
+                            return _player.AllowedMessages == MessagesType.All ? "Рассылка включена" :"Рассылка отключена";
+                        }
                         default: return "Неизвестная команда. Используйте команду \"бот помощь\" для получения справки";
                     }
                 case "ботфракция":
@@ -1167,6 +1175,7 @@ RemoveFaction [Тег] - Убирает фракцию из игры, остав
 NextTurn - Начинает следующий ход.
 
 Send [Ник] [Сообщение] - Отправляет сообщение указанному игроку. Сообщение может содержать пробелы.
+SetVkGroup [Тег] [URL] - Устанавливает группу ВК фракции.
 ";
                         }
                         case "save":
@@ -1448,26 +1457,7 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                                 sectors.ForEach(x => service[0] += x.Service);
                                 faction.Ships.ForEach(x => service[0] += SMyEconomyConsts.Ships[x.Key].Service * x.Value);
                                 // ReSharper disable once SwitchStatementMissingSomeCases
-                                faction.MaxResourses.MonolithCharges = service[0].MonolithCharges;
-                                faction.MaxResourses.ShipSlots = service[0].ShipSlots;
-                                faction.MaxResourses.Production = service[0].Production;
-                                if (faction.ShipBuild.HasValue)
-                                {
-                                    if (faction.TotalShipBuild <= faction.CurrentShipBuild + service[0].Production)
-                                    {
-                                        // ReSharper disable once PossibleInvalidOperationException
-                                        faction.Ships[faction.ShipBuild.Value] += 1;
-                                        // ReSharper disable once PossibleInvalidOperationException
-                                        new Task(new MyEventShipCompleted(faction, faction.ShipBuild.Value).Send).Start();
-                                        faction.Resourses.Production = faction.CurrentShipBuild + service[0].Production;
-                                        faction.ShipBuild = null;
-                                    }
-                                    else
-                                    {
-                                        faction.CurrentShipBuild += faction.Resourses.Production;
-                                        faction.Resourses.Production = 0;
-                                    }
-                                }
+
 
                                 switch (faction.FactionType)
                                 {
@@ -1491,92 +1481,116 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                                 faction.Resourses.ShipSlots = 0;
                                 faction.Resourses.MonolithCharges = 0;
                                 faction.Resourses += service[0];
-                            }
 
-                            foreach (MyOffer offer in MySave.Offers)
-                            {
-                                // ReSharper disable once PossibleInvalidOperationException
-                                // ReSharper disable once PossibleInvalidOperationException
-                                if (offer.Confirmed || offer.Confirm.Item1.HasValue ^ offer.Confirm.Item2.HasValue) continue;
-                                offer.Confirmed = true;
-                                MyFaction faction1 = MySave.Factions.Find(x => x.Tag == offer.Factions.Item1);
-                                MyFaction faction2 = MySave.Factions.Find(x => x.Tag == offer.Factions.Item2);
-                                MyPolitic pol = MySave.Politics.Find(x => (x.Factions.Item1 == faction1.Tag && x.Factions.Item2 == faction2.Tag) ^ (x.Factions.Item2 == faction1.Tag && x.Factions.Item1 == faction2.Tag));
 
-                                faction1.Resourses -= offer.Deal.Item1.Resourses;
-                                faction2.Resourses += offer.Deal.Item1.Resourses;
-                                faction2.Resourses -= offer.Deal.Item2.Resourses;
-                                faction1.Resourses += offer.Deal.Item2.Resourses;
-
-                                offer.Deal.Item1.Sectors.ForEach(x =>
-                                                                 {
-                                                                     MySector sector = MySave.Sectors.Find(y => y.Name == x);
-                                                                     // ReSharper disable once IsExpressionAlwaysTrue
-                                                                     if (sector is object) sector.Tag = offer.Factions.Item2;
-                                                                 });
-                                offer.Deal.Item2.Sectors.ForEach(x =>
-                                                                 {
-                                                                     MySector sector = MySave.Sectors.Find(y => y.Name == x);
-                                                                     // ReSharper disable once IsExpressionAlwaysTrue
-                                                                     if (sector is object) sector.Tag = offer.Factions.Item1;
-                                                                 });
-                                offer.Deal.Item1.Ships.ForEach(x =>
-                                                               {
-                                                                   faction1.Ships[x.Key] -= x.Value;
-                                                                   faction2.Ships[x.Key] += x.Value;
-                                                               });
-                                offer.Deal.Item2.Ships.ForEach(x =>
-                                                               {
-                                                                   faction2.Ships[x.Key] -= x.Value;
-                                                                   faction1.Ships[x.Key] += x.Value;
-                                                               });
-                                switch (offer.OfferType)
+                                foreach (MyOffer offer in MySave.Offers)
                                 {
-                                    case MyOfferType.Default:
-                                        break;
-                                    case MyOfferType.WarToNeutral:
-                                        pol.Status = MyPoliticStatus.Neutral;
-                                        new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
-                                        break;
-                                    case MyOfferType.NeutralToAlly:
-                                        pol.Status = MyPoliticStatus.Ally;
-                                        new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
-                                        break;
-                                    case MyOfferType.AllyToNeutral:
-                                        new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
-                                        pol.Union = false;
-                                        pol.Status = MyPoliticStatus.Neutral;
-                                        break;
-                                    case MyOfferType.NeutralToWar:
-                                        new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
-                                        pol.Status = MyPoliticStatus.War;
-                                        break;
-                                    default:
-                                        throw new ArgumentOutOfRangeException();
+                                    // ReSharper disable once PossibleInvalidOperationException
+                                    // ReSharper disable once PossibleInvalidOperationException
+                                    if (offer.Confirmed || offer.Confirm.Item1.HasValue ^ offer.Confirm.Item2.HasValue) continue;
+                                    offer.Confirmed = true;
+                                    MyFaction faction1 = MySave.Factions.Find(x => x.Tag == offer.Factions.Item1);
+                                    MyFaction faction2 = MySave.Factions.Find(x => x.Tag == offer.Factions.Item2);
+                                    MyPolitic pol = MySave.Politics.Find(x => (x.Factions.Item1 == faction1.Tag && x.Factions.Item2 == faction2.Tag) ^ (x.Factions.Item2 == faction1.Tag && x.Factions.Item1 == faction2.Tag));
+
+                                    faction1.Resourses -= offer.Deal.Item1.Resourses;
+                                    faction2.Resourses += offer.Deal.Item1.Resourses;
+                                    faction2.Resourses -= offer.Deal.Item2.Resourses;
+                                    faction1.Resourses += offer.Deal.Item2.Resourses;
+
+                                    offer.Deal.Item1.Sectors.ForEach(x =>
+                                                                     {
+                                                                         MySector sector = MySave.Sectors.Find(y => y.Name == x);
+                                                                         // ReSharper disable once IsExpressionAlwaysTrue
+                                                                         if (sector is object) sector.Tag = offer.Factions.Item2;
+                                                                     });
+                                    offer.Deal.Item2.Sectors.ForEach(x =>
+                                                                     {
+                                                                         MySector sector = MySave.Sectors.Find(y => y.Name == x);
+                                                                         // ReSharper disable once IsExpressionAlwaysTrue
+                                                                         if (sector is object) sector.Tag = offer.Factions.Item1;
+                                                                     });
+                                    offer.Deal.Item1.Ships.ForEach(x =>
+                                                                   {
+                                                                       faction1.Ships[x.Key] -= x.Value;
+                                                                       faction2.Ships[x.Key] += x.Value;
+                                                                   });
+                                    offer.Deal.Item2.Ships.ForEach(x =>
+                                                                   {
+                                                                       faction2.Ships[x.Key] -= x.Value;
+                                                                       faction1.Ships[x.Key] += x.Value;
+                                                                   });
+                                    switch (offer.OfferType)
+                                    {
+                                        case MyOfferType.Default:
+                                            break;
+                                        case MyOfferType.WarToNeutral:
+                                            pol.Status = MyPoliticStatus.Neutral;
+                                            new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
+                                            break;
+                                        case MyOfferType.NeutralToAlly:
+                                            pol.Status = MyPoliticStatus.Ally;
+                                            new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
+                                            break;
+                                        case MyOfferType.AllyToNeutral:
+                                            new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
+                                            pol.Union = false;
+                                            pol.Status = MyPoliticStatus.Neutral;
+                                            break;
+                                        case MyOfferType.NeutralToWar:
+                                            new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
+                                            pol.Status = MyPoliticStatus.War;
+                                            break;
+                                        default:
+                                            throw new ArgumentOutOfRangeException();
+                                    }
+
+                                    if (offer.Options == MyOfferOptions.ChangeUnion) pol.Union = !pol.Union;
+                                    else if (offer.Options == MyOfferOptions.CreatePact)
+                                    {
+                                        pol.Pact = true;
+                                        pol.PactTurns = offer.PactTurns;
+                                    }
+                                }
+                                faction.MaxResourses.MonolithCharges = service[0].MonolithCharges;
+                                faction.MaxResourses.ShipSlots = service[0].ShipSlots;
+                                faction.MaxResourses.Production = service[0].Production;
+                                if (faction.ShipBuild.HasValue)
+                                {
+                                    if (faction.TotalShipBuild <= faction.CurrentShipBuild + service[0].Production)
+                                    {
+                                        // ReSharper disable once PossibleInvalidOperationException
+                                        faction.Ships[faction.ShipBuild.Value] += 1;
+                                        // ReSharper disable once PossibleInvalidOperationException
+                                        new MyEventShipCompleted(faction, faction.ShipBuild.Value).Send();
+                                        faction.Resourses.Production = faction.CurrentShipBuild + service[0].Production;
+                                        faction.ShipBuild = null;
+                                    }
+                                    else
+                                    {
+                                        faction.CurrentShipBuild += faction.Resourses.Production;
+                                        faction.Resourses.Production = 0;
+                                    }
                                 }
 
-                                if (offer.Options == MyOfferOptions.ChangeUnion) pol.Union = !pol.Union;
-                                else if (offer.Options == MyOfferOptions.CreatePact)
+                                        foreach (MyPolitic p in MySave.Politics)
                                 {
-                                    pol.Pact = true;
-                                    pol.PactTurns = offer.PactTurns;
+                                    if (!p.Pact || p.Status == MyPoliticStatus.Ally) continue;
+                                    --p.PactTurns;
+                                    if (p.PactTurns <= 0)
+                                    {
+                                        p.Pact = false;
+                                        new MyEventPactEnded(p).Send();
+                                    }
                                 }
-                            }
 
-                            foreach (MyPolitic p in MySave.Politics)
-                            {
-                                if (!p.Pact || p.Status == MyPoliticStatus.Ally) continue;
-                                --p.PactTurns;
-                                if (p.PactTurns <= 0)
-                                {
-                                    p.Pact = false;
-                                    new Task(new MyEventPactEnded(p).Send).Start();
-                                }
+                                
+                                
                             }
-
-                            new Task(new MyEventNextTurn().Send).Start();
+                            new MyEventNextTurn().Send();
                             return "Ход завершен";
-                        }
+                                }
+                            
                         case "send":
                         {
                             if (arguments.Length < 4) return "Неверное количество аргументов";
@@ -1595,7 +1609,15 @@ Send [Ник] [Сообщение] - Отправляет сообщение у�
                             MyVkApi.LastApi.SendMessage(id, string.Join(" ", arguments, 3, arguments.Length - 3), arguments.GetHashCode(), "Сообщение от администратора");
                             return string.Empty;
                         }
-                        //case "interned": return arguments.Length < 3 ? "Неверное количество аргументов" : (string.IsInterned(arguments[2]) != null).ToString();
+                            //case "interned": return arguments.Length < 3 ? "Неверное количество аргументов" : (string.IsInterned(arguments[2]) != null).ToString();
+                        case "setvkgroup":
+                        {
+                            if (arguments.Length < 4) return "Неверное количество аргументов";
+                            var faction = MySave.Factions.Find(x => x.Tag == arguments[2]);
+                            if (faction is null) return "Фракция не найдена";
+                            faction.VkUrl = arguments[3];
+                            return "Данные изменены";
+                        }
                         default:
                             return "Неизвестная команда. Используйте команду \"botadmin help\" для получения справки";
                     }

@@ -19,6 +19,7 @@ namespace EW.ObjectModel
         [DataMember] public ShipType? ShipBuild;
         [DataMember] public IDictionary<ShipType, int> Ships = SMyEconomyConsts.GetNewEmptyShipDictionary();
         [DataMember] public TradeShipStatus TradeShipStatus;
+        [DataMember] public string VkUrl;
 
         [IgnoreDataMember]
         public override string Tag

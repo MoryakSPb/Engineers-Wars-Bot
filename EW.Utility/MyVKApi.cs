@@ -77,8 +77,14 @@ namespace EW.Utility
                 {
                     Console.WriteLine($"{DateTime.Now}: Отправлен ответ \"OK\" ВК");
                 }
-                catch (IOException)
+                catch (Exception e)
                 {
+                    lock (Console.Out)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine($"{DateTime.Now}: {e}");
+                        Console.ForegroundColor = ConsoleColor.Green;
+                    }
                 }
             }
 
@@ -112,9 +118,14 @@ namespace EW.Utility
                 {
                     Console.WriteLine($"{DateTime.Now}: Затрачено мс: {(t2 - t1).TotalMilliseconds}");
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    // ignored
+                    lock (Console.Out)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine($"{DateTime.Now}: {e}");
+                        Console.ForegroundColor = ConsoleColor.Green;
+                    }
                 }
             }
 
