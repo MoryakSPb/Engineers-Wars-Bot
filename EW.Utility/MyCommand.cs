@@ -1083,7 +1083,9 @@ namespace EW.Utility
                             }
 
                             // ReSharper disable once RedundantTypeSpecificationInDefaultExpression
-                            MySave.Offers = MySave.Offers.Add(new MyOffer(obj.Factions, _factionApi.Tag == obj.Factions.Item2, _factionApi.Tag == obj.Factions.Item2 ? (default(bool?), (bool?) true) : ((bool?) true, default), type, opt, (new MyTradeResourses(res1, sectors1, ships1), new MyTradeResourses(res2, sectors2, ships2)), pactturns));
+                            MyOffer o = new MyOffer(obj.Factions, _factionApi.Tag == obj.Factions.Item2, _factionApi.Tag == obj.Factions.Item2 ? (default(bool?), (bool?) true) : ((bool?) true, default), type, opt, (new MyTradeResourses(res1, sectors1, ships1), new MyTradeResourses(res2, sectors2, ships2)), pactturns);
+                            MySave.Offers = MySave.Offers.Add(o);
+                            new MyEventOfferCreated(o).Send();
                             return "Договор создан";
                         }
                         default:
@@ -1541,19 +1543,19 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                             break;
                                         case MyOfferType.WarToNeutral:
                                             pol.Status = MyPoliticStatus.Neutral;
-                                            new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
+                                            new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send();
                                             break;
                                         case MyOfferType.NeutralToAlly:
                                             pol.Status = MyPoliticStatus.Ally;
-                                            new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
+                                            new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send();
                                             break;
                                         case MyOfferType.AllyToNeutral:
-                                            new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
+                                            new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send();
                                             pol.Union = false;
                                             pol.Status = MyPoliticStatus.Neutral;
                                             break;
                                         case MyOfferType.NeutralToWar:
-                                            new Task(new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send).Start();
+                                            new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send();
                                             pol.Status = MyPoliticStatus.War;
                                             string enemy = faction1 == _factionApi.Faction ? faction2.Tag : faction1.Tag;
                                             var pols = MySave.Politics.Where(x => x.Factions.Item1 == enemy ^ x.Factions.Item2 == enemy && x.Union);
