@@ -10,13 +10,13 @@ namespace EW.ObjectModel
         [DataMember] public (TimeSpan start, TimeSpan finish) ActiveInterval;
         [DataMember] public bool Attack;
         [DataMember] public int BulidPoints;
+        [DataMember] public MyResourses ChangesResourses;
         [DataMember] public int CurrentShipBuild;
 
         [DataMember] public FactionType FactionType;
         [DataMember] public (int MonolithCharges, int ShipSlots, int Production) MaxResourses;
         [DataMember] public ICollection<string> MInvitesNicks = new List<string>();
         [DataMember] public MyResourses Resourses;
-        [DataMember] public MyResourses ChangesResourses;
         [DataMember] public ShipType? ShipBuild;
         [DataMember] public IDictionary<ShipType, int> Ships = SMyEconomyConsts.GetNewEmptyShipDictionary();
         [DataMember] public TradeShipStatus TradeShipStatus;

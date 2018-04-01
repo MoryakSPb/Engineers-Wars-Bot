@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -220,7 +219,7 @@ namespace EW.Utility
                                                            };
                 HttpContent content = new FormUrlEncodedContent(post);
                 Calls--;
-                var x = _httpClient.PostAsync(MessageSend, content).Result;
+                HttpResponseMessage x = _httpClient.PostAsync(MessageSend, content).Result;
                 Console.WriteLine($"{DateTime.Now}: {x.Content.ReadAsStringAsync().Result}");
             }
         }

@@ -85,7 +85,7 @@ namespace EW.ObjectModel
         FactionMember
     }
 
-   public enum MessagesType : byte
+    public enum MessagesType : byte
     {
         None = 0,
         All = 1
