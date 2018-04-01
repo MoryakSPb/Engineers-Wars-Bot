@@ -195,7 +195,7 @@ namespace EW.Utility.Api
                 contact = MySave.Sectors.Exists(x => x.Name == item);
                 if (contact) break;
             }
-
+            contact |= sector.SectorType == SectorType.Monolith && MySave.Sectors.Exists(x => x.Tag == Faction.Tag && sector.SectorType == SectorType.Monolith));
             if (!contact) return MySectorGoResult.NoContacts;
             sector.Tag = Tag;
             Faction.Attack = false;

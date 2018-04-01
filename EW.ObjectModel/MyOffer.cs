@@ -40,7 +40,6 @@ namespace EW.ObjectModel
             else Deal = default;
             if (Options == MyOfferOptions.CreatePact) PactTurns = pactTurns;
             if (OfferType != MyOfferType.NeutralToWar && OfferType != MyOfferType.AllyToNeutral) return;
-            Confirmed = true;
             Confirm = (true, true);
         }
 

@@ -26,7 +26,7 @@ namespace EW.Utility
                 case FactionType.Military: return "Военная";
                 case FactionType.Resettlement: return "Переселенческая";
                 case FactionType.Research: return "Исследовательская";
-                case FactionType.Industrial: return "Индусриальная";
+                case FactionType.Industrial: return "Индустриальная";
                 case FactionType.Commercial: return "Комерчерская";
                 case FactionType.Pirate: return "Пиратская";
                 case FactionType.Adventurous: return "Авантюристская";

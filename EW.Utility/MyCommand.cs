@@ -83,6 +83,7 @@ namespace EW.Utility
 ""Status"" или ""Cтатус"" - Отображает ваши данные.
 ""Players"" или ""Игроки"" - Отображает список игроков.
 ""Player [ВК_ID]"", ""Player [Steam64Id]"", ""Player [Ник]"", ""Игрок [ВК_ID]"", ""Игрок [Steam64Id]"" или ""Игрок [Ник]"" - Отображает данные игрока.
+""setmessages"" или ""установитьсообщения"" - Включает или отключает рассылку.
 
 ""Activity"" или ""Активность"" - Отображает ваше время активности.
 ""Activity [Часы Начала]:[Минуты начала] [Час конца]:[Минуты конца]"" или ""Активность"" - Устанавливает время активности.
@@ -144,16 +145,17 @@ namespace EW.Utility
                                 text.AppendLine($"　{MyStrings.GetShipNameMany(item.Key)}: {item.Value}");
                             text.AppendLine();
                             text.AppendLine("Ресурсы:");
-                            text.AppendLine($"　Железо: {faction.Resourses.Iron}");
-                            text.AppendLine($"　Энергия: {faction.Resourses.Energy}");
-                            text.AppendLine($"　Боеприпасы: {faction.Resourses.Ammo}");
-                            text.AppendLine($"　Заряды монолита: {faction.Resourses.MonolithCharges} / {faction.MaxResourses.MonolithCharges}");
-                            text.AppendLine($"　Мест для кораблей: {faction.Resourses.ShipSlots} / {faction.MaxResourses.ShipSlots}");
-                            text.AppendLine($"　Производство: {faction.Resourses.Production} / {faction.MaxResourses.Production}");
+                            text.AppendLine($"　Железо: {faction.Resourses.Iron} ({(faction.ChangesResourses.Iron < 0 ? "-" :"")}{faction.ChangesResourses.Iron})");
+                            text.AppendLine($"　Энергия: {faction.Resourses.Energy} ({(faction.ChangesResourses.Energy < 0 ? "-" : "")}{faction.ChangesResourses.Energy})");
+                            text.AppendLine($"　Боеприпасы: {faction.Resourses.Ammo} ({(faction.ChangesResourses.Ammo < 0 ? "-" : "")}{faction.ChangesResourses.Ammo})");
+                            text.AppendLine($"　Заряды монолита: {faction.Resourses.MonolithCharges} / {faction.MaxResourses.MonolithCharges} ({(faction.ChangesResourses.MonolithCharges < 0 ? "-" : "")}{faction.ChangesResourses.MonolithCharges})");
+                            text.AppendLine($"　Мест для кораблей: {faction.Resourses.ShipSlots} / {faction.MaxResourses.ShipSlots} ({(faction.ChangesResourses.ShipSlots < 0 ? "-" : "")}{faction.ChangesResourses.ShipSlots})");
+                            text.AppendLine($"　Производство: {faction.Resourses.Production} / {faction.MaxResourses.Production} ({(faction.ChangesResourses.Production < 0 ? "-" : "")}{faction.ChangesResourses.Production})");
                             if (_player.IsAdmin || _player.Tag == arguments[2])
                             {
                                 text.AppendLine("　Инсайдерская информация:");
                                 text.AppendLine($"　　Возможность атаки сектора: {MyStrings.GetBoolYesNo(faction.Attack)}");
+                                text.AppendLine();
                                 // ReSharper disable once PossibleInvalidOperationException
                                 text.AppendLine($"　　Текущий проект: {(faction.ShipBuild.HasValue ? MyStrings.GetShipNameOnce(faction.ShipBuild.Value) : Nd)}");
                                 text.AppendLine($"　　Стадия строительства: {faction.CurrentShipBuild} / {faction.TotalShipBuild}");
@@ -167,11 +169,15 @@ namespace EW.Utility
                                 text.Append(item.IsFactionLeader ? '♔' : '　');
                                 text.AppendLine(item.Name);
                             }
-
-                            text.AppendLine("Сектора:");
+                            text.AppendLine();
+                                text.AppendLine("Сектора:");
                             foreach (MySector item in MySave.Sectors.Where(x => x.Tag == faction.Tag))
+                            {
+                                text.Append('　');
                                 text.AppendLine(item.Name);
-                            text.AppendLine("Политика:");
+                            }
+                            text.AppendLine();
+                                text.AppendLine("Политика:");
                             foreach (MyPolitic item in MySave.Politics.Where(x => x.Factions.Item1 == faction.Tag || x.Factions.Item2 == faction.Tag))
                             {
                                 string tag = item.Factions.Item1 == faction.Tag ? item.Factions.Item2 : item.Factions.Item1;
@@ -185,8 +191,6 @@ namespace EW.Utility
                                     text.AppendLine($"　　Пакт о ненападении: {MyStrings.GetBoolYesNo(item.Pact)}");
                                     text.AppendLine($"　　Ходов осталось: {item.PactTurns}");
                                 }
-
-                                text.AppendLine();
                             }
 
                             return text.ToString();
@@ -237,7 +241,7 @@ namespace EW.Utility
                             if (sector is null) return "Сектор не найден";
                             title = sector.Name;
                             StringBuilder text = new StringBuilder(128);
-                            text.AppendLine($"Владедец: {(string.IsNullOrWhiteSpace(sector.Tag) ? "(Н/Д)" : sector.Tag)}");
+                            text.AppendLine($"Владелец: {(string.IsNullOrWhiteSpace(sector.Tag) ? "(Н/Д)" : sector.Tag)}");
                             text.AppendLine($"Тип: {MyStrings.GetSectorType(sector.SectorType)}");
                             text.AppendLine($"Улучшение: {MyStrings.GetSectorImprovementType(sector.Improvement.Type)} (ур. {sector.Improvement.Level})");
                             text.AppendLine("Есть переходы в…");
@@ -456,7 +460,7 @@ namespace EW.Utility
                         }
                         case "version":
                         case "версия":
-                            return "Engineers Wars Bot\r\nВерсия: 0.0.4.1-ALPHA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
+                            return "Engineers Wars Bot\r\nВерсия: 0.0.4.2-ALPHA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
                         case "время":
                         case "time":
                             return DateTime.UtcNow.ToString(_russianCulture);
@@ -595,7 +599,7 @@ namespace EW.Utility
                                 switch (_factionApi.BuildImprovement(sector, (SectorImprovementType) Convert.ToInt32(arguments[3])))
                                 {
                                     case MyBotFactionApi.MyBuildImprovementResult.Ok:
-                                        new Task(new MyEventImprovementBuilded(sector, (SectorImprovementType) Convert.ToInt32(arguments[3])).Send).Start();
+                                        new MyEventImprovementBuilded(sector, (SectorImprovementType) Convert.ToInt32(arguments[3])).Send();
                                         return "Улучшение построено";
                                     case MyBotFactionApi.MyBuildImprovementResult.NoResourses: return "Недостаточно ресурсов";
                                     case MyBotFactionApi.MyBuildImprovementResult.NotOwner: return "Только владелец сектора может строить улучшения";
@@ -620,7 +624,7 @@ namespace EW.Utility
                             switch (_factionApi.UpgrateImprovement(sector))
                             {
                                 case MyBotFactionApi.MySectorUpdateResult.Ok:
-                                    new Task(new MyEventImprovementUpgrated(sector, sector.Improvement.Type).Send).Start();
+                                    new MyEventImprovementUpgrated(sector, sector.Improvement.Type).Send();
                                     return "Уровень улучшения повышен";
                                 case MyBotFactionApi.MySectorUpdateResult.EmptySector: return "Сектор не имеет улучшений";
                                 case MyBotFactionApi.MySectorUpdateResult.NotOwner: return "Вы не являеетесь владельцем сектора";
@@ -639,7 +643,7 @@ namespace EW.Utility
                             switch (_factionApi.DestroyImprovement(sector))
                             {
                                 case MyBotFactionApi.MyDestroyImprovementResult.Ok:
-                                    new Task(new MyEventImprovementBuilded(sector, SectorImprovementType.None).Send).Start();
+                                    new MyEventImprovementBuilded(sector, SectorImprovementType.None).Send();
                                     return "Улучшение уничтожено";
                                 case MyBotFactionApi.MyDestroyImprovementResult.EmptySector: return "В секторе нет улучшения";
                                 case MyBotFactionApi.MyDestroyImprovementResult.NotOwner: return "Вы не являетесь владельцем этого сектора";
@@ -658,7 +662,7 @@ namespace EW.Utility
                             {
                                 case MyBotFactionApi.MySectorGoResult.Ok:
                                 {
-                                    new Task(new MyEventSectorOwnerChanged(null, _factionApi.Faction, sector, MyEventSectorOwnerChanged.ReasonEnum.Nobody).Send).Start();
+                                    new MyEventSectorOwnerChanged(null, _factionApi.Faction, sector, MyEventSectorOwnerChanged.ReasonEnum.Nobody).Send();
                                     return "Сектор теперь под вашим контролем";
                                 }
                                 case MyBotFactionApi.MySectorGoResult.YourSector: return "Сектор уже под вашим контролем";
@@ -681,7 +685,7 @@ namespace EW.Utility
                                 case MyBotFactionApi.MySectorAttackResult.Ok:
                                 {
                                     MySave.Fights = MySave.Fights.Add(fight);
-                                    new Task(new MyEventFightCreated(fight).Send).Start();
+                                    new MyEventFightCreated(fight).Send();
                                     return "Битва запланированна";
                                 }
                                 case MyBotFactionApi.MySectorAttackResult.OkNoFight: return "Сектор был взят без боя";
@@ -791,29 +795,38 @@ namespace EW.Utility
                             --index;
                             if (index >= list.Count) return "Договор не найден";
                             MyOffer item = list[index];
-                            StringBuilder text = new StringBuilder(512);
+                            StringBuilder text = new StringBuilder(1024);
                             text.Append("Сторона №1: ");
                             text.AppendLine(item.Factions.Item1);
+                            text.Append("Статус: ");
+                            // ReSharper disable once PossibleInvalidOperationException
+                            text.AppendLine(item.Confirm.Item1.HasValue ? item.Confirm.Item1.Value ? "Принят" : "Отклонен" : "Н/Д");
                             text.Append("Сторона №2: ");
                             text.AppendLine(item.Factions.Item2);
-                            text.AppendLine();
+                            text.Append("Статус: ");
+                            // ReSharper disable once PossibleInvalidOperationException
+                            text.AppendLine(item.Confirm.Item2.HasValue ? item.Confirm.Item2.Value ? "Принят" : "Отклонен" : "Н/Д");
+                                text.AppendLine();
                             text.Append("Инициатор: ");
                             text.AppendLine(item.Creator ? item.Factions.Item2 : item.Factions.Item1);
                             text.Append("Тип договора: ");
                             text.AppendLine(MyStrings.GetOfferType(item.OfferType));
-                            switch (item.Options)
+                            
+                                switch (item.Options)
                             {
                                 case MyOfferOptions.Trade: break;
                                 case MyOfferOptions.CreatePact:
-                                    text.AppendLine($"Включает пакт о ненападении на {item.PactTurns} ход(а/ов)");
+                                    text.AppendLine();
+                                        text.AppendLine($"Включает пакт о ненападении на {item.PactTurns} ход(а/ов)");
                                     break;
                                 case MyOfferOptions.ChangeUnion:
-                                    text.AppendLine("Включает оборонительный союз");
+                                    text.AppendLine();
+                                        text.AppendLine("Включает оборонительный союз");
                                     break;
                                 default: throw new ArgumentOutOfRangeException();
                             }
-
-                            text.AppendLine("Торговый договор:");
+                            text.AppendLine();
+                                text.AppendLine("Торговый договор:");
                             text.AppendLine(Space + "Сторона №1 дает:");
                             text.AppendLine(Space + Space + $"Железо: {item.Deal.Item1.Resourses.Iron}");
                             text.AppendLine(Space + Space + $"Энергия: {item.Deal.Item1.Resourses.Energy}");
@@ -1427,10 +1440,12 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                         }
                         case "nextturn":
                         {
+                            
                             if (MySave.Fights.Exists(x => !x.ResultRegistered)) return "Не все битвы зарегестрированы";
                             foreach (MyFaction faction in MySave.Factions)
                             {
-                                faction.Attack = true;
+                                MyResourses r = faction.Resourses;
+                                        faction.Attack = true;
                                 faction.BulidPoints = faction.FactionType == FactionType.Industrial ? 2 : 1;
                                 bool tradeShipFinished = false;
                                 switch (faction.TradeShipStatus)
@@ -1593,8 +1608,8 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                     }
                                 }
 
-                                
-                                
+
+                                faction.ChangesResourses = faction.Resourses - r;
                             }
                             new MyEventNextTurn().Send();
                             return "Ход завершен";
