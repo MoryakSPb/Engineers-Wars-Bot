@@ -220,7 +220,8 @@ namespace EW.Utility
                                                            };
                 HttpContent content = new FormUrlEncodedContent(post);
                 Calls--;
-                _httpClient.PostAsync(MessageSend, content);
+                var x = _httpClient.PostAsync(MessageSend, content).Result;
+                Console.WriteLine($"{DateTime.Now}: {x.Content.ReadAsStringAsync().Result}");
             }
         }
 

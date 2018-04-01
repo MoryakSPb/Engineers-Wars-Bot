@@ -1598,7 +1598,7 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                         faction.Resourses.Production = 0;
                                     }
                                 }
-
+                                MySave.Politics.ForEach(x => ++x.PactTurns);
                                         foreach (MyPolitic p in MySave.Politics)
                                 {
                                     if (!p.Pact || p.Status == MyPoliticStatus.Ally) continue;
@@ -1608,6 +1608,7 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                         p.Pact = false;
                                         new MyEventPactEnded(p).Send();
                                     }
+                                    
                                 }
 
 
