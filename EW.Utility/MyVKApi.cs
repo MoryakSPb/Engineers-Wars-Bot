@@ -183,7 +183,7 @@ namespace EW.Utility
                                                            },
                                                            {"message", message}, {"title", title},
                                                            {
-                                                               "random_id", vkId.ToString(CultureInfo.InvariantCulture) + messId.ToString(CultureInfo.InvariantCulture)
+                                                               "random_id", vkId.ToString(CultureInfo.InvariantCulture) + Math.Abs(messId).ToString(CultureInfo.InvariantCulture)
                                                            }
                                                        };
             HttpContent content = new FormUrlEncodedContent(post);
@@ -214,7 +214,7 @@ namespace EW.Utility
                                                                },
                                                                {"message", message}, {"title", title},
                                                                {
-                                                                   "random_id", vkIDs[0].ToString(CultureInfo.InvariantCulture) + messId.ToString(CultureInfo.InvariantCulture)
+                                                                   "random_id", Math.Abs(message.GetHashCode() + messId).ToString()
                                                                }
                                                            };
                 HttpContent content = new FormUrlEncodedContent(post);

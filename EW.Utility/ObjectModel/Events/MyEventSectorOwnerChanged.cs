@@ -41,7 +41,7 @@ namespace EW.Utility.ObjectModel.Events
                 case ReasonEnum.Default: throw new ArgumentOutOfRangeException();
                 case ReasonEnum.Fight: return $"Фракция «{NewOwner.Name}» отбила в бою сектор «{Sector.Name}» у фракции «{OldOwner.Name}»";
                 case ReasonEnum.Offer: return $"Фракция «{NewOwner.Name}» получила сектор «{Sector.Name}» в результате договора с фракцией «{OldOwner.Name}»";
-                case ReasonEnum.Nobody: return $"Фракция «{NewOwner.Name}» заняла ничейный сектор «{Sector.Name}»";
+                case ReasonEnum.Nobody: return $"Фракция «{NewOwner.Name}» заняла пустующий сектор «{Sector.Name}»";
                 default:
                     throw new ArgumentOutOfRangeException();
             }

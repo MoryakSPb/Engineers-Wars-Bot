@@ -11,6 +11,6 @@ namespace EW.Utility.ObjectModel.Events
         {
         }
 
-        public override string ToString() => "Ход завершен";
+        public override string ToString() => "==========\r\nХод завершен\r\n==========";
     }
 }

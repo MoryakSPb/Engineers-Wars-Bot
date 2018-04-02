@@ -192,7 +192,7 @@ namespace EW.Utility.Api
             bool contact = false;
             foreach (string item in sector.Contacts)
             {
-                contact = MySave.Sectors.Exists(x => x.Tag == Faction.Tag && x.Name == item );
+                contact = MySave.Sectors.Exists(x => x.Tag == Faction.Tag && x.Name == item);
                 if (contact) break;
             }
 

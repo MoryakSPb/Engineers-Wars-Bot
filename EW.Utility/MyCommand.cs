@@ -133,7 +133,7 @@ namespace EW.Utility
 
                             MyFaction faction = _api.Faction(arguments[2]);
                             if (faction is null) return "Фракция не найдена";
-                            StringBuilder text = new StringBuilder(1024);
+                            StringBuilder text = new StringBuilder(2048);
                             title = faction.Name;
                             text.AppendLine($"Тег: {faction.Tag}");
                             text.AppendLine($"Тип: {MyStrings.GetFactionStatusDescription(faction.FactionType)}");
@@ -144,16 +144,17 @@ namespace EW.Utility
                                 text.AppendLine($"　{MyStrings.GetShipNameMany(item.Key)}: {item.Value}");
                             text.AppendLine();
                             text.AppendLine("Ресурсы:");
-                            text.AppendLine($"　Железо: {faction.Resourses.Iron} ({(faction.ChangesResourses.Iron < 0 ? "-" : "")}{faction.ChangesResourses.Iron})");
-                            text.AppendLine($"　Энергия: {faction.Resourses.Energy} ({(faction.ChangesResourses.Energy < 0 ? "-" : "")}{faction.ChangesResourses.Energy})");
-                            text.AppendLine($"　Боеприпасы: {faction.Resourses.Ammo} ({(faction.ChangesResourses.Ammo < 0 ? "-" : "")}{faction.ChangesResourses.Ammo})");
-                            text.AppendLine($"　Заряды монолита: {faction.Resourses.MonolithCharges} / {faction.MaxResourses.MonolithCharges} ({(faction.ChangesResourses.MonolithCharges < 0 ? "-" : "")}{faction.ChangesResourses.MonolithCharges})");
-                            text.AppendLine($"　Мест для кораблей: {faction.Resourses.ShipSlots} / {faction.MaxResourses.ShipSlots} ({(faction.ChangesResourses.ShipSlots < 0 ? "-" : "")}{faction.ChangesResourses.ShipSlots})");
-                            text.AppendLine($"　Производство: {faction.Resourses.Production} / {faction.MaxResourses.Production} ({(faction.ChangesResourses.Production < 0 ? "-" : "")}{faction.ChangesResourses.Production})");
+                            text.AppendLine($"　Железо: {faction.Resourses.Iron} ({(faction.ChangesResourses.Iron < 0 ? "" : "+")}{faction.ChangesResourses.Iron})");
+                            text.AppendLine($"　Энергия: {faction.Resourses.Energy} ({(faction.ChangesResourses.Energy < 0 ? "" : "+")}{faction.ChangesResourses.Energy})");
+                            text.AppendLine($"　Боеприпасы: {faction.Resourses.Ammo} ({(faction.ChangesResourses.Ammo < 0 ? "" : "+")}{faction.ChangesResourses.Ammo})");
+                            text.AppendLine($"　Заряды монолита: {faction.Resourses.MonolithCharges} / {faction.MaxResourses.MonolithCharges}"); // ({(faction.ChangesResourses.MonolithCharges < 0 ? "+" : "")}{faction.ChangesResourses.MonolithCharges})
+                            text.AppendLine($"　Мест для кораблей: {faction.Resourses.ShipSlots} / {faction.MaxResourses.ShipSlots}"); //({(faction.ChangesResourses.ShipSlots < 0 ? "-" : "")}{faction.ChangesResourses.ShipSlots})
+                            text.AppendLine($"　Производство: {faction.Resourses.Production} / {faction.MaxResourses.Production}"); //({(faction.ChangesResourses.Production < 0 ? "-" : "")}{faction.ChangesResourses.Production})
                             if (_player.IsAdmin || _player.Tag == arguments[2])
                             {
                                 text.AppendLine("　Инсайдерская информация:");
                                 text.AppendLine($"　　Возможность атаки сектора: {MyStrings.GetBoolYesNo(faction.Attack)}");
+                                text.AppendLine($"Очков строительства: {faction.BulidPoints}");
                                 text.AppendLine();
                                 // ReSharper disable once PossibleInvalidOperationException
                                 text.AppendLine($"　　Текущий проект: {(faction.ShipBuild.HasValue ? MyStrings.GetShipNameOnce(faction.ShipBuild.Value) : Nd)}");
@@ -200,7 +201,7 @@ namespace EW.Utility
                         case "players":
                         {
                             title = "Игроки";
-                            StringBuilder text = new StringBuilder(512);
+                            StringBuilder text = new StringBuilder(2048);
                             MySave.Players.ForEach(x => text.AppendLine(x.Name));
                             return text.ToString();
                         }
@@ -461,7 +462,7 @@ namespace EW.Utility
                         }
                         case "version":
                         case "версия":
-                            return "Engineers Wars Bot\r\nВерсия: 0.0.4.4-ALPHA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
+                            return "Engineers Wars Bot\r\nВерсия: 0.1.0.0-BETA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
                         case "время":
                         case "time":
                             return DateTime.UtcNow.ToString(_russianCulture);
@@ -1099,12 +1100,14 @@ namespace EW.Utility
                     if (arguments.Length < 2) return "Неверное количество аргументов. Введите \"ботрегистрация помощь\" для получения справки";
 
                     if (arguments[1].ToLowerInvariant() == "помощь" || arguments[1].ToLowerInvariant() == "help" || arguments[1].ToLowerInvariant() == "?")
+                    {
                         return @"Для регистрации введите команду ""ботрегистрация [Ник] [SteamID64]""
 
 [Ник] - Ваш псевдоним, под которым вас будут знать другие игроки. Если вы хотите использовать пробел в нике, используйте ""_"". Также избегайте использования специальных символов (*, \, / и др.)
 [SteamID64] - Уникальный номер вашего аккаунта в Steam. Можно узнать на сайте https://steamid.io/ (написать/вставить в поле ""input…"" ссылку на ваш профиль Steam)
 
 Пример: ботрегистрация Console 76561197960287930";
+                    }
 
                     if (arguments.Length != 3) return "Неверное количество аргументов";
                     try
@@ -1599,20 +1602,19 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                     }
                                 }
 
-                                MySave.Politics.ForEach(x => ++x.PactTurns);
-                                foreach (MyPolitic p in MySave.Politics)
-                                {
-                                    if (!p.Pact || p.Status == MyPoliticStatus.Ally) continue;
-                                    --p.PactTurns;
-                                    if (p.PactTurns <= 0)
-                                    {
-                                        p.Pact = false;
-                                        new MyEventPactEnded(p).Send();
-                                    }
-                                }
-
 
                                 faction.ChangesResourses = faction.Resourses - r;
+                            }
+
+                            foreach (MyPolitic p in MySave.Politics)
+                            {
+                                if (!p.Pact || p.Status == MyPoliticStatus.Ally) continue;
+                                --p.PactTurns;
+                                if (p.PactTurns <= 0)
+                                {
+                                    p.Pact = false;
+                                    new MyEventPactEnded(p).Send();
+                                }
                             }
 
                             new MyEventNextTurn().Send();

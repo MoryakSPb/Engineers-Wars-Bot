@@ -17,6 +17,8 @@ namespace EW.ObjectModel
         [DataMember] public (int MonolithCharges, int ShipSlots, int Production) MaxResourses;
         [DataMember] public ICollection<string> MInvitesNicks = new List<string>();
         [DataMember] public MyResourses Resourses;
+        [DataMember] public MyResourses SavedResourses1;
+        [DataMember] public MyResourses SavedResourses2;
         [DataMember] public ShipType? ShipBuild;
         [DataMember] public IDictionary<ShipType, int> Ships = SMyEconomyConsts.GetNewEmptyShipDictionary();
         [DataMember] public TradeShipStatus TradeShipStatus;
