@@ -192,11 +192,11 @@ namespace EW.Utility.Api
             bool contact = false;
             foreach (string item in sector.Contacts)
             {
-                contact = MySave.Sectors.Exists(x => x.Name == item);
+                contact = MySave.Sectors.Exists(x => x.Tag == Faction.Tag && x.Name == item );
                 if (contact) break;
             }
 
-            if (sector.SectorType == SectorType.Monolith) contact = MySave.Sectors.Exists(x => x.Tag == Faction.Tag && x.SectorType == SectorType.Monolith);
+            if (sector.SectorType == SectorType.Monolith && MySave.Sectors.Exists(x => x.Tag == Faction.Tag && x.SectorType == SectorType.Monolith)) contact = true;
             if (!contact) return MySectorGoResult.NoContacts;
             sector.Tag = Tag;
             Faction.Attack = false;
