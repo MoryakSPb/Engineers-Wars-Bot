@@ -154,7 +154,7 @@ namespace EW.Utility
                             {
                                 text.AppendLine("　Инсайдерская информация:");
                                 text.AppendLine($"　　Возможность атаки сектора: {MyStrings.GetBoolYesNo(faction.Attack)}");
-                                text.AppendLine($"Очков строительства: {faction.BulidPoints}");
+                                text.AppendLine($"　　Очков строительства: {faction.BulidPoints}");
                                 text.AppendLine();
                                 // ReSharper disable once PossibleInvalidOperationException
                                 text.AppendLine($"　　Текущий проект: {(faction.ShipBuild.HasValue ? MyStrings.GetShipNameOnce(faction.ShipBuild.Value) : Nd)}");
@@ -1448,7 +1448,10 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                             if (MySave.Fights.Exists(x => !x.ResultRegistered)) return "Не все битвы зарегестрированы";
                             foreach (MyFaction faction in MySave.Factions)
                             {
-                                MyResourses r = faction.Resourses;
+                                faction.Resourses.Production = 0;
+                                faction.Resourses.ShipSlots = 0;
+                                faction.Resourses.MonolithCharges = 0;
+                                        MyResourses r = faction.Resourses;
                                 faction.Attack = true;
                                 faction.BulidPoints = faction.FactionType == FactionType.Industrial ? 2 : 1;
                                 bool tradeShipFinished = false;
@@ -1474,7 +1477,8 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                 ImmutableList<MySector> factionsSectors = MySave.Sectors.FindAll(x => x.Tag == faction.Tag);
                                 int monoithSectors = factionsSectors.Count(x => x.SectorType == SectorType.Monolith);
                                 sectors.ForEach(x => service[0] += x.Service);
-                                faction.Ships.ForEach(x => service[0] += SMyEconomyConsts.Ships[x.Key].Service * x.Value);
+
+                                        
                                 // ReSharper disable once SwitchStatementMissingSomeCases
 
 
@@ -1491,14 +1495,13 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                         break;
                                 }
 
-                                if (tradeShipFinished)
-                                    service[0] %= faction.FactionType == FactionType.Commercial ? 400 : 200;
-                                for (int i = 0; i < MyResourses.Length; i++)
-                                    if (faction.Resourses[i] < 0)
-                                        service[0][i] %= 85;
-                                faction.Resourses.Production = 0;
-                                faction.Resourses.ShipSlots = 0;
-                                faction.Resourses.MonolithCharges = 0;
+                                if (tradeShipFinished) service[0] %= faction.FactionType == FactionType.Commercial ? 400 : 200;
+                                for (int i = 0; i < MyResourses.Length; i++) if (faction.Resourses[i] < 0) service[0][i] %= 85;
+                                faction.MaxResourses.MonolithCharges = service[0].MonolithCharges;
+                                faction.MaxResourses.ShipSlots = service[0].ShipSlots;
+                                faction.MaxResourses.Production = service[0].Production;
+                                faction.Ships.ForEach(x => service[0] += SMyEconomyConsts.Ships[x.Key].Service * x.Value);
+
                                 faction.Resourses += service[0];
 
 
@@ -1581,9 +1584,7 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                     }
                                 }
 
-                                faction.MaxResourses.MonolithCharges = service[0].MonolithCharges;
-                                faction.MaxResourses.ShipSlots = service[0].ShipSlots;
-                                faction.MaxResourses.Production = service[0].Production;
+
                                 if (faction.ShipBuild.HasValue)
                                 {
                                     if (faction.TotalShipBuild <= faction.CurrentShipBuild + service[0].Production)
@@ -1645,7 +1646,7 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                             if (arguments.Length < 4) return "Неверное количество аргументов";
                             MyFaction faction = MySave.Factions.Find(x => x.Tag == arguments[2]);
                             if (faction is null) return "Фракция не найдена";
-                            faction.VkUrl = arguments[3];
+                            faction.VkUrl = arguments[3].Replace(' ','_');
                             return "Данные изменены";
                         }
                         default:
