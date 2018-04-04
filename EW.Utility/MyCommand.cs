@@ -462,7 +462,7 @@ namespace EW.Utility
                         }
                         case "version":
                         case "версия":
-                            return "Engineers Wars Bot\r\nВерсия: 0.1.0.0-BETA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
+                            return "Engineers Wars Bot\r\nВерсия: 0.1.1.0-BETA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
                         case "время":
                         case "time":
                             return DateTime.UtcNow.ToString(_russianCulture);
@@ -1480,7 +1480,7 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
 
 
                                         // ReSharper disable once SwitchStatementMissingSomeCases
-                                for (int i = 0; i < MyResourses.Length; i++) if (faction.Resourses[i] < 0) service[0][i] %= 85;
+                                for (int i = 0; i < MyResourses.Length; i++) if (faction.Resourses[i] < 0) service[0][i] %= 75;
                                         if (tradeShipFinished) service[0] %= faction.FactionType == FactionType.Commercial ? 400 : 200;
                                         switch (faction.FactionType)
                                 {
@@ -1533,10 +1533,10 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                         MyFaction faction2 = MySave.Factions.Find(x => x.Tag == offer.Factions.Item2);
                                         MyPolitic pol = MySave.Politics.Find(x => (x.Factions.Item1 == faction1.Tag && x.Factions.Item2 == faction2.Tag) ^ (x.Factions.Item2 == faction1.Tag && x.Factions.Item1 == faction2.Tag));
 
-                                        faction1.Resourses -= offer.Deal.Item1.Resourses;
-                                        faction2.Resourses += offer.Deal.Item1.Resourses;
-                                        faction2.Resourses -= offer.Deal.Item2.Resourses;
-                                        faction1.Resourses += offer.Deal.Item2.Resourses;
+                                        faction1.Resourses -= offer.Deal.Item1.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
+                                        faction2.Resourses += offer.Deal.Item1.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
+                                        faction2.Resourses -= offer.Deal.Item2.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
+                                        faction1.Resourses += offer.Deal.Item2.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
 
                                         offer.Deal.Item1.Sectors.ForEach(x =>
                                         {
