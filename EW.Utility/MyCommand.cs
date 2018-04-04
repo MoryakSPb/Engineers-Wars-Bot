@@ -462,7 +462,7 @@ namespace EW.Utility
                         }
                         case "version":
                         case "версия":
-                            return "Engineers Wars Bot\r\nВерсия: 0.1.1.0-BETA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
+                            return "Engineers Wars Bot\r\nВерсия: 0.1.1.1-BETA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
                         case "время":
                         case "time":
                             return DateTime.UtcNow.ToString(_russianCulture);
