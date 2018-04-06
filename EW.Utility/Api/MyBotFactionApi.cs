@@ -258,7 +258,8 @@ namespace EW.Utility.Api
             NoPoint = -3,
             NotAvalable = -4,
             UseDestroyImprovement = -5,
-            SectorImproved = -6
+            SectorImproved = -6,
+            
         }
 
         internal enum MyDestroyImprovementResult

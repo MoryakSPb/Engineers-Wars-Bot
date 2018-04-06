@@ -462,7 +462,7 @@ namespace EW.Utility
                         }
                         case "version":
                         case "версия":
-                            return "Engineers Wars Bot\r\nВерсия: 0.1.1.1-BETA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
+                            return "Engineers Wars Bot\r\nВерсия: 0.1.1.2-BETA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
                         case "время":
                         case "time":
                             return DateTime.UtcNow.ToString(_russianCulture);
@@ -603,7 +603,7 @@ namespace EW.Utility
                                     case MyBotFactionApi.MyBuildImprovementResult.Ok:
                                         new MyEventImprovementBuilded(sector, (SectorImprovementType) Convert.ToInt32(arguments[3])).Send();
                                         return "Улучшение построено";
-                                    case MyBotFactionApi.MyBuildImprovementResult.NoResourses: return "Недостаточно ресурсов";
+                                    case MyBotFactionApi.MyBuildImprovementResult.NoResourses: return "Недостаточно ресурсов или хоть один вид ресурса имеет отрицательное количество";
                                     case MyBotFactionApi.MyBuildImprovementResult.NotOwner: return "Только владелец сектора может строить улучшения";
                                     case MyBotFactionApi.MyBuildImprovementResult.NoPoint: return "Нет очков строительства";
                                     case MyBotFactionApi.MyBuildImprovementResult.NotAvalable: return "Данное улучшение нельзя построить";
@@ -1510,7 +1510,11 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                         faction.Ships[faction.ShipBuild.Value] += 1;
                                         // ReSharper disable once PossibleInvalidOperationException
                                         new MyEventShipCompleted(faction, faction.ShipBuild.Value).Send();
-                                        faction.Resourses.Production = faction.CurrentShipBuild + service[0].Production;
+                                        // ReSharper disable once PossibleInvalidOperationException
+                                        var cost = SMyEconomyConsts.Ships[faction.ShipBuild.Value].Cost;
+                                        cost.Production = 0;
+                                        faction.Resourses -= cost;
+                                        faction.Resourses.Production = faction.CurrentShipBuild + service[0].Production - faction.TotalShipBuild;
                                         faction.ShipBuild = null;
                                     }
                                     else
