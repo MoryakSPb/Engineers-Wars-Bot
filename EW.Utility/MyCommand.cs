@@ -160,6 +160,9 @@ namespace EW.Utility
                                 text.AppendLine($"　　Текущий проект: {(faction.ShipBuild.HasValue ? MyStrings.GetShipNameOnce(faction.ShipBuild.Value) : Nd)}");
                                 text.AppendLine($"　　Стадия строительства: {faction.CurrentShipBuild} / {faction.TotalShipBuild}");
                                 text.AppendLine($"　　Осталось ходов: {(faction.MaxResourses.Production != 0 ? (faction.TotalShipBuild / faction.MaxResourses.Production).ToString() : "∞")}");
+                                text.AppendLine();
+                                text.Append("Статус торгового корабля: ");
+                                text.AppendLine(MyStrings.GetTradeShipStatus(faction.TradeShipStatus));
                             }
 
                             text.AppendLine("Игроки:");
@@ -462,7 +465,7 @@ namespace EW.Utility
                         }
                         case "version":
                         case "версия":
-                            return "Engineers Wars Bot\r\nВерсия: 0.1.1.2-BETA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
+                            return "Engineers Wars Bot\r\nВерсия: 0.1.2.0-BETA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
                         case "время":
                         case "time":
                             return DateTime.UtcNow.ToString(_russianCulture);
@@ -680,7 +683,7 @@ namespace EW.Utility
                             if (arguments.Length < 4) return "Неверное количество аргументов";
                             if (!MySave.BotSettings.EnableFights) return "Битвы отключены";
                             MySector sector = MySave.Sectors.Find(x => x.Name == arguments[2]);
-                            if (sector is null) return "Сектор не найденили переход в него заблокирован";
+                            if (sector is null) return "Сектор не найден или переход в него заблокирован";
                             if (!TimeSpan.TryParse(arguments[3], out TimeSpan time)) return "Неверный формат времени";
                             switch (_factionApi.Attack(sector, time, out MySectorFight fight))
                             {

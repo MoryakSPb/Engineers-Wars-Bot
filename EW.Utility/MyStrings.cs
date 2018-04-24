@@ -147,5 +147,21 @@ namespace EW.Utility
                     throw new ArgumentOutOfRangeException(nameof(result), result, null);
             }
         }
+
+        static internal string GetTradeShipStatus(TradeShipStatus status)
+        {
+            switch (status)
+            {
+                case TradeShipStatus.None:
+                    return "(Н/Д)";
+                case TradeShipStatus.Started:
+                    return "Запущен";
+                case TradeShipStatus.InWay:
+                    return "В пути";
+                case TradeShipStatus.Attacked:
+                    return "Атакован";
+                default: throw new ArgumentOutOfRangeException(nameof(status), status, null);
+            }
+        }
     }
 }
