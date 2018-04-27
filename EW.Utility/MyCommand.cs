@@ -465,7 +465,7 @@ namespace EW.Utility
                         }
                         case "version":
                         case "версия":
-                            return "Engineers Wars Bot\r\nВерсия: 0.1.2.0-BETA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
+                            return "Engineers Wars Bot\r\nВерсия: 0.1.2.1-BETA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
                         case "время":
                         case "time":
                             return DateTime.UtcNow.ToString(_russianCulture);
@@ -531,7 +531,7 @@ namespace EW.Utility
 ""DestroyShip [Тип корабля]"" или ""УничтожитьКорабль [Тип корабля]"" - отправляет корабль на металолом и возвращает половину зараченных ресурсов. Допустимые типы кораблей: 0 = истребитель, 3 = корвет.
 
 ""BuildImprovement [Сектор] [Тип улучшения]"" или ""ПостроитьУлучшение [Сектор] [Тип улучшения]"" - строит выбранное улучшение в секторе. Возможные варианты улучшения: 2 = шахта, 3 = завод, 4 = склад, 5 = ангар, 6 = энергостанция, 7 = аванпост.
-""UpgrateImprovement [Сектор]"" или ""УлучшитьУлучшение [Сектор]"" - повышает уровень улучшения в выбранном секторе.
+""UpgradeImprovement [Сектор]"" или ""УлучшитьУлучшение [Сектор]"" - повышает уровень улучшения в выбранном секторе.
 ""DestroyImprovement [Сектор]"" или ""УничтожитьУлучшение [Сектор]"" - уничтожает улучшение и приносит половину затраченных ресурсов.
 
 ""StartTradeShip"" или ""ЗапуститьТорговыйКорабль"" - начинает подготовку к запуску торгового корабля.
@@ -620,6 +620,7 @@ namespace EW.Utility
                                 return "Неверно указан тип улучшения";
                             }
                         }
+                        case "upgradeimprovement":
                         case "upgrateimprovement":
                         case "улучшитьулучшение":
                         {
@@ -1539,34 +1540,36 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                         MyFaction faction1 = MySave.Factions.Find(x => x.Tag == offer.Factions.Item1);
                                         MyFaction faction2 = MySave.Factions.Find(x => x.Tag == offer.Factions.Item2);
                                         MyPolitic pol = MySave.Politics.Find(x => (x.Factions.Item1 == faction1.Tag && x.Factions.Item2 == faction2.Tag) ^ (x.Factions.Item2 == faction1.Tag && x.Factions.Item1 == faction2.Tag));
+                                        if (!(offer.Deal.Item1 is null && offer.Deal.Item2 is null))
+                                        {
+                                            faction1.Resourses -= offer.Deal.Item1.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
+                                            faction2.Resourses += offer.Deal.Item1.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
+                                            faction2.Resourses -= offer.Deal.Item2.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
+                                            faction1.Resourses += offer.Deal.Item2.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
 
-                                        faction1.Resourses -= offer.Deal.Item1.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
-                                        faction2.Resourses += offer.Deal.Item1.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
-                                        faction2.Resourses -= offer.Deal.Item2.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
-                                        faction1.Resourses += offer.Deal.Item2.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
-
-                                        offer.Deal.Item1.Sectors.ForEach(x =>
-                                        {
-                                            MySector sector = MySave.Sectors.Find(y => y.Name == x);
-                                            // ReSharper disable once IsExpressionAlwaysTrue
-                                            if (sector is object) sector.Tag = offer.Factions.Item2;
-                                        });
-                                        offer.Deal.Item2.Sectors.ForEach(x =>
-                                        {
-                                            MySector sector = MySave.Sectors.Find(y => y.Name == x);
-                                            // ReSharper disable once IsExpressionAlwaysTrue
-                                            if (sector is object) sector.Tag = offer.Factions.Item1;
-                                        });
-                                        offer.Deal.Item1.Ships.ForEach(x =>
-                                        {
-                                            faction1.Ships[x.Key] -= x.Value;
-                                            faction2.Ships[x.Key] += x.Value;
-                                        });
-                                        offer.Deal.Item2.Ships.ForEach(x =>
-                                        {
-                                            faction2.Ships[x.Key] -= x.Value;
-                                            faction1.Ships[x.Key] += x.Value;
-                                        });
+                                            offer.Deal.Item1.Sectors.ForEach(x =>
+                                                                             {
+                                                                                 MySector sector = MySave.Sectors.Find(y => y.Name == x);
+                                                                                 // ReSharper disable once IsExpressionAlwaysTrue
+                                                                                 if (sector is object) sector.Tag = offer.Factions.Item2;
+                                                                             });
+                                            offer.Deal.Item2.Sectors.ForEach(x =>
+                                                                             {
+                                                                                 MySector sector = MySave.Sectors.Find(y => y.Name == x);
+                                                                                 // ReSharper disable once IsExpressionAlwaysTrue
+                                                                                 if (sector is object) sector.Tag = offer.Factions.Item1;
+                                                                             });
+                                            offer.Deal.Item1.Ships.ForEach(x =>
+                                                                           {
+                                                                               faction1.Ships[x.Key] -= x.Value;
+                                                                               faction2.Ships[x.Key] += x.Value;
+                                                                           });
+                                            offer.Deal.Item2.Ships.ForEach(x =>
+                                                                           {
+                                                                               faction2.Ships[x.Key] -= x.Value;
+                                                                               faction1.Ships[x.Key] += x.Value;
+                                                                           });
+                                        }
                                         switch (offer.OfferType)
                                         {
                                             case MyOfferType.Default:
@@ -1587,7 +1590,8 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                             case MyOfferType.NeutralToWar:
                                                 new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send();
                                                 pol.Status = MyPoliticStatus.War;
-                                                string enemy = faction1 == _factionApi.Faction ? faction2.Tag : faction1.Tag;
+                                                string enemy = offer.Creator ? faction1.Tag : faction2.Tag;
+                                                string creator = offer.Creator ? faction2.Tag : faction1.Tag;
                                                 IEnumerable<MyPolitic> pols = MySave.Politics.Where(x => (x.Factions.Item1 == enemy) ^ (x.Factions.Item2 == enemy) && x.Union);
                                                 List<MyFaction> factions = new List<MyFaction>();
                                                 pols.ForEach(x =>
@@ -1595,7 +1599,7 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                                     if (x.Factions.Item1 == enemy) factions.Add(MySave.Factions.Find(y => y.Tag == x.Factions.Item2));
                                                     else factions.Add(MySave.Factions.Find(y => y.Tag == x.Factions.Item1));
                                                 });
-                                                factions.ForEach(y => MySave.Politics.Find(x => (x.Factions.Item1 == enemy) ^ (x.Factions.Item2 == enemy) && (x.Factions.Item1 == _factionApi.Faction.Tag) ^ (x.Factions.Item2 == _factionApi.Faction.Tag)).Status = MyPoliticStatus.War);
+                                                factions.ForEach(y => MySave.Politics.Find(x => (x.Factions.Item1 == enemy) ^ (x.Factions.Item2 == enemy) && (x.Factions.Item1 == creator) ^ (x.Factions.Item2 == creator)).Status = MyPoliticStatus.War);
                                                 break;
                                             default:
                                                 throw new ArgumentOutOfRangeException();
