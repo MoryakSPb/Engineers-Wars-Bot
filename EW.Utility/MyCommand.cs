@@ -284,7 +284,7 @@ namespace EW.Utility
                             int index;
                             try
                             {
-                                index = Convert.ToInt32(arguments[3]);
+                                index = Convert.ToInt32(arguments[2]);
                             }
                             catch (Exception)
                             {
@@ -294,7 +294,7 @@ namespace EW.Utility
                             AMyFight fight;
                             try
                             {
-                                fight = _api.AllFights().ToList()[index];
+                                fight = _api.AllFights().ToList()[index-1];
                             }
                             catch (Exception)
                             {
@@ -328,12 +328,41 @@ namespace EW.Utility
                             text.Append("Статус: ");
                             text.AppendLine(fight.ResultRegistered ? MyStrings.GetFightStatus(fight.Result) : "Бой не закончен");
                             text.AppendLine("Игроки:");
-
-                            text.AppendLine("Потери:");
                             text.AppendLine("\u3000Атакующие:");
-                            //fight.AttackersСasualties
-
-                            return text.ToString();
+                            fight.AttackersPlayers.ForEach(x =>
+                                                           {
+                                                               text.Append("\u3000\u3000");
+                                                               text.AppendLine(x);
+                                                           });
+                            text.AppendLine("\u3000Обороняющиеся:");
+                                fight.DefendersPlayers.ForEach(x =>
+                                                           {
+                                                               text.Append("\u3000\u3000");
+                                                               text.AppendLine(x);
+                                                           });
+                                text.AppendLine("Потери:");
+                            text.AppendLine("\u3000Атакующие:");
+                            fight.AttackersСasualties.ForEach(x =>
+                                                              {
+                                                                  text.Append("\u3000\u3000");
+                                                                  text.Append(MyStrings.GetShipNameMany(x.Key));
+                                                                  text.Append(": ");
+                                                                  text.AppendLine(x.Value.ToString(_russianCulture));
+                                                              });
+                            text.AppendLine("\u3000Обороняющиеся:");
+                                fight.DefendersСasualties.ForEach(x =>
+                                                              {
+                                                                  text.Append("\u3000\u3000");
+                                                                  text.Append(MyStrings.GetShipNameMany(x.Key));
+                                                                  text.Append(": ");
+                                                                  text.AppendLine(x.Value.ToString(_russianCulture));
+                                                              });
+                            if (fight is MySectorFight sectorFight && fight.ResultRegistered)
+                            {
+                                text.Append("\u3000");
+                                text.AppendLine(sectorFight.ImprovementDestroyed ? "Улучшение уничтожено" : "Улучшение не пострадало");
+                            }
+                                return text.ToString();
                         }
                         case "битвы":
                         case "fights":
@@ -352,7 +381,7 @@ namespace EW.Utility
                             StringBuilder text = new StringBuilder(aMyFights.Count << 5);
                             for (int i = 0; i < aMyFights.Count; i += 1)
                             {
-                                AMyFight x = ((List<AMyFight>) list)[i];
+                                AMyFight x = aMyFights[i];
                                 if (mode)
                                 {
                                     if (!(x.AttackersMercSlots - x.AttackersPlayers.FindAll(y => MySave.Players.Find(z => z.Name == y).Status == PlayerStatus.Mercenary).Count > 0 || x.AttackersMercSlots - x.AttackersPlayers.FindAll(y => MySave.Players.Find(z => z.Name == y).Status == PlayerStatus.Mercenary).Count > 0)) continue;
@@ -413,19 +442,19 @@ namespace EW.Utility
 
 
                             MyBotApi.BotJoinResult result;
-                            try
-                            {
-                                if (!_api.Fights().Contains(((List<AMyFight>) _api.AllFights())[Convert.ToInt32(arguments[2])]))
+                           /* try
+                            {*/
+                                if (!_api.Fights().Contains(_api.AllFights().ToList()[Convert.ToInt32(arguments[2])-1]))
                                     return "На данную битву невозможно записатся";
-                                result = _api.Join(Convert.ToInt32(arguments[2]), Convert.ToInt32(arguments[3]));
-                            }
-                            catch (Exception)
+                                result = _api.Join(Convert.ToInt32(arguments[2])-1, Convert.ToInt32(arguments[3]));
+                            /*}
+                            catch (Exception e)
                             {
                                 return "Неверный формат аргумента";
-                            }
+                            }*/
 
-                            // ReSharper disable once SwitchStatementMissingSomeCases
-                            switch (result)
+                                // ReSharper disable once SwitchStatementMissingSomeCases
+                                switch (result)
                             {
                                 case MyBotApi.BotJoinResult.Ok: return "Вы записаны на битву";
                                 case MyBotApi.BotJoinResult.Guest:
@@ -446,7 +475,7 @@ namespace EW.Utility
                             int index;
                             try
                             {
-                                index = Convert.ToInt32(arguments[2]);
+                                index = Convert.ToInt32(arguments[2])-1;
                             }
                             catch (Exception)
                             {
@@ -465,7 +494,7 @@ namespace EW.Utility
                         }
                         case "version":
                         case "версия":
-                            return "Engineers Wars Bot\r\nВерсия: 0.1.2.1-BETA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
+                            return "Engineers Wars Bot\r\nВерсия: 0.1.2.4-BETA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
                         case "время":
                         case "time":
                             return DateTime.UtcNow.ToString(_russianCulture);
@@ -690,7 +719,7 @@ namespace EW.Utility
                             {
                                 case MyBotFactionApi.MySectorAttackResult.Ok:
                                 {
-                                    MySave.Fights = MySave.Fights.Add(fight);
+                                    //MySave.Fights = MySave.Fights.Add(fight);
                                     new MyEventFightCreated(fight).Send();
                                     return "Битва запланированна";
                                 }
@@ -952,7 +981,7 @@ namespace EW.Utility
                             MyOffer offer;
                             try
                             {
-                                offer = _factionApi.Offers()[Convert.ToInt32(arguments[2])];
+                                offer = _factionApi.Offers()[Convert.ToInt32(arguments[2])+1];
                             }
                             catch (IndexOutOfRangeException)
                             {

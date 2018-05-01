@@ -215,7 +215,7 @@ namespace EW.Utility.Api
                 case MySectorGoResult.NoAttack: return MySectorAttackResult.NoAttack;
                 default:
                 {
-                    MyPolitic policits = MySave.Politics.Find(x => x.Factions.Item1 == Faction.Tag && (x.Factions.Item2 == sector.Tag) ^ (x.Factions.Item2 == Faction.Tag) && x.Factions.Item1 == sector.Tag) ?? throw new ArgumentException("Данные отношений не найдены", nameof(Faction));
+                    MyPolitic policits = MySave.Politics.Find(x => (x.Factions.Item1 == Faction.Tag && x.Factions.Item2 == sector.Tag) ^ (x.Factions.Item2 == Faction.Tag && x.Factions.Item1 == sector.Tag));
                     if (policits.Status != MyPoliticStatus.War) return MySectorAttackResult.NoWar;
                     if (MySave.BotSettings.ActivityTime.Item1 > time || MySave.BotSettings.ActivityTime.Item2 < time) return MySectorAttackResult.InvalidAdminTime;
                     if (Faction.ActiveInterval.start > time || Faction.ActiveInterval.finish < time) return MySectorAttackResult.InvalidYourTime;

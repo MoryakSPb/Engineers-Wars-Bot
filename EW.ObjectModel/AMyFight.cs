@@ -38,7 +38,7 @@ namespace EW.ObjectModel
 
         public string DefendersTag
         {
-            get => MAttackersTag;
+            get => MDefendersTag;
             set
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));

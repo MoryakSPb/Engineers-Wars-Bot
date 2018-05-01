@@ -56,7 +56,7 @@ namespace EW.Utility.Api
             List<MyPlayer> defenders = new List<MyPlayer>();
             try
             {
-                fight = ((List<AMyFight>) AllFights())[fightIndex];
+                fight = AllFights().ToList()[fightIndex];
             }
             catch (IndexOutOfRangeException)
             {
