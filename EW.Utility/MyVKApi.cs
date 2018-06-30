@@ -24,16 +24,16 @@ namespace EW.Utility
         private const string MessageSend = ApiUrl + "messages.send";
         private const string VkApiV = "5.71";
 
-        static public readonly SortedList<int, MyCommand> ApiCommands = new SortedList<int, MyCommand>(MySave.Players.Count);
+        static readonly public SortedList<int, MyCommand> ApiCommands = new SortedList<int, MyCommand>(MySave.Players.Count);
 
         //private static readonly DataContractJsonSerializer CallbackSer = new DataContractJsonSerializer(typeof(MyCallbackStruct<MyMessageStruct>));
 
-        static private readonly byte[] OkArray = {111, 107};
+        static readonly private byte[] OkArray = {111, 107};
 
         static private Timer _timer = new Timer(stateInfo => Calls = 20, null, 1, 1000);
 
-        private readonly HttpClient _httpClient = new HttpClient();
-        private readonly HttpListener _httpListener = new HttpListener();
+        readonly private HttpClient _httpClient = new HttpClient();
+        readonly private HttpListener _httpListener = new HttpListener();
 
         static public int Calls { get; private set; } = 20;
         static public MyVkApi LastApi { get; private set; }
@@ -50,7 +50,6 @@ namespace EW.Utility
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "Engineers Wars Bot");
         }
-
 
         public void SetLastApi() => LastApi = this;
 
@@ -97,8 +96,7 @@ namespace EW.Utility
                     return;
                 }
 
-                if (!ApiCommands.ContainsKey(callback.@object.user_id))
-                    ApiCommands.Add(callback.@object.user_id, new MyCommand(callback.@object.user_id));
+                if (!ApiCommands.ContainsKey(callback.@object.user_id)) ApiCommands.Add(callback.@object.user_id, new MyCommand(callback.@object.user_id));
                 string mes = ApiCommands[callback.@object.user_id].ExecuteCommand(callback.@object.body, out string title);
                 try
                 {
@@ -166,26 +164,24 @@ namespace EW.Utility
                 return;
             }
 
-            if (message.Length >= 7500)
-                throw new ArgumentException("Слишком большая длина сообщения.", nameof(message));
-            while (Calls <= 0)
-            {
-            }
+            if (message.Length >= 7500) throw new ArgumentException("Слишком большая длина сообщения.", nameof(message));
+            while (Calls <= 0) { }
 
             IReadOnlyDictionary<string, string> post = new Dictionary<string, string>(6)
-                                                       {
-                                                           {"v", VkApiV},
-                                                           {
-                                                               "access_token", MySave.BotSettings.VkToken
-                                                           },
-                                                           {
-                                                               "peer_id", vkId.ToString(CultureInfo.InvariantCulture)
-                                                           },
-                                                           {"message", message}, {"title", title},
-                                                           {
-                                                               "random_id", vkId.ToString(CultureInfo.InvariantCulture) + Math.Abs(messId).ToString(CultureInfo.InvariantCulture)
-                                                           }
-                                                       };
+            {
+                {"v", VkApiV},
+                {
+                    "access_token", MySave.BotSettings.VkToken
+                },
+                {
+                    "peer_id", vkId.ToString(CultureInfo.InvariantCulture)
+                },
+                {"message", message},
+                {"title", title},
+                {
+                    "random_id", vkId.ToString(CultureInfo.InvariantCulture) + Math.Abs(messId).ToString(CultureInfo.InvariantCulture)
+                }
+            };
             HttpContent content = new FormUrlEncodedContent(post);
             --Calls;
             _httpClient.PostAsync(MessageSend, content);
@@ -194,29 +190,27 @@ namespace EW.Utility
         public void SendMessage(int[] vkIDs, string message, int messId = 0, string title = "")
         {
             if (string.IsNullOrWhiteSpace(message)) return;
-            if (message.Length >= 7500)
-                throw new ArgumentException("Слишком большая длина сообщения.", nameof(message));
+            if (message.Length >= 7500) throw new ArgumentException("Слишком большая длина сообщения.", nameof(message));
             if (vkIDs.Length == 0) return;
             for (int i = 0; i < vkIDs.Length; i += 100)
             {
-                while (Calls <= 0)
-                {
-                }
+                while (Calls <= 0) { }
 
                 IReadOnlyDictionary<string, string> post = new Dictionary<string, string>(6)
-                                                           {
-                                                               {"v", VkApiV},
-                                                               {
-                                                                   "access_token", MySave.BotSettings.VkToken
-                                                               },
-                                                               {
-                                                                   "user_ids", string.Join(",", vkIDs.Skip(i).Take(100))
-                                                               },
-                                                               {"message", message}, {"title", title},
-                                                               {
-                                                                   "random_id", Math.Abs(message.GetHashCode() + messId).ToString()
-                                                               }
-                                                           };
+                {
+                    {"v", VkApiV},
+                    {
+                        "access_token", MySave.BotSettings.VkToken
+                    },
+                    {
+                        "user_ids", string.Join(",", vkIDs.Skip(i).Take(100))
+                    },
+                    {"message", message},
+                    {"title", title},
+                    {
+                        "random_id", Math.Abs(message.GetHashCode() + messId).ToString()
+                    }
+                };
                 HttpContent content = new FormUrlEncodedContent(post);
                 Calls--;
                 HttpResponseMessage x = _httpClient.PostAsync(MessageSend, content).Result;
@@ -234,12 +228,16 @@ namespace EW.Utility
         [SuppressMessage("ReSharper", "InconsistentNaming")]
         public struct MyCallbackStruct<T> : IEquatable<MyCallbackStruct<T>>
         {
-            static internal readonly DataContractJsonSerializer SerializerMessage = new DataContractJsonSerializer(typeof(MyCallbackStruct<T>), MySave.SerializerSettings);
+            static readonly internal DataContractJsonSerializer SerializerMessage = new DataContractJsonSerializer(typeof(MyCallbackStruct<T>), MySave.SerializerSettings);
 
-            [DataMember(Name = "type")] public readonly string type;
-            [DataMember(Name = "object")] public readonly T @object;
-            [DataMember(Name = "group_id")] public readonly int group_id;
-            [DataMember(Name = "secret")] public readonly string secret;
+            [DataMember(Name = "type")]
+            readonly public string type;
+            [DataMember(Name = "object")]
+            readonly public T @object;
+            [DataMember(Name = "group_id")]
+            readonly public int group_id;
+            [DataMember(Name = "secret")]
+            readonly public string secret;
 
             // ReSharper disable once UnusedMember.Local
             public MyCallbackStruct(string type, T @object, int groupId, string secret)
@@ -273,19 +271,26 @@ namespace EW.Utility
         {
             static internal DataContractJsonSerializer Serializer = new DataContractJsonSerializer(typeof(MyMessageStruct), MySave.SerializerSettings);
 
-            [DataMember(Name = "id")] public readonly int id;
-            [DataMember(Name = "user_id")] public readonly int user_id;
-            [DataMember(Name = "from_id")] public readonly int from_id;
+            [DataMember(Name = "id")]
+            readonly public int id;
+            [DataMember(Name = "user_id")]
+            readonly public int user_id;
+            [DataMember(Name = "from_id")]
+            readonly public int from_id;
 
             [IgnoreDataMember]
             public DateTime Time => date.CreateDateTimeFromUnixtime();
 
-            [DataMember(Name = "date")] public readonly uint date;
-            [DataMember(Name = "read_state")] public readonly byte read_state;
-            [DataMember(Name = "out")] public readonly byte @out;
-            [DataMember(Name = "title")] public readonly string title;
-            [DataMember(Name = "body")] public readonly string body;
-
+            [DataMember(Name = "date")]
+            readonly public uint date;
+            [DataMember(Name = "read_state")]
+            readonly public byte read_state;
+            [DataMember(Name = "out")]
+            readonly public byte @out;
+            [DataMember(Name = "title")]
+            readonly public string title;
+            [DataMember(Name = "body")]
+            readonly public string body;
 
             public MyMessageStruct(int id, int userId, int fromId, uint date, byte readState, byte @out, string title, string body)
             {

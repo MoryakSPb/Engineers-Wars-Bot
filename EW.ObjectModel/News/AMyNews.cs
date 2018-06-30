@@ -8,9 +8,9 @@ namespace EW.ObjectModel
 {
     [DataContract]
     [Obsolete]
-    public abstract class AMyNews
+    abstract public class AMyNews
     {
-        public readonly DateTime CreateTime;
+        readonly public DateTime CreateTime;
 
         protected AMyNews() => CreateTime = DateTime.UtcNow;
 

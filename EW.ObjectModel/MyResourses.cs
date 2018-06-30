@@ -34,18 +34,12 @@ namespace EW.ObjectModel
             {
                 switch (index)
                 {
-                    case 0:
-                        return Iron;
-                    case 1:
-                        return Energy;
-                    case 2:
-                        return Ammo;
-                    case 3:
-                        return MonolithCharges;
-                    case 4:
-                        return ShipSlots;
-                    case 5:
-                        return Production;
+                    case 0: return Iron;
+                    case 1: return Energy;
+                    case 2: return Ammo;
+                    case 3: return MonolithCharges;
+                    case 4: return ShipSlots;
+                    case 5: return Production;
                     default: throw new IndexOutOfRangeException();
                 }
             }
@@ -76,7 +70,6 @@ namespace EW.ObjectModel
             }
         }
 
-
         public MyResourses(int iron, int energy, int ammo, int monolithcharges, int shipslots, int production)
         {
             Iron = iron;
@@ -94,75 +87,111 @@ namespace EW.ObjectModel
 
         static public MyResourses operator -(MyResourses resourses) => Negate(resourses);
 
-        static public MyResourses Negate(MyResourses resourses) =>
-            new MyResourses
-            {
-                Ammo = -resourses.Ammo, Energy = -resourses.Energy, Iron = -resourses.Iron, MonolithCharges = -resourses.MonolithCharges, Production = -resourses.Production, ShipSlots = -resourses.ShipSlots
-            };
+        static public MyResourses Negate(MyResourses resourses) => new MyResourses
+        {
+            Ammo = -resourses.Ammo,
+            Energy = -resourses.Energy,
+            Iron = -resourses.Iron,
+            MonolithCharges = -resourses.MonolithCharges,
+            Production = -resourses.Production,
+            ShipSlots = -resourses.ShipSlots
+        };
 
         static public MyResourses operator +(MyResourses summand1, MyResourses summand2) => Add(summand1, summand2);
 
-        static public MyResourses Add(MyResourses summand1, MyResourses summand2) =>
-            new MyResourses
-            {
-                Iron = summand1.Iron + summand2.Iron, Ammo = summand1.Ammo + summand2.Ammo, Energy = summand1.Energy + summand2.Energy, MonolithCharges = summand1.MonolithCharges + summand2.MonolithCharges, Production = summand1.Production + summand2.Production, ShipSlots = summand1.ShipSlots + summand2.ShipSlots
-            };
+        static public MyResourses Add(MyResourses summand1, MyResourses summand2) => new MyResourses
+        {
+            Iron = summand1.Iron + summand2.Iron,
+            Ammo = summand1.Ammo + summand2.Ammo,
+            Energy = summand1.Energy + summand2.Energy,
+            MonolithCharges = summand1.MonolithCharges + summand2.MonolithCharges,
+            Production = summand1.Production + summand2.Production,
+            ShipSlots = summand1.ShipSlots + summand2.ShipSlots
+        };
 
         static public MyResourses operator -(MyResourses minuend, MyResourses subtrahend) => Subtract(minuend, subtrahend);
 
-        static public MyResourses Subtract(MyResourses minuend, MyResourses subtrahend) =>
-            new MyResourses
-            {
-                Iron = minuend.Iron - subtrahend.Iron, Ammo = minuend.Ammo - subtrahend.Ammo, Energy = minuend.Energy - subtrahend.Energy, MonolithCharges = minuend.MonolithCharges - subtrahend.MonolithCharges, Production = minuend.Production - subtrahend.Production, ShipSlots = minuend.ShipSlots - subtrahend.ShipSlots
-            };
+        static public MyResourses Subtract(MyResourses minuend, MyResourses subtrahend) => new MyResourses
+        {
+            Iron = minuend.Iron - subtrahend.Iron,
+            Ammo = minuend.Ammo - subtrahend.Ammo,
+            Energy = minuend.Energy - subtrahend.Energy,
+            MonolithCharges = minuend.MonolithCharges - subtrahend.MonolithCharges,
+            Production = minuend.Production - subtrahend.Production,
+            ShipSlots = minuend.ShipSlots - subtrahend.ShipSlots
+        };
 
         static public MyResourses operator *(MyResourses multiplicand, double multiplier) => Multiply(multiplicand, multiplier);
 
-        static public MyResourses Multiply(MyResourses multiplicand, double multiplier) =>
-            new MyResourses
-            {
-                Iron = (int) Math.Round(multiplicand.Iron * multiplier), Ammo = (int) Math.Round(multiplicand.Ammo * multiplier), Energy = (int) Math.Round(multiplicand.Energy * multiplier), MonolithCharges = (int) Math.Round(multiplicand.MonolithCharges * multiplier), Production = (int) Math.Round(multiplicand.Production * multiplier), ShipSlots = (int) Math.Round(multiplicand.ShipSlots * multiplier)
-            };
+        static public MyResourses Multiply(MyResourses multiplicand, double multiplier) => new MyResourses
+        {
+            Iron = (int) Math.Round(multiplicand.Iron * multiplier),
+            Ammo = (int) Math.Round(multiplicand.Ammo * multiplier),
+            Energy = (int) Math.Round(multiplicand.Energy * multiplier),
+            MonolithCharges = (int) Math.Round(multiplicand.MonolithCharges * multiplier),
+            Production = (int) Math.Round(multiplicand.Production * multiplier),
+            ShipSlots = (int) Math.Round(multiplicand.ShipSlots * multiplier)
+        };
 
         static public MyResourses operator *(MyResourses multiplicand, int multiplier) => Multiply(multiplicand, multiplier);
 
-        static public MyResourses Multiply(MyResourses multiplicand, int multiplier) =>
-            new MyResourses
-            {
-                Iron = multiplicand.Iron * multiplier, Ammo = multiplicand.Ammo * multiplier, Energy = multiplicand.Energy * multiplier, MonolithCharges = multiplicand.MonolithCharges * multiplier, Production = multiplicand.Production * multiplier, ShipSlots = multiplicand.ShipSlots * multiplier
-            };
+        static public MyResourses Multiply(MyResourses multiplicand, int multiplier) => new MyResourses
+        {
+            Iron = multiplicand.Iron * multiplier,
+            Ammo = multiplicand.Ammo * multiplier,
+            Energy = multiplicand.Energy * multiplier,
+            MonolithCharges = multiplicand.MonolithCharges * multiplier,
+            Production = multiplicand.Production * multiplier,
+            ShipSlots = multiplicand.ShipSlots * multiplier
+        };
 
         static public MyResourses operator *(MyResourses multiplicand, MyResourses multiplier) => Multiply(multiplicand, multiplier);
 
-        static public MyResourses Multiply(MyResourses multiplicand, MyResourses multiplier) =>
-            new MyResourses
-            {
-                Iron = multiplicand.Iron * multiplier.Iron, Ammo = multiplicand.Ammo * multiplier.Ammo, Energy = multiplicand.Energy * multiplier.Energy, MonolithCharges = multiplicand.MonolithCharges * multiplier.MonolithCharges, Production = multiplicand.Production * multiplier.Production, ShipSlots = multiplicand.ShipSlots * multiplier.ShipSlots
-            };
+        static public MyResourses Multiply(MyResourses multiplicand, MyResourses multiplier) => new MyResourses
+        {
+            Iron = multiplicand.Iron * multiplier.Iron,
+            Ammo = multiplicand.Ammo * multiplier.Ammo,
+            Energy = multiplicand.Energy * multiplier.Energy,
+            MonolithCharges = multiplicand.MonolithCharges * multiplier.MonolithCharges,
+            Production = multiplicand.Production * multiplier.Production,
+            ShipSlots = multiplicand.ShipSlots * multiplier.ShipSlots
+        };
 
         static public MyResourses operator /(MyResourses multiplicand, double multiplier) => Divide(multiplicand, multiplier);
 
-        static public MyResourses Divide(MyResourses multiplicand, double multiplier) =>
-            new MyResourses
-            {
-                Iron = (int) Math.Round(multiplicand.Iron / multiplier), Ammo = (int) Math.Round(multiplicand.Ammo / multiplier), Energy = (int) Math.Round(multiplicand.Energy / multiplier), MonolithCharges = (int) Math.Round(multiplicand.MonolithCharges / multiplier), Production = (int) Math.Round(multiplicand.Production / multiplier), ShipSlots = (int) Math.Round(multiplicand.ShipSlots / multiplier)
-            };
+        static public MyResourses Divide(MyResourses multiplicand, double multiplier) => new MyResourses
+        {
+            Iron = (int) Math.Round(multiplicand.Iron / multiplier),
+            Ammo = (int) Math.Round(multiplicand.Ammo / multiplier),
+            Energy = (int) Math.Round(multiplicand.Energy / multiplier),
+            MonolithCharges = (int) Math.Round(multiplicand.MonolithCharges / multiplier),
+            Production = (int) Math.Round(multiplicand.Production / multiplier),
+            ShipSlots = (int) Math.Round(multiplicand.ShipSlots / multiplier)
+        };
 
         static public MyResourses operator /(MyResourses multiplicand, int multiplier) => Divide(multiplicand, multiplier);
 
-        static public MyResourses Divide(MyResourses multiplicand, int multiplier) =>
-            new MyResourses
-            {
-                Iron = multiplicand.Iron / multiplier, Ammo = multiplicand.Ammo / multiplier, Energy = multiplicand.Energy / multiplier, MonolithCharges = multiplicand.MonolithCharges / multiplier, Production = multiplicand.Production / multiplier, ShipSlots = multiplicand.ShipSlots / multiplier
-            };
+        static public MyResourses Divide(MyResourses multiplicand, int multiplier) => new MyResourses
+        {
+            Iron = multiplicand.Iron / multiplier,
+            Ammo = multiplicand.Ammo / multiplier,
+            Energy = multiplicand.Energy / multiplier,
+            MonolithCharges = multiplicand.MonolithCharges / multiplier,
+            Production = multiplicand.Production / multiplier,
+            ShipSlots = multiplicand.ShipSlots / multiplier
+        };
 
         static public MyResourses operator /(MyResourses multiplicand, MyResourses multiplier) => Divide(multiplicand, multiplier);
 
-        static public MyResourses Divide(MyResourses multiplicand, MyResourses multiplier) =>
-            new MyResourses
-            {
-                Iron = multiplicand.Iron / multiplier.Iron, Ammo = multiplicand.Ammo / multiplier.Ammo, Energy = multiplicand.Energy / multiplier.Energy, MonolithCharges = multiplicand.MonolithCharges / multiplier.MonolithCharges, Production = multiplicand.Production / multiplier.Production, ShipSlots = multiplicand.ShipSlots / multiplier.ShipSlots
-            };
+        static public MyResourses Divide(MyResourses multiplicand, MyResourses multiplier) => new MyResourses
+        {
+            Iron = multiplicand.Iron / multiplier.Iron,
+            Ammo = multiplicand.Ammo / multiplier.Ammo,
+            Energy = multiplicand.Energy / multiplier.Energy,
+            MonolithCharges = multiplicand.MonolithCharges / multiplier.MonolithCharges,
+            Production = multiplicand.Production / multiplier.Production,
+            ShipSlots = multiplicand.ShipSlots / multiplier.ShipSlots
+        };
 
         static public MyResourses operator %(MyResourses resourses, int precent) => Precent(resourses, precent);
 
@@ -179,9 +208,14 @@ namespace EW.ObjectModel
             MyResourses mod = new MyResourses(iron.Round(), energy.Round(), ammo.Round(), monolithCharges.Round(), shipSlots.Round(), production.Round());
 
             return new MyResourses
-                   {
-                       Iron = resourses.Iron > 0 ? resourses.Iron + mod.Iron : resourses.Iron - mod.Iron, Energy = resourses.Energy > 0 ? resourses.Energy + mod.Energy : resourses.Energy - mod.Energy, Ammo = resourses.Ammo > 0 ? resourses.Ammo + mod.Ammo : resourses.Ammo - mod.Ammo, MonolithCharges = resourses.MonolithCharges > 0 ? resourses.MonolithCharges + mod.MonolithCharges : resourses.MonolithCharges - mod.MonolithCharges, ShipSlots = resourses.ShipSlots > 0 ? resourses.ShipSlots + mod.ShipSlots : resourses.ShipSlots - mod.ShipSlots, Production = resourses.Production > 0 ? resourses.Production + mod.Production : resourses.Production - mod.Production
-                   };
+            {
+                Iron = resourses.Iron > 0 ? resourses.Iron + mod.Iron : resourses.Iron - mod.Iron,
+                Energy = resourses.Energy > 0 ? resourses.Energy + mod.Energy : resourses.Energy - mod.Energy,
+                Ammo = resourses.Ammo > 0 ? resourses.Ammo + mod.Ammo : resourses.Ammo - mod.Ammo,
+                MonolithCharges = resourses.MonolithCharges > 0 ? resourses.MonolithCharges + mod.MonolithCharges : resourses.MonolithCharges - mod.MonolithCharges,
+                ShipSlots = resourses.ShipSlots > 0 ? resourses.ShipSlots + mod.ShipSlots : resourses.ShipSlots - mod.ShipSlots,
+                Production = resourses.Production > 0 ? resourses.Production + mod.Production : resourses.Production - mod.Production
+            };
         }
 
         [Obsolete("", true)]
@@ -236,9 +270,14 @@ namespace EW.ObjectModel
         {
             string[] x = s.Trim('{', '}').Split(';');
             return new MyResourses
-                   {
-                       Iron = int.Parse(x[0], CultureInfo.InvariantCulture), Energy = int.Parse(x[1], CultureInfo.InvariantCulture), Ammo = int.Parse(x[2], CultureInfo.InvariantCulture), MonolithCharges = int.Parse(x[3], CultureInfo.InvariantCulture), ShipSlots = int.Parse(x[4], CultureInfo.InvariantCulture), Production = int.Parse(x[5], CultureInfo.InvariantCulture)
-                   };
+            {
+                Iron = int.Parse(x[0], CultureInfo.InvariantCulture),
+                Energy = int.Parse(x[1], CultureInfo.InvariantCulture),
+                Ammo = int.Parse(x[2], CultureInfo.InvariantCulture),
+                MonolithCharges = int.Parse(x[3], CultureInfo.InvariantCulture),
+                ShipSlots = int.Parse(x[4], CultureInfo.InvariantCulture),
+                Production = int.Parse(x[5], CultureInfo.InvariantCulture)
+            };
         }
 
         public void Deconstruct(out int iron, out int energy, out int ammo, out int monolithCharges, out int shipSlots, out int production)

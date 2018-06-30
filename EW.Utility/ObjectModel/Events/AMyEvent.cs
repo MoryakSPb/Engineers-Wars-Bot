@@ -8,20 +8,23 @@ using EW.ObjectModel;
 namespace EW.Utility.ObjectModel.Events
 {
     [DataContract]
-    public abstract class AMyEvent : IEquatable<AMyEvent>
+    abstract public class AMyEvent : IEquatable<AMyEvent>
     {
-        [IgnoreDataMember] static public DataContractJsonSerializer Serializer = new DataContractJsonSerializer(typeof(AMyEvent), MySave.SerializerSettings);
+        [IgnoreDataMember]
+        static public DataContractJsonSerializer Serializer = new DataContractJsonSerializer(typeof(AMyEvent), MySave.SerializerSettings);
 
-        [DataMember] internal readonly DateTime Created = DateTime.UtcNow;
+        [DataMember]
+        readonly internal DateTime Created = DateTime.UtcNow;
 
-        [DataMember] internal bool Sended;
+        [DataMember]
+        internal bool Sended;
 
         [DataMember]
         protected virtual int[] Destination => MySave.Players.FindAll(x => x.AllowedMessages == MessagesType.All).Select(x => x.Vk).ToArray();
 
         protected AMyEvent(bool sended) => Sended = sended;
 
-        public abstract override string ToString();
+        abstract public override string ToString();
 
         public virtual void Send()
         {
@@ -29,7 +32,6 @@ namespace EW.Utility.ObjectModel.Events
             MyVkApi.LastApi.SendMessage(Destination, ToString(), GetHashCode(), string.Empty);
             Sended = true;
         }
-
 
         public override bool Equals(object obj) => Equals(obj as AMyEvent);
 

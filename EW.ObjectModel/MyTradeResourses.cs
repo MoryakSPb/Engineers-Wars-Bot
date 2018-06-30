@@ -11,10 +11,13 @@ namespace EW.ObjectModel
     [KnownType(typeof(string))]
     public class MyTradeResourses
     {
-        [DataMember] public readonly ICollection<string> Sectors;
+        [DataMember]
+        readonly public ICollection<string> Sectors;
 
-        [DataMember] public readonly IDictionary<ShipType, int> Ships;
-        [DataMember] public MyResourses Resourses;
+        [DataMember]
+        readonly public IDictionary<ShipType, int> Ships;
+        [DataMember]
+        public MyResourses Resourses;
 
         public MyTradeResourses(MyResourses resourses, ICollection<string> sectors, IDictionary<ShipType, int> ships)
         {

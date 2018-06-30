@@ -8,7 +8,8 @@ namespace EW.ObjectModel
     [DataContract]
     public class MySector : AMyGameObject
     {
-        [DataMember] public List<string> Contacts;
+        [DataMember]
+        public List<string> Contacts;
 
         [DataMember]
         public SectorType SectorType { get; set; }

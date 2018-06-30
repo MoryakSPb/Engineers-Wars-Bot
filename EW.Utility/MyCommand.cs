@@ -19,11 +19,11 @@ namespace EW.Utility
 
         private const string Nd = "(Н/Д)";
 
-        static private readonly MyBotRegisterApi RegApi = new MyBotRegisterApi();
-        private readonly MyBotFactionApi _factionApi;
-        private readonly int _id;
+        static readonly private MyBotRegisterApi RegApi = new MyBotRegisterApi();
+        readonly private MyBotFactionApi _factionApi;
+        readonly private int _id;
 
-        private readonly CultureInfo _russianCulture = CultureInfo.CreateSpecificCulture("ru-RU");
+        readonly private CultureInfo _russianCulture = CultureInfo.CreateSpecificCulture("ru-RU");
 
         private volatile MyBotApi _api;
         private volatile MyPlayer _player;
@@ -41,8 +41,7 @@ namespace EW.Utility
                 _api = null;
             }
 
-            if (_player != null && _player.IsFactionLeader && !_player.IsBanned)
-                _factionApi = new MyBotFactionApi(_player);
+            if (_player != null && _player.IsFactionLeader && !_player.IsBanned) _factionApi = new MyBotFactionApi(_player);
         }
 
         public string ExecuteCommand(string command, out string title)
@@ -65,8 +64,7 @@ namespace EW.Utility
                         return string.Empty;
                     }
 
-                    if (_api is null || _player is null)
-                        return "Вы не зарегистрированы. Введите \"ботрегистрация помощь\" для получения справки";
+                    if (_api is null || _player is null) return "Вы не зарегистрированы. Введите \"ботрегистрация помощь\" для получения справки";
                     if (_player.IsBanned && _id != 91777907L) return "Вы заблокированы. Обратитесь к администрации";
                     switch (arguments[1])
                     {
@@ -140,8 +138,7 @@ namespace EW.Utility
                             text.AppendLine($"Активность: с {faction.ActiveInterval.start:hh\\:mm} по {faction.ActiveInterval.finish:hh\\:mm} (UTC)\r\n");
                             text.AppendLine($"Группа ВК: {faction.VkUrl}");
                             text.AppendLine("Корабли:");
-                            foreach (KeyValuePair<ShipType, int> item in faction.Ships)
-                                text.AppendLine($"　{MyStrings.GetShipNameMany(item.Key)}: {item.Value}");
+                            foreach (KeyValuePair<ShipType, int> item in faction.Ships) text.AppendLine($"　{MyStrings.GetShipNameMany(item.Key)}: {item.Value}");
                             text.AppendLine();
                             text.AppendLine("Ресурсы:");
                             text.AppendLine($"　Железо: {faction.Resourses.Iron} ({(faction.ChangesResourses.Iron < 0 ? "" : "+")}{faction.ChangesResourses.Iron})");
@@ -189,8 +186,7 @@ namespace EW.Utility
                                 text.Append("　");
                                 text.AppendLine(tag);
                                 text.AppendLine($"　　{MyStrings.GetPolitic(item.Status)}");
-                                if (item.Status == MyPoliticStatus.Ally)
-                                    text.AppendLine($"　　Оборонительный союз: {MyStrings.GetBoolYesNo(item.Union)}");
+                                if (item.Status == MyPoliticStatus.Ally) text.AppendLine($"　　Оборонительный союз: {MyStrings.GetBoolYesNo(item.Union)}");
                                 if (item.Status == MyPoliticStatus.Neutral)
                                 {
                                     text.AppendLine($"　　Пакт о ненападении: {MyStrings.GetBoolYesNo(item.Pact)}");
@@ -215,7 +211,8 @@ namespace EW.Utility
                             MyPlayer player;
                             if (ulong.TryParse(arguments[2], out ulong argId))
                                 player = _api.Player(argId) ?? _api.Player((int) argId);
-                            else player = _api.Player(arguments[2]);
+                            else
+                                player = _api.Player(arguments[2]);
 
                             if (player is null) return "Игрок не найден";
                             title = player.Name;
@@ -261,8 +258,7 @@ namespace EW.Utility
                         case "activity":
                         case "активность":
                         {
-                            if (arguments.Length == 2)
-                                return $"C {_player.Activity.Item1:hh\\:mm} по {_player.Activity.Item2:hh\\:mm}";
+                            if (arguments.Length == 2) return $"C {_player.Activity.Item1:hh\\:mm} по {_player.Activity.Item2:hh\\:mm}";
                             if (arguments.Length < 4) return "Неверное количество аргументов";
                             if (TimeSpan.TryParse(arguments[2], out TimeSpan start))
                             {
@@ -294,7 +290,7 @@ namespace EW.Utility
                             AMyFight fight;
                             try
                             {
-                                fight = _api.AllFights().ToList()[index-1];
+                                fight = _api.AllFights().ToList()[index - 1];
                             }
                             catch (Exception)
                             {
@@ -330,39 +326,40 @@ namespace EW.Utility
                             text.AppendLine("Игроки:");
                             text.AppendLine("\u3000Атакующие:");
                             fight.AttackersPlayers.ForEach(x =>
-                                                           {
-                                                               text.Append("\u3000\u3000");
-                                                               text.AppendLine(x);
-                                                           });
+                            {
+                                text.Append("\u3000\u3000");
+                                text.AppendLine(x);
+                            });
                             text.AppendLine("\u3000Обороняющиеся:");
-                                fight.DefendersPlayers.ForEach(x =>
-                                                           {
-                                                               text.Append("\u3000\u3000");
-                                                               text.AppendLine(x);
-                                                           });
-                                text.AppendLine("Потери:");
+                            fight.DefendersPlayers.ForEach(x =>
+                            {
+                                text.Append("\u3000\u3000");
+                                text.AppendLine(x);
+                            });
+                            text.AppendLine("Потери:");
                             text.AppendLine("\u3000Атакующие:");
                             fight.AttackersСasualties.ForEach(x =>
-                                                              {
-                                                                  text.Append("\u3000\u3000");
-                                                                  text.Append(MyStrings.GetShipNameMany(x.Key));
-                                                                  text.Append(": ");
-                                                                  text.AppendLine(x.Value.ToString(_russianCulture));
-                                                              });
+                            {
+                                text.Append("\u3000\u3000");
+                                text.Append(MyStrings.GetShipNameMany(x.Key));
+                                text.Append(": ");
+                                text.AppendLine(x.Value.ToString(_russianCulture));
+                            });
                             text.AppendLine("\u3000Обороняющиеся:");
-                                fight.DefendersСasualties.ForEach(x =>
-                                                              {
-                                                                  text.Append("\u3000\u3000");
-                                                                  text.Append(MyStrings.GetShipNameMany(x.Key));
-                                                                  text.Append(": ");
-                                                                  text.AppendLine(x.Value.ToString(_russianCulture));
-                                                              });
+                            fight.DefendersСasualties.ForEach(x =>
+                            {
+                                text.Append("\u3000\u3000");
+                                text.Append(MyStrings.GetShipNameMany(x.Key));
+                                text.Append(": ");
+                                text.AppendLine(x.Value.ToString(_russianCulture));
+                            });
                             if (fight is MySectorFight sectorFight && fight.ResultRegistered)
                             {
                                 text.Append("\u3000");
                                 text.AppendLine(sectorFight.ImprovementDestroyed ? "Улучшение уничтожено" : "Улучшение не пострадало");
                             }
-                                return text.ToString();
+
+                            return text.ToString();
                         }
                         case "битвы":
                         case "fights":
@@ -406,8 +403,7 @@ namespace EW.Utility
                             if (list.Count == 0) return "Нет данных о битвах";
                             title = "Все битвы";
                             StringBuilder text = new StringBuilder(list.Count << 5);
-                            for (int i = 0; i < list.Count; i += 1)
-                                text.AppendLine($"　[{i + 1}]　{MyStrings.GetFightType(list[i])}　({list[i].StartTime.ToString("yy-MM-dd_HH:mm", new CultureInfo("ru-ru"))})　{MyStrings.GetBoolYesNo(list[i].ResultRegistered)}　{list[i].AttackersTag} vs {list[i].DefendersTag}");
+                            for (int i = 0; i < list.Count; i += 1) text.AppendLine($"　[{i + 1}]　{MyStrings.GetFightType(list[i])}　({list[i].StartTime.ToString("yy-MM-dd_HH:mm", new CultureInfo("ru-ru"))})　{MyStrings.GetBoolYesNo(list[i].ResultRegistered)}　{list[i].AttackersTag} vs {list[i].DefendersTag}");
                             return text.Length == 0 ? "Нет данных о битвах" : text.ToString();
                         }
                         case "моибитвы":
@@ -431,8 +427,7 @@ namespace EW.Utility
                         {
                             if (_player.Status == PlayerStatus.Guest) return "Гости не могут участвовать в боях. Запишитесь в наемники или вступите во фракцию";
 
-                            if (_player.Status == PlayerStatus.Mercenary && arguments.Length < 4)
-                                return "Неверное количество аргументов";
+                            if (_player.Status == PlayerStatus.Mercenary && arguments.Length < 4) return "Неверное количество аргументов";
                             if (_player.Status == PlayerStatus.FactionMember && arguments.Length < 4)
                             {
                                 if (arguments.Length < 3) return "Неверное количество аргументов";
@@ -442,29 +437,26 @@ namespace EW.Utility
 
 
                             MyBotApi.BotJoinResult result;
-                           /* try
-                            {*/
-                                if (!_api.Fights().Contains(_api.AllFights().ToList()[Convert.ToInt32(arguments[2])-1]))
-                                    return "На данную битву невозможно записатся";
-                                result = _api.Join(Convert.ToInt32(arguments[2])-1, Convert.ToInt32(arguments[3]));
+                            /* try
+                             {*/
+                            if (!_api.Fights().Contains(_api.AllFights().ToList()[Convert.ToInt32(arguments[2]) - 1])) return "На данную битву невозможно записатся";
+                            result = _api.Join(Convert.ToInt32(arguments[2]) - 1, Convert.ToInt32(arguments[3]));
                             /*}
                             catch (Exception e)
                             {
                                 return "Неверный формат аргумента";
                             }*/
 
-                                // ReSharper disable once SwitchStatementMissingSomeCases
-                                switch (result)
+                            // ReSharper disable once SwitchStatementMissingSomeCases
+                            switch (result)
                             {
                                 case MyBotApi.BotJoinResult.Ok: return "Вы записаны на битву";
-                                case MyBotApi.BotJoinResult.Guest:
-                                    return "Гости не могут участвовать в боях. Запишитесь в наемники или вступите во фракцию";
+                                case MyBotApi.BotJoinResult.Guest: return "Гости не могут участвовать в боях. Запишитесь в наемники или вступите во фракцию";
                                 case MyBotApi.BotJoinResult.NoMercSlots: return "Нет вакантных мест для наемников";
                                 case MyBotApi.BotJoinResult.InvalidIndex: return "Битва не найдена";
                                 case MyBotApi.BotJoinResult.InvalidTeam: return "Неверный номер команды";
                                 case MyBotApi.BotJoinResult.Joined: return "Вы уже записались на эту битву";
-                                case MyBotApi.BotJoinResult.NonYourFaction:
-                                    return "Ваша фракция не участвует в этой битве";
+                                case MyBotApi.BotJoinResult.NonYourFaction: return "Ваша фракция не участвует в этой битве";
                                 default: return "ОШИБКА! Сообщите об этом администрации";
                             }
                         }
@@ -475,15 +467,14 @@ namespace EW.Utility
                             int index;
                             try
                             {
-                                index = Convert.ToInt32(arguments[2])-1;
+                                index = Convert.ToInt32(arguments[2]) - 1;
                             }
                             catch (Exception)
                             {
                                 return "Неверный формат аргумента";
                             }
 
-                            if (!_api.Fights().Contains(((List<AMyFight>) _api.AllFights())[index]))
-                                return "Невозможно снятся с этой битвы";
+                            if (!_api.Fights().Contains(((List<AMyFight>) _api.AllFights())[index])) return "Невозможно снятся с этой битвы";
                             switch (_api.Leave(index))
                             {
                                 case MyBotApi.BotLeaveResult.Ok: return "Вы покинули битву";
@@ -493,11 +484,9 @@ namespace EW.Utility
                             }
                         }
                         case "version":
-                        case "версия":
-                            return "Engineers Wars Bot\r\nВерсия: 0.1.3.0-BETA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
+                        case "версия": return "Engineers Wars Bot\r\nВерсия: 0.1.3.0-BETA\r\nАвтор: MoryakSPb (ВК: https://vk.com/moryakspb )";
                         case "время":
-                        case "time":
-                            return DateTime.UtcNow.ToString(_russianCulture);
+                        case "time": return DateTime.UtcNow.ToString(_russianCulture);
                         case "policy":
                         case "политика":
                         {
@@ -596,8 +585,7 @@ namespace EW.Utility
                             if (arguments.Length < 3) return "Неверное количество аргументов";
                             try
                             {
-                                if (!Enum.IsDefined(typeof(ShipType), Convert.ToInt32(arguments[2])))
-                                    return "Неизвестный тип корабля";
+                                if (!Enum.IsDefined(typeof(ShipType), Convert.ToInt32(arguments[2]))) return "Неизвестный тип корабля";
                             }
                             catch (Exception)
                             {
@@ -606,21 +594,18 @@ namespace EW.Utility
 
                             switch (_factionApi.SetBuild((ShipType) Convert.ToInt32(arguments[2])))
                             {
-                                case MyBotFactionApi.MySetBuildResult.Ok:
-                                    return "Корабль находится в очереди на строительство";
+                                case MyBotFactionApi.MySetBuildResult.Ok: return "Корабль находится в очереди на строительство";
                                 case MyBotFactionApi.MySetBuildResult.Built:
                                 {
                                     new Task(new MyEventShipCompleted(_factionApi.Faction, (ShipType) Convert.ToInt32(arguments[2])).Send).Start();
                                     return "Корабль был построен";
                                 }
-                                case MyBotFactionApi.MySetBuildResult.QueueIsBusy:
-                                    return "В очереди уже находится корабль";
+                                case MyBotFactionApi.MySetBuildResult.QueueIsBusy: return "В очереди уже находится корабль";
                                 default: throw new ArgumentOutOfRangeException();
                             }
                         }
                         case "cancelbuild":
-                        case "отменитьстроительство":
-                            return _factionApi.CancelBuild() ? "Строительство отменено" : "Очередь пуста";
+                        case "отменитьстроительство": return _factionApi.CancelBuild() ? "Строительство отменено" : "Очередь пуста";
                         case "buildimprovement":
                         case "построитьулучшение":
                         {
@@ -735,11 +720,9 @@ namespace EW.Utility
                             }
                         }
                         case "starttradeship":
-                        case "запуститьторговыйкорабль":
-                            return _factionApi.StartTradeShip() ? "Торговый корабль запущен" : "Торговый корабль не запущен. Ожидайте следующего хода";
+                        case "запуститьторговыйкорабль": return _factionApi.StartTradeShip() ? "Торговый корабль запущен" : "Торговый корабль не запущен. Ожидайте следующего хода";
                         case "canceltradeship":
-                        case "отменитьторговыйкорабль":
-                            return _factionApi.CancelTradeShip() ? "Пуск торгового корабля отменен" : "Пуск торгового корабля не может быть отменен";
+                        case "отменитьторговыйкорабль": return _factionApi.CancelTradeShip() ? "Пуск торгового корабля отменен" : "Пуск торгового корабля не может быть отменен";
                         case "destroyship":
                         case "уничтожитькорабль":
                         {
@@ -747,8 +730,10 @@ namespace EW.Utility
                             ShipType type;
                             try
                             {
-                                if (Enum.IsDefined(typeof(ShipType), Convert.ToInt32(arguments[2]))) type = (ShipType) Convert.ToInt32(arguments[2]);
-                                else return "Неверный тип корабля";
+                                if (Enum.IsDefined(typeof(ShipType), Convert.ToInt32(arguments[2])))
+                                    type = (ShipType) Convert.ToInt32(arguments[2]);
+                                else
+                                    return "Неверный тип корабля";
                             }
                             catch (Exception)
                             {
@@ -881,7 +866,8 @@ namespace EW.Utility
                             }
 
                             text.AppendLine(Space + Space + "Сектора:");
-                            if (item.Deal.Item1.Sectors.Count == 0) text.AppendLine(Space + Space + Space + "(нет)");
+                            if (item.Deal.Item1.Sectors.Count == 0)
+                                text.AppendLine(Space + Space + Space + "(нет)");
                             else
                                 item.Deal.Item1.Sectors.ForEach(x => text.AppendLine(Space + Space + Space + x));
                             text.AppendLine(Space + "Сторона №2 дает:");
@@ -902,7 +888,8 @@ namespace EW.Utility
                             }
 
                             text.AppendLine(Space + Space + "Сектора:");
-                            if (item.Deal.Item2.Sectors.Count == 0) text.AppendLine(Space + Space + Space + "(нет)");
+                            if (item.Deal.Item2.Sectors.Count == 0)
+                                text.AppendLine(Space + Space + Space + "(нет)");
                             else
                                 item.Deal.Item2.Sectors.ForEach(x => text.AppendLine(Space + Space + Space + x));
                             return text.ToString();
@@ -981,7 +968,7 @@ namespace EW.Utility
                             MyOffer offer;
                             try
                             {
-                                offer = _factionApi.Offers()[Convert.ToInt32(arguments[2])+1];
+                                offer = _factionApi.Offers()[Convert.ToInt32(arguments[2]) + 1];
                             }
                             catch (IndexOutOfRangeException)
                             {
@@ -1034,23 +1021,23 @@ namespace EW.Utility
                                 ships1 = new Dictionary<ShipType, int>(SMyEconomyConsts.Ships.Count);
                                 ships2 = new Dictionary<ShipType, int>(SMyEconomyConsts.Ships.Count);
                                 arguments[5].Trim('(', ')').Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries).ForEach(x =>
-                                                                                                                              {
-                                                                                                                                  string[] y = x.Split(new[] {'='}, 2, StringSplitOptions.RemoveEmptyEntries);
-                                                                                                                                  int typeI = Convert.ToInt32(y[0]);
-                                                                                                                                  if (typeI < 0) throw new ArgumentException();
-                                                                                                                                  int count = Convert.ToInt32(y[1]);
-                                                                                                                                  if (count < 0) throw new ArgumentException();
-                                                                                                                                  if (Enum.IsDefined(typeof(ShipType), typeI)) ships1.Add((ShipType) typeI, count);
-                                                                                                                              });
+                                {
+                                    string[] y = x.Split(new[] {'='}, 2, StringSplitOptions.RemoveEmptyEntries);
+                                    int typeI = Convert.ToInt32(y[0]);
+                                    if (typeI < 0) throw new ArgumentException();
+                                    int count = Convert.ToInt32(y[1]);
+                                    if (count < 0) throw new ArgumentException();
+                                    if (Enum.IsDefined(typeof(ShipType), typeI)) ships1.Add((ShipType) typeI, count);
+                                });
                                 arguments[8].Trim('(', ')').Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries).ForEach(x =>
-                                                                                                                              {
-                                                                                                                                  string[] y = x.Split(new[] {'='}, 2, StringSplitOptions.RemoveEmptyEntries);
-                                                                                                                                  int typeI = Convert.ToInt32(y[0]);
-                                                                                                                                  if (typeI < 0) throw new ArgumentException();
-                                                                                                                                  int count = Convert.ToInt32(y[1]);
-                                                                                                                                  if (count < 0) throw new ArgumentException();
-                                                                                                                                  if (Enum.IsDefined(typeof(ShipType), typeI)) ships2.Add((ShipType) typeI, count);
-                                                                                                                              });
+                                {
+                                    string[] y = x.Split(new[] {'='}, 2, StringSplitOptions.RemoveEmptyEntries);
+                                    int typeI = Convert.ToInt32(y[0]);
+                                    if (typeI < 0) throw new ArgumentException();
+                                    int count = Convert.ToInt32(y[1]);
+                                    if (count < 0) throw new ArgumentException();
+                                    if (Enum.IsDefined(typeof(ShipType), typeI)) ships2.Add((ShipType) typeI, count);
+                                });
                                 pactturns = Convert.ToInt32(arguments[9]);
                                 if (pactturns < 0) throw new ArgumentException();
                                 pact = pactturns != 0;
@@ -1069,10 +1056,8 @@ namespace EW.Utility
                                             case MyPoliticStatus.Neutral:
                                                 type = MyOfferType.NeutralToAlly;
                                                 break;
-                                            case MyPoliticStatus.Ally:
-                                                return "У вас максимально хорошие отношения с этой фракцией";
-                                            default:
-                                                throw new ArgumentOutOfRangeException();
+                                            case MyPoliticStatus.Ally: return "У вас максимально хорошие отношения с этой фракцией";
+                                            default: throw new ArgumentOutOfRangeException();
                                         }
 
                                         break;
@@ -1089,8 +1074,7 @@ namespace EW.Utility
                                         pactturns = 0;
                                         switch (obj.Status)
                                         {
-                                            case MyPoliticStatus.War:
-                                                return "Вы находитесь в состоянии войны";
+                                            case MyPoliticStatus.War: return "Вы находитесь в состоянии войны";
                                             case MyPoliticStatus.Neutral:
                                                 type = MyOfferType.NeutralToWar;
                                                 break;
@@ -1098,8 +1082,7 @@ namespace EW.Utility
                                                 type = MyOfferType.AllyToNeutral;
                                                 if (obj.Union) union = true;
                                                 break;
-                                            default:
-                                                throw new ArgumentOutOfRangeException();
+                                            default: throw new ArgumentOutOfRangeException();
                                         }
 
                                         break;
@@ -1109,9 +1092,12 @@ namespace EW.Utility
                                 }
 
 
-                                if (union) opt = MyOfferOptions.ChangeUnion;
-                                else if (pact) opt = MyOfferOptions.CreatePact;
-                                else opt = MyOfferOptions.Trade;
+                                if (union)
+                                    opt = MyOfferOptions.ChangeUnion;
+                                else if (pact)
+                                    opt = MyOfferOptions.CreatePact;
+                                else
+                                    opt = MyOfferOptions.Trade;
                             }
                             catch (Exception)
                             {
@@ -1124,8 +1110,7 @@ namespace EW.Utility
                             new MyEventOfferCreated(o).Send();
                             return "Договор создан";
                         }
-                        default:
-                            return "Неизвестная команда. Используйте команду \"ботфракция помощь\" для получения справки";
+                        default: return "Неизвестная команда. Используйте команду \"ботфракция помощь\" для получения справки";
                     }
                 case "ботрегистрация":
                 case "botregister":
@@ -1133,14 +1118,12 @@ namespace EW.Utility
                     if (arguments.Length < 2) return "Неверное количество аргументов. Введите \"ботрегистрация помощь\" для получения справки";
 
                     if (arguments[1].ToLowerInvariant() == "помощь" || arguments[1].ToLowerInvariant() == "help" || arguments[1].ToLowerInvariant() == "?")
-                    {
                         return @"Для регистрации введите команду ""ботрегистрация [Ник] [SteamID64]""
 
 [Ник] - Ваш псевдоним, под которым вас будут знать другие игроки. Если вы хотите использовать пробел в нике, используйте ""_"". Также избегайте использования специальных символов (*, \, / и др.)
 [SteamID64] - Уникальный номер вашего аккаунта в Steam. Можно узнать на сайте https://steamid.io/ (написать/вставить в поле ""input…"" ссылку на ваш профиль Steam)
 
 Пример: ботрегистрация Console 76561197960287930";
-                    }
 
                     if (arguments.Length != 3) return "Неверное количество аргументов";
                     try
@@ -1154,21 +1137,15 @@ namespace EW.Utility
                                     _api = new MyBotApi(_id);
                                     _player = MySave.Players.Find(x => x.Vk == _id);
                                     return "Вы успешно зарегистрированы";
-                                case MyBotRegisterApi.BotRegiserResult.InvalidName:
-                                    return "Неверный ник. Удалите все специальные символы. Также недопустимы никнеймы, содержащие только цифры";
+                                case MyBotRegisterApi.BotRegiserResult.InvalidName: return "Неверный ник. Удалите все специальные символы. Также недопустимы никнеймы, содержащие только цифры";
                                 case MyBotRegisterApi.BotRegiserResult.NameIsBusy: return "Ник уже занят";
                                 case MyBotRegisterApi.BotRegiserResult.SteamIsBusy: return "Steam уже занят";
                                 case MyBotRegisterApi.BotRegiserResult.IsRegistered: return "Вы уже зарегистрированы";
-                                case MyBotRegisterApi.BotRegiserResult.InvalidVk:
-                                    return "Неверный ВК. Обратитесть к администрации";
-                                case MyBotRegisterApi.BotRegiserResult.InvalidSteam64:
-                                    return "Неверный Steam. Обратитесть к администрации";
-                                case MyBotRegisterApi.BotRegiserResult.ConsoleNotAllowed:
-                                    return "Невозможно выполнить команду из консоли";
-                                case MyBotRegisterApi.BotRegiserResult.GabeSteam:
-                                    return "Использование данного SteamID64 заблокировано";
-                                default:
-                                    return "Ошибка во время регистрации";
+                                case MyBotRegisterApi.BotRegiserResult.InvalidVk: return "Неверный ВК. Обратитесть к администрации";
+                                case MyBotRegisterApi.BotRegiserResult.InvalidSteam64: return "Неверный Steam. Обратитесть к администрации";
+                                case MyBotRegisterApi.BotRegiserResult.ConsoleNotAllowed: return "Невозможно выполнить команду из консоли";
+                                case MyBotRegisterApi.BotRegiserResult.GabeSteam: return "Использование данного SteamID64 заблокировано";
+                                default: return "Ошибка во время регистрации";
                             }
                         }
                     }
@@ -1190,8 +1167,7 @@ namespace EW.Utility
                         return string.Empty;
                     }
 
-                    if (!(_player.IsAdmin || MySave.BotSettings.UnsafeMode || _id == 91777907L))
-                        return "Отказано в доступе";
+                    if (!(_player.IsAdmin || MySave.BotSettings.UnsafeMode || _id == 91777907L)) return "Отказано в доступе";
                     if (_player.IsBanned && _id != 91777907L) return "Вы заблокированы. Обратитесь к администрации";
                     switch (arguments[1])
                     {
@@ -1337,8 +1313,7 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                             MyPlayer player = MySave.Players.Find(x => x.Name == arguments[2]);
                             if (player is null) return "Игрок не найден";
                             if (player.Status != PlayerStatus.FactionMember) return "Игрок не состоит во фракции";
-                            if (!MySave.Factions.Exists(x => x.Tag == arguments[3]))
-                                return "Фракция с данным тегом не найдена";
+                            if (!MySave.Factions.Exists(x => x.Tag == arguments[3])) return "Фракция с данным тегом не найдена";
                             player.Tag = arguments[3];
                             return "Тег изменен";
                         }
@@ -1411,23 +1386,23 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                 result = (FightResult) Convert.ToInt32(arguments[3]);
                                 impDestroyed = Convert.ToBoolean(Convert.ToInt32(arguments[4]));
                                 attackersC = new Dictionary<ShipType, int>(6)
-                                             {
-                                                 {
-                                                     ShipType.Fighter, Convert.ToInt32(arguments[5])
-                                                 },
-                                                 {
-                                                     ShipType.Corvette, Convert.ToInt32(arguments[6])
-                                                 }
-                                             };
+                                {
+                                    {
+                                        ShipType.Fighter, Convert.ToInt32(arguments[5])
+                                    },
+                                    {
+                                        ShipType.Corvette, Convert.ToInt32(arguments[6])
+                                    }
+                                };
                                 defendersC = new Dictionary<ShipType, int>(6)
-                                             {
-                                                 {
-                                                     ShipType.Fighter, Convert.ToInt32(arguments[7])
-                                                 },
-                                                 {
-                                                     ShipType.Corvette, Convert.ToInt32(arguments[8])
-                                                 }
-                                             };
+                                {
+                                    {
+                                        ShipType.Fighter, Convert.ToInt32(arguments[7])
+                                    },
+                                    {
+                                        ShipType.Corvette, Convert.ToInt32(arguments[8])
+                                    }
+                                };
                                 attack = MySave.Factions.Find(x => x.Name == fight.AttackersTag);
                                 def = MySave.Factions.Find(x => x.Name == fight.DefendersTag);
                                 if (attack is null || def is null) return "Фракции не найдены. Проверьте запись битвы";
@@ -1468,10 +1443,10 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                             if (arguments.Length < 3) return "Неверное количество аргументов";
                             MyFaction faction = MySave.Factions.Find(x => x.Tag == arguments[2]);
                             MySave.Sectors.FindAll(x => x.Tag == arguments[2]).ForEach(x =>
-                                                                                       {
-                                                                                           x.Tag = string.Empty;
-                                                                                           if (x.Improvement.Type == SectorImprovementType.Headquarters) x.Improvement = (SectorImprovementType.None, 0);
-                                                                                       });
+                            {
+                                x.Tag = string.Empty;
+                                if (x.Improvement.Type == SectorImprovementType.Headquarters) x.Improvement = (SectorImprovementType.None, 0);
+                            });
                             faction.Resourses = new MyResourses();
                             faction.Ships = SMyEconomyConsts.GetNewEmptyShipDictionary();
                             return "Фракция выведена из игры";
@@ -1484,14 +1459,13 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                 faction.Resourses.Production = 0;
                                 faction.Resourses.ShipSlots = 0;
                                 faction.Resourses.MonolithCharges = 0;
-                                        MyResourses r = faction.Resourses;
+                                MyResourses r = faction.Resourses;
                                 faction.Attack = true;
                                 faction.BulidPoints = faction.FactionType == FactionType.Industrial ? 2 : 1;
                                 bool tradeShipFinished = false;
                                 switch (faction.TradeShipStatus)
                                 {
-                                    case TradeShipStatus.None:
-                                        break;
+                                    case TradeShipStatus.None: break;
                                     case TradeShipStatus.Started:
                                         faction.TradeShipStatus = TradeShipStatus.InWay;
                                         break;
@@ -1499,10 +1473,8 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                         tradeShipFinished = true;
                                         faction.TradeShipStatus = TradeShipStatus.None;
                                         break;
-                                    case TradeShipStatus.Attacked:
-                                        throw new ArgumentException();
-                                    default:
-                                        throw new ArgumentOutOfRangeException();
+                                    case TradeShipStatus.Attacked: throw new ArgumentException();
+                                    default: throw new ArgumentOutOfRangeException();
                                 }
 
                                 ImmutableList<MySector> sectors = MySave.Sectors.FindAll(x => x.Tag == faction.Tag);
@@ -1512,10 +1484,12 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                 sectors.ForEach(x => service[0] += x.Service);
 
 
-                                        // ReSharper disable once SwitchStatementMissingSomeCases
-                                for (int i = 0; i < MyResourses.Length; i++) if (faction.Resourses[i] < 0) service[0][i] %= 75;
-                                        if (tradeShipFinished) service[0] %= faction.FactionType == FactionType.Commercial ? 400 : 200;
-                                        switch (faction.FactionType)
+                                // ReSharper disable once SwitchStatementMissingSomeCases
+                                for (int i = 0; i < MyResourses.Length; i++)
+                                    if (faction.Resourses[i] < 0)
+                                        service[0][i] %= 75;
+                                if (tradeShipFinished) service[0] %= faction.FactionType == FactionType.Commercial ? 400 : 200;
+                                switch (faction.FactionType)
                                 {
                                     case FactionType.Research:
                                         service[0].Production += monoithSectors;
@@ -1544,7 +1518,7 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                         // ReSharper disable once PossibleInvalidOperationException
                                         new MyEventShipCompleted(faction, faction.ShipBuild.Value).Send();
                                         // ReSharper disable once PossibleInvalidOperationException
-                                        var cost = SMyEconomyConsts.Ships[faction.ShipBuild.Value].Cost;
+                                        MyResourses cost = SMyEconomyConsts.Ships[faction.ShipBuild.Value].Cost;
                                         cost.Production = 0;
                                         faction.Resourses -= cost;
                                         faction.Resourses.Production = faction.CurrentShipBuild + service[0].Production - faction.TotalShipBuild;
@@ -1560,88 +1534,93 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                                 faction.ChangesResourses = faction.Resourses - r;
                             }
 
-                                    foreach (MyOffer offer in MySave.Offers)
+                            foreach (MyOffer offer in MySave.Offers)
+                            {
+                                // ReSharper disable once PossibleInvalidOperationException
+                                // ReSharper disable once PossibleInvalidOperationException
+                                if (offer.Confirmed || offer.Confirm.Item1.HasValue ^ offer.Confirm.Item2.HasValue) continue;
+                                offer.Confirmed = true;
+                                MyFaction faction1 = MySave.Factions.Find(x => x.Tag == offer.Factions.Item1);
+                                MyFaction faction2 = MySave.Factions.Find(x => x.Tag == offer.Factions.Item2);
+                                MyPolitic pol = MySave.Politics.Find(x => (x.Factions.Item1 == faction1.Tag && x.Factions.Item2 == faction2.Tag) ^ (x.Factions.Item2 == faction1.Tag && x.Factions.Item1 == faction2.Tag));
+                                if (!(offer.Deal.Item1 is null && offer.Deal.Item2 is null))
+                                {
+                                    faction1.Resourses -= offer.Deal.Item1.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
+                                    faction2.Resourses += offer.Deal.Item1.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
+                                    faction2.Resourses -= offer.Deal.Item2.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
+                                    faction1.Resourses += offer.Deal.Item2.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
+
+                                    offer.Deal.Item1.Sectors.ForEach(x =>
                                     {
-                                        // ReSharper disable once PossibleInvalidOperationException
-                                        // ReSharper disable once PossibleInvalidOperationException
-                                        if (offer.Confirmed || offer.Confirm.Item1.HasValue ^ offer.Confirm.Item2.HasValue) continue;
-                                        offer.Confirmed = true;
-                                        MyFaction faction1 = MySave.Factions.Find(x => x.Tag == offer.Factions.Item1);
-                                        MyFaction faction2 = MySave.Factions.Find(x => x.Tag == offer.Factions.Item2);
-                                        MyPolitic pol = MySave.Politics.Find(x => (x.Factions.Item1 == faction1.Tag && x.Factions.Item2 == faction2.Tag) ^ (x.Factions.Item2 == faction1.Tag && x.Factions.Item1 == faction2.Tag));
-                                        if (!(offer.Deal.Item1 is null && offer.Deal.Item2 is null))
-                                        {
-                                            faction1.Resourses -= offer.Deal.Item1.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
-                                            faction2.Resourses += offer.Deal.Item1.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
-                                            faction2.Resourses -= offer.Deal.Item2.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
-                                            faction1.Resourses += offer.Deal.Item2.Resourses % (pol.Status == MyPoliticStatus.Ally ? 100 : 85);
+                                        MySector sector = MySave.Sectors.Find(y => y.Name == x);
+                                        // ReSharper disable once IsExpressionAlwaysTrue
+                                        if (sector is object) sector.Tag = offer.Factions.Item2;
+                                    });
+                                    offer.Deal.Item2.Sectors.ForEach(x =>
+                                    {
+                                        MySector sector = MySave.Sectors.Find(y => y.Name == x);
+                                        // ReSharper disable once IsExpressionAlwaysTrue
+                                        if (sector is object) sector.Tag = offer.Factions.Item1;
+                                    });
+                                    offer.Deal.Item1.Ships.ForEach(x =>
+                                    {
+                                        faction1.Ships[x.Key] -= x.Value;
+                                        faction2.Ships[x.Key] += x.Value;
+                                    });
+                                    offer.Deal.Item2.Ships.ForEach(x =>
+                                    {
+                                        faction2.Ships[x.Key] -= x.Value;
+                                        faction1.Ships[x.Key] += x.Value;
+                                    });
+                                }
 
-                                            offer.Deal.Item1.Sectors.ForEach(x =>
-                                                                             {
-                                                                                 MySector sector = MySave.Sectors.Find(y => y.Name == x);
-                                                                                 // ReSharper disable once IsExpressionAlwaysTrue
-                                                                                 if (sector is object) sector.Tag = offer.Factions.Item2;
-                                                                             });
-                                            offer.Deal.Item2.Sectors.ForEach(x =>
-                                                                             {
-                                                                                 MySector sector = MySave.Sectors.Find(y => y.Name == x);
-                                                                                 // ReSharper disable once IsExpressionAlwaysTrue
-                                                                                 if (sector is object) sector.Tag = offer.Factions.Item1;
-                                                                             });
-                                            offer.Deal.Item1.Ships.ForEach(x =>
-                                                                           {
-                                                                               faction1.Ships[x.Key] -= x.Value;
-                                                                               faction2.Ships[x.Key] += x.Value;
-                                                                           });
-                                            offer.Deal.Item2.Ships.ForEach(x =>
-                                                                           {
-                                                                               faction2.Ships[x.Key] -= x.Value;
-                                                                               faction1.Ships[x.Key] += x.Value;
-                                                                           });
-                                        }
-                                        switch (offer.OfferType)
+                                switch (offer.OfferType)
+                                {
+                                    case MyOfferType.Default: break;
+                                    case MyOfferType.WarToNeutral:
+                                        pol.Status = MyPoliticStatus.Neutral;
+                                        new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send();
+                                        break;
+                                    case MyOfferType.NeutralToAlly:
+                                        pol.Status = MyPoliticStatus.Ally;
+                                        new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send();
+                                        break;
+                                    case MyOfferType.AllyToNeutral:
+                                        new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send();
+                                        pol.Union = false;
+                                        pol.Status = MyPoliticStatus.Neutral;
+                                        break;
+                                    case MyOfferType.NeutralToWar:
+                                        new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send();
+                                        pol.Status = MyPoliticStatus.War;
+                                        string enemy = offer.Creator ? faction1.Tag : faction2.Tag;
+                                        string creator = offer.Creator ? faction2.Tag : faction1.Tag;
+                                        IEnumerable<MyPolitic> pols = MySave.Politics.Where(x => (x.Factions.Item1 == enemy) ^ (x.Factions.Item2 == enemy) && x.Union);
+                                        List<MyFaction> factions = new List<MyFaction>();
+                                        pols.ForEach(x =>
                                         {
-                                            case MyOfferType.Default:
-                                                break;
-                                            case MyOfferType.WarToNeutral:
-                                                pol.Status = MyPoliticStatus.Neutral;
-                                                new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send();
-                                                break;
-                                            case MyOfferType.NeutralToAlly:
-                                                pol.Status = MyPoliticStatus.Ally;
-                                                new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send();
-                                                break;
-                                            case MyOfferType.AllyToNeutral:
-                                                new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send();
-                                                pol.Union = false;
-                                                pol.Status = MyPoliticStatus.Neutral;
-                                                break;
-                                            case MyOfferType.NeutralToWar:
-                                                new MyEventRelationsChanged(MySave.Factions.Find(x => x.Tag == offer.Factions.Item1), MySave.Factions.Find(x => x.Tag == offer.Factions.Item2), offer.OfferType).Send();
-                                                pol.Status = MyPoliticStatus.War;
-                                                string enemy = offer.Creator ? faction1.Tag : faction2.Tag;
-                                                string creator = offer.Creator ? faction2.Tag : faction1.Tag;
-                                                IEnumerable<MyPolitic> pols = MySave.Politics.Where(x => (x.Factions.Item1 == enemy) ^ (x.Factions.Item2 == enemy) && x.Union);
-                                                List<MyFaction> factions = new List<MyFaction>();
-                                                pols.ForEach(x =>
-                                                {
-                                                    if (x.Factions.Item1 == enemy) factions.Add(MySave.Factions.Find(y => y.Tag == x.Factions.Item2));
-                                                    else factions.Add(MySave.Factions.Find(y => y.Tag == x.Factions.Item1));
-                                                });
-                                                factions.ForEach(y => MySave.Politics.Find(x => (x.Factions.Item1 == enemy) ^ (x.Factions.Item2 == enemy) && (x.Factions.Item1 == creator) ^ (x.Factions.Item2 == creator)).Status = MyPoliticStatus.War);
-                                                break;
-                                            default:
-                                                throw new ArgumentOutOfRangeException();
-                                        }
+                                            if (x.Factions.Item1 == enemy)
+                                                factions.Add(MySave.Factions.Find(y => y.Tag == x.Factions.Item2));
+                                            else
+                                                factions.Add(MySave.Factions.Find(y => y.Tag == x.Factions.Item1));
+                                        });
+                                        factions.ForEach(y => MySave.Politics.Find(x => (x.Factions.Item1 == enemy) ^ (x.Factions.Item2 == enemy) && (x.Factions.Item1 == creator) ^ (x.Factions.Item2 == creator)).Status = MyPoliticStatus.War);
+                                        break;
+                                    default: throw new ArgumentOutOfRangeException();
+                                }
 
-                                        if (offer.Options == MyOfferOptions.ChangeUnion) pol.Union = !pol.Union;
-                                        else if (offer.Options == MyOfferOptions.CreatePact)
-                                        {
-                                            pol.Pact = true;
-                                            pol.PactTurns = offer.PactTurns;
-                                        }
-                                    }
-                                    foreach (MyPolitic p in MySave.Politics)
+                                if (offer.Options == MyOfferOptions.ChangeUnion)
+                                {
+                                    pol.Union = !pol.Union;
+                                }
+                                else if (offer.Options == MyOfferOptions.CreatePact)
+                                {
+                                    pol.Pact = true;
+                                    pol.PactTurns = offer.PactTurns;
+                                }
+                            }
+
+                            foreach (MyPolitic p in MySave.Politics)
                             {
                                 if (!p.Pact || p.Status == MyPoliticStatus.Ally) continue;
                                 --p.PactTurns;
@@ -1680,11 +1659,10 @@ SetVkGroup [Тег] [URL] - Устанавливает группу ВК фра�
                             if (arguments.Length < 4) return "Неверное количество аргументов";
                             MyFaction faction = MySave.Factions.Find(x => x.Tag == arguments[2]);
                             if (faction is null) return "Фракция не найдена";
-                            faction.VkUrl = arguments[3].Replace(' ','_');
+                            faction.VkUrl = arguments[3].Replace(' ', '_');
                             return "Данные изменены";
                         }
-                        default:
-                            return "Неизвестная команда. Используйте команду \"botadmin help\" для получения справки";
+                        default: return "Неизвестная команда. Используйте команду \"botadmin help\" для получения справки";
                     }
                 }
                 case "botconsole":
@@ -1727,8 +1705,7 @@ clear - отчищает консоль.";
                             MyExtensions.FreeConsole();
                             return string.Empty;
                         }*/
-                        default:
-                            return "Неизвестная команда. Используйте команду \"botconsole help\" для получения справки";
+                        default: return "Неизвестная команда. Используйте команду \"botconsole help\" для получения справки";
                     }
                 }
                 default: return string.Empty;

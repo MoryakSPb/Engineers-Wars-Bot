@@ -4,7 +4,7 @@ namespace EW.Utility.ObjectModel.Events
 {
     public class MyEventPactEnded : AMyEvent
     {
-        internal readonly MyPolitic Politic;
+        readonly internal MyPolitic Politic;
 
         public MyEventPactEnded(MyPolitic politic) : base(false) => Politic = politic;
 

@@ -5,14 +5,16 @@ namespace EW.ObjectModel
 {
     [Serializable]
     [DataContract]
-    public abstract class AMyGameObject : IComparable<AMyGameObject>
+    abstract public class AMyGameObject : IComparable<AMyGameObject>
     {
         /// <summary>
         ///     Имя объекта
         /// </summary>
-        [DataMember] public readonly string Name;
+        [DataMember]
+        readonly public string Name;
 
-        [DataMember] protected string MTag;
+        [DataMember]
+        protected string MTag;
 
         /// <summary>
         ///     Тег объекта
@@ -26,8 +28,10 @@ namespace EW.ObjectModel
             set
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (value.Length == 3 || string.IsNullOrEmpty(value)) MTag = value;
-                else throw new ArgumentException("Некорректный тег", nameof(value));
+                if (value.Length == 3 || string.IsNullOrEmpty(value))
+                    MTag = value;
+                else
+                    throw new ArgumentException("Некорректный тег", nameof(value));
             }
         }
 
@@ -36,7 +40,6 @@ namespace EW.ObjectModel
             Name = name ?? throw new ArgumentNullException(nameof(name));
             MTag = tag ?? throw new ArgumentNullException(nameof(tag));
         }
-
 
         public bool Equals(AMyGameObject other) => Equals(this, other);
 

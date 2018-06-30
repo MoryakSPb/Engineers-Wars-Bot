@@ -12,19 +12,27 @@ namespace EW.ObjectModel
     [KnownType(typeof(List<string>))]
     public class MyOffer
     {
-        [DataMember] public readonly DateTime CreateTime = DateTime.UtcNow;
+        [DataMember]
+        readonly public DateTime CreateTime = DateTime.UtcNow;
 
-        [DataMember] public readonly bool Creator;
+        [DataMember]
+        readonly public bool Creator;
 
-        [DataMember] public readonly (string, string) Factions;
+        [DataMember]
+        readonly public (string, string) Factions;
 
-        [DataMember] public readonly MyOfferType OfferType;
+        [DataMember]
+        readonly public MyOfferType OfferType;
 
-        [DataMember] public readonly MyOfferOptions Options;
-        [DataMember] public readonly int PactTurns;
-        [DataMember] public bool Confirmed;
+        [DataMember]
+        readonly public MyOfferOptions Options;
+        [DataMember]
+        readonly public int PactTurns;
+        [DataMember]
+        public bool Confirmed;
 
-        [DataMember] public (MyTradeResourses, MyTradeResourses) Deal;
+        [DataMember]
+        public (MyTradeResourses, MyTradeResourses) Deal;
 
         [DataMember]
         public (bool?, bool?) Confirm { get; set; }
@@ -36,16 +44,16 @@ namespace EW.ObjectModel
             Confirm = confirm;
             OfferType = offerType;
             Options = options;
-            if (OfferType == MyOfferType.WarToNeutral || OfferType == MyOfferType.NeutralToAlly || OfferType == MyOfferType.Default) Deal = deal;
-            else Deal = default;
+            if (OfferType == MyOfferType.WarToNeutral || OfferType == MyOfferType.NeutralToAlly || OfferType == MyOfferType.Default)
+                Deal = deal;
+            else
+                Deal = default;
             if (Options == MyOfferOptions.CreatePact) PactTurns = pactTurns;
             if (OfferType != MyOfferType.NeutralToWar && OfferType != MyOfferType.AllyToNeutral) return;
             Confirm = (true, true);
         }
 
-        public MyOffer((string, string) factions, bool creator, (bool?, bool?) confirm, MyOfferType offerType, MyOfferOptions options, int pactTurns, (int, int, int, int, int, int) resourses1, ICollection<string> sectors1, IDictionary<ShipType, int> ships1, (int, int, int, int, int, int) resourses2, ICollection<string> sectors2, IDictionary<ShipType, int> ships2) : this(factions, creator, confirm, offerType, options, (new MyTradeResourses(new MyResourses(resourses1), sectors1, ships1), new MyTradeResourses(new MyResourses(resourses2), sectors2, ships2)), pactTurns)
-        {
-        }
+        public MyOffer((string, string) factions, bool creator, (bool?, bool?) confirm, MyOfferType offerType, MyOfferOptions options, int pactTurns, (int, int, int, int, int, int) resourses1, ICollection<string> sectors1, IDictionary<ShipType, int> ships1, (int, int, int, int, int, int) resourses2, ICollection<string> sectors2, IDictionary<ShipType, int> ships2) : this(factions, creator, confirm, offerType, options, (new MyTradeResourses(new MyResourses(resourses1), sectors1, ships1), new MyTradeResourses(new MyResourses(resourses2), sectors2, ships2)), pactTurns) { }
     }
 
     public enum MyOfferType

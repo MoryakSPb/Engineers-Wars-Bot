@@ -10,9 +10,11 @@ namespace EW.Utility.ObjectModel.Events
     {
         static public new DataContractJsonSerializer Serializer = new DataContractJsonSerializer(typeof(MyEventShipCompleted), MySave.SerializerSettings);
 
-        [DataMember] public readonly MyFaction Faction;
+        [DataMember]
+        readonly public MyFaction Faction;
 
-        [DataMember] public readonly ShipType Ship;
+        [DataMember]
+        readonly public ShipType Ship;
 
         protected override int[] Destination => MySave.Players.FindAll(x => x.AllowedMessages == MessagesType.All).Select(x => x.Vk).ToArray();
 

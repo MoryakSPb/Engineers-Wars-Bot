@@ -4,7 +4,7 @@ namespace EW.ObjectModel
 {
     public class MyCustomFight : AMyFight
     {
-        public readonly MyResourses Prize;
+        readonly public MyResourses Prize;
 
         public string Description { get; set; }
 

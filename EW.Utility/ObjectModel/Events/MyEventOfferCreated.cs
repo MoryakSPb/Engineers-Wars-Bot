@@ -5,7 +5,7 @@ namespace EW.Utility.ObjectModel.Events
 {
     public class MyEventOfferCreated : AMyEvent
     {
-        public readonly MyOffer Offer;
+        readonly public MyOffer Offer;
         protected override int[] Destination => MySave.Players.Where(x => x.IsAdmin || x.IsFactionLeader && (x.Tag == Offer.Factions.Item1) ^ (x.Tag == Offer.Factions.Item2)).Select(x => x.Vk).ToArray();
         private MyFaction Faction1 => MySave.Factions.Find(x => x.Tag == Offer.Factions.Item1);
         private MyFaction Faction2 => MySave.Factions.Find(x => x.Tag == Offer.Factions.Item2);

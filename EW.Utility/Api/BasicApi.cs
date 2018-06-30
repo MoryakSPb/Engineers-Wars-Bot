@@ -2,7 +2,7 @@
 
 namespace EW.Utility.Api
 {
-    internal abstract class MyBasicApi
+    abstract internal class MyBasicApi
     {
         protected MyPlayer Sender;
 

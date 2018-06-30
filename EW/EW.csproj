@@ -13,10 +13,10 @@
     <Copyright>Copyright 2018 Alexandr Erohin</Copyright>
     <PackageLicenseUrl>https://github.com/MoryakSPb/Engineers-Wars-Bot/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/MoryakSPb/Engineers-Wars-Bot</RepositoryUrl>
-    <FileVersion>0.0.4.0</FileVersion>
+    <FileVersion>0.1.3.0</FileVersion>
     <Company>Engineers Wars</Company>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <AssemblyVersion>0.0.4.0</AssemblyVersion>
+    <AssemblyVersion>0.1.3.0</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

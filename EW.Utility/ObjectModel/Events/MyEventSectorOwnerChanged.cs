@@ -12,13 +12,17 @@ namespace EW.Utility.ObjectModel.Events
     {
         static public new DataContractJsonSerializer Serializer = new DataContractJsonSerializer(typeof(MyEventSectorOwnerChanged), MySave.SerializerSettings);
 
-        [DataMember] private readonly ReasonEnum _reason;
+        [DataMember]
+        readonly private ReasonEnum _reason;
 
-        [DataMember] internal readonly MyFaction NewOwner;
+        [DataMember]
+        readonly internal MyFaction NewOwner;
 
-        [DataMember] internal readonly MyFaction OldOwner;
+        [DataMember]
+        readonly internal MyFaction OldOwner;
 
-        [DataMember] internal readonly MySector Sector;
+        [DataMember]
+        readonly internal MySector Sector;
 
         [DataMember]
         protected override int[] Destination => MySave.Players.FindAll(x => x.AllowedMessages == MessagesType.All).Select(x => x.Vk).ToArray();
@@ -33,7 +37,6 @@ namespace EW.Utility.ObjectModel.Events
             _reason = reason;
         }
 
-
         public override string ToString()
         {
             switch (Reason)
@@ -42,11 +45,9 @@ namespace EW.Utility.ObjectModel.Events
                 case ReasonEnum.Fight: return $"Фракция «{NewOwner.Name}» отбила в бою сектор «{Sector.Name}» у фракции «{OldOwner.Name}»";
                 case ReasonEnum.Offer: return $"Фракция «{NewOwner.Name}» получила сектор «{Sector.Name}» в результате договора с фракцией «{OldOwner.Name}»";
                 case ReasonEnum.Nobody: return $"Фракция «{NewOwner.Name}» заняла пустующий сектор «{Sector.Name}»";
-                default:
-                    throw new ArgumentOutOfRangeException();
+                default: throw new ArgumentOutOfRangeException();
             }
         }
-
 
         public override bool Equals(object obj)
         {

@@ -7,11 +7,14 @@ namespace EW.ObjectModel
     [DataContract]
     public class MyPlayer : AMyGameObject
     {
-        [DataMember] public (TimeSpan, TimeSpan) Activity;
+        [DataMember]
+        public (TimeSpan, TimeSpan) Activity;
 
-        [DataMember] public MessagesType AllowedMessages;
+        [DataMember]
+        public MessagesType AllowedMessages;
 
-        [DataMember] protected bool MIsFactionLeader;
+        [DataMember]
+        protected bool MIsFactionLeader;
 
         /// <summary>
         ///     ID страницы ВКонтакте
@@ -73,7 +76,6 @@ namespace EW.ObjectModel
             MIsFactionLeader = isFactionLeader;
         }
     }
-
 
     /// <summary>
     ///     Перечисление, представляющие статус игрока

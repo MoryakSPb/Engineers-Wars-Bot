@@ -1,6 +1,4 @@
 ﻿namespace EW.Utility.Api
 {
-    internal class MyBotAdminApi : MyBasicApi
-    {
-    }
+    internal class MyBotAdminApi : MyBasicApi { }
 }

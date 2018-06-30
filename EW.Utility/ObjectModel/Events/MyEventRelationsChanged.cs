@@ -11,11 +11,14 @@ namespace EW.Utility.ObjectModel.Events
     {
         static public new DataContractJsonSerializer Serializer = new DataContractJsonSerializer(typeof(MyEventRelationsChanged), MySave.SerializerSettings);
 
-        [DataMember] internal readonly MyFaction Faction1;
+        [DataMember]
+        readonly internal MyFaction Faction1;
 
-        [DataMember] internal readonly MyFaction Faction2;
+        [DataMember]
+        readonly internal MyFaction Faction2;
 
-        [DataMember] internal readonly MyOfferType Relations;
+        [DataMember]
+        readonly internal MyOfferType Relations;
 
         [DataMember]
         protected override int[] Destination => MySave.Players.FindAll(x => x.AllowedMessages == MessagesType.All).Select(x => x.Vk).ToArray();
@@ -31,14 +34,10 @@ namespace EW.Utility.ObjectModel.Events
         {
             switch (Relations)
             {
-                case MyOfferType.WarToNeutral:
-                    return $"Фракции «{Faction1.Name}» и «{Faction2.Name}» заключили мирный договор";
-                case MyOfferType.NeutralToAlly:
-                    return $"Фракции «{Faction1.Name}» и «{Faction2.Name}» перешли к сотрудничеству";
-                case MyOfferType.AllyToNeutral:
-                    return $"Фракции «{Faction1.Name}» и «{Faction2.Name}» больше не сотрудничают";
-                case MyOfferType.NeutralToWar:
-                    return $"Фракции «{Faction1.Name}» и «{Faction2.Name}» теперь находятся в состоянии войны";
+                case MyOfferType.WarToNeutral: return $"Фракции «{Faction1.Name}» и «{Faction2.Name}» заключили мирный договор";
+                case MyOfferType.NeutralToAlly: return $"Фракции «{Faction1.Name}» и «{Faction2.Name}» перешли к сотрудничеству";
+                case MyOfferType.AllyToNeutral: return $"Фракции «{Faction1.Name}» и «{Faction2.Name}» больше не сотрудничают";
+                case MyOfferType.NeutralToWar: return $"Фракции «{Faction1.Name}» и «{Faction2.Name}» теперь находятся в состоянии войны";
                 default: throw new ArgumentException(nameof(Relations));
             }
         }

@@ -4,8 +4,8 @@ namespace EW.Utility.ObjectModel.Events
 {
     public class MyEventImprovementBuilded : AMyEvent
     {
-        internal readonly SectorImprovementType Improvement;
-        internal readonly MySector Sector;
+        readonly internal SectorImprovementType Improvement;
+        readonly internal MySector Sector;
 
         public MyEventImprovementBuilded(MySector sector, SectorImprovementType improvement) : base(false)
         {

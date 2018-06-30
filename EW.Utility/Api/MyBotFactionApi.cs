@@ -7,7 +7,7 @@ namespace EW.Utility.Api
 {
     internal sealed class MyBotFactionApi : MyBasicApi
     {
-        internal readonly MyFaction Faction;
+        readonly internal MyFaction Faction;
 
         internal string Tag => Faction.Tag;
 
@@ -17,8 +17,7 @@ namespace EW.Utility.Api
             if (Sender is null) throw new ArgumentNullException("Игрок не зарегистрирован", nameof(sender));
             if (Sender.IsBanned) throw new ArgumentException("Игрок заблокирован", nameof(sender));
             Faction = MySave.Factions.Find(x => x.Tag == Sender.Tag);
-            if (Faction is null || !Sender.IsFactionLeader)
-                throw new InvalidOperationException("Игрок не состоит во фракции или не является ее лидером");
+            if (Faction is null || !Sender.IsFactionLeader) throw new InvalidOperationException("Игрок не состоит во фракции или не является ее лидером");
         }
 
         internal MyBotFactionApi(MyPlayer sender)
@@ -27,8 +26,7 @@ namespace EW.Utility.Api
             if (Sender is null) throw new ArgumentNullException("Игрок не зарегистрирован", nameof(sender));
             if (Sender.IsBanned) throw new ArgumentException("Игрок заблокирован", nameof(sender));
             Faction = MySave.Factions.Find(x => x.Tag == Sender.Tag);
-            if (Faction is null || !Sender.IsFactionLeader)
-                throw new InvalidOperationException("Игрок не состоит во фракции или не является ее лидером");
+            if (Faction is null || !Sender.IsFactionLeader) throw new InvalidOperationException("Игрок не состоит во фракции или не является ее лидером");
         }
 
         static internal List<string> GetTradeShips()
@@ -151,7 +149,7 @@ namespace EW.Utility.Api
             if (impId == SectorImprovementType.Headquarters) return MyBuildImprovementResult.NotAvalable;
             if (Faction.BulidPoints <= 0) return MyBuildImprovementResult.NoPoint;
             if (sector.Tag != Tag) return MyBuildImprovementResult.NotOwner;
-            var (buyable, cost, _) = SMyEconomyConsts.SectorImprovements[(impId, 1)];
+            (bool buyable, MyResourses cost, _) = SMyEconomyConsts.SectorImprovements[(impId, 1)];
             if (!buyable) return MyBuildImprovementResult.NotAvalable;
             if (!Faction.Resourses.CheckCost(cost)) return MyBuildImprovementResult.NoResourses;
             sector.Improvement = (impId, 1);
@@ -177,7 +175,7 @@ namespace EW.Utility.Api
         {
             if (sector.Tag != Tag) return MyDestroyImprovementResult.NotOwner;
             if (sector.Improvement.Type == 0) return MyDestroyImprovementResult.EmptySector;
-            var (buyable, cost, _) = SMyEconomyConsts.SectorImprovements[sector.Improvement];
+            (bool buyable, MyResourses cost, _) = SMyEconomyConsts.SectorImprovements[sector.Improvement];
             if (!buyable) return MyDestroyImprovementResult.NotAvalable;
             sector.Improvement = (SectorImprovementType.None, 0);
             Faction.Resourses += cost / 2;
@@ -258,8 +256,7 @@ namespace EW.Utility.Api
             NoPoint = -3,
             NotAvalable = -4,
             UseDestroyImprovement = -5,
-            SectorImproved = -6,
-            
+            SectorImproved = -6
         }
 
         internal enum MyDestroyImprovementResult

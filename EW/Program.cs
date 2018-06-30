@@ -41,7 +41,9 @@ namespace EW
 
             Console.Write($"{DateTime.Now}: Автосохранение: ");
             if (MySave.BotSettings.AutoSaveInterval == 0)
+            {
                 Console.WriteLine("ВЫКЛ");
+            }
             else
             {
                 Console.Write(MySave.BotSettings.AutoSaveInterval);

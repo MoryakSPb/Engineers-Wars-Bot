@@ -95,10 +95,8 @@ namespace EW.Utility
         {
             switch (fight)
             {
-                case MySectorFight _:
-                    return Flag;
-                case MyTradeShipFight _:
-                    return Rocket;
+                case MySectorFight _: return Flag;
+                case MyTradeShipFight _: return Rocket;
                 default: return "⚔";
             }
         }
@@ -112,8 +110,7 @@ namespace EW.Utility
                 case MyOfferType.NeutralToAlly: return "Союзный договор";
                 case MyOfferType.AllyToNeutral: return "Разрыв союзного договора";
                 case MyOfferType.NeutralToWar: return "Объявление войны";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                default: throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
         }
 
@@ -124,8 +121,7 @@ namespace EW.Utility
                 case MyOfferOptions.Trade: return string.Empty;
                 case MyOfferOptions.CreatePact: return "Мирный договор";
                 case MyOfferOptions.ChangeUnion: return "Оборонительный союз";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(opt), opt, null);
+                default: throw new ArgumentOutOfRangeException(nameof(opt), opt, null);
             }
         }
 
@@ -135,16 +131,11 @@ namespace EW.Utility
         {
             switch (result)
             {
-                case FightResult.NoResult:
-                    return "(Н/Д)";
-                case FightResult.AttackersWin:
-                    return "Победа атакующих";
-                case FightResult.DefendersWin:
-                    return "Победа обороняющихся";
-                case FightResult.Stalemate:
-                    return "Пат";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(result), result, null);
+                case FightResult.NoResult: return "(Н/Д)";
+                case FightResult.AttackersWin: return "Победа атакующих";
+                case FightResult.DefendersWin: return "Победа обороняющихся";
+                case FightResult.Stalemate: return "Пат";
+                default: throw new ArgumentOutOfRangeException(nameof(result), result, null);
             }
         }
 
@@ -152,14 +143,10 @@ namespace EW.Utility
         {
             switch (status)
             {
-                case TradeShipStatus.None:
-                    return "(Н/Д)";
-                case TradeShipStatus.Started:
-                    return "Запущен";
-                case TradeShipStatus.InWay:
-                    return "В пути";
-                case TradeShipStatus.Attacked:
-                    return "Атакован";
+                case TradeShipStatus.None: return "(Н/Д)";
+                case TradeShipStatus.Started: return "Запущен";
+                case TradeShipStatus.InWay: return "В пути";
+                case TradeShipStatus.Attacked: return "Атакован";
                 default: throw new ArgumentOutOfRangeException(nameof(status), status, null);
             }
         }

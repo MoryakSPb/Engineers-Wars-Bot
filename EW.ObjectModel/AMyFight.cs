@@ -6,23 +6,31 @@ namespace EW.ObjectModel
 {
     [Serializable]
     [DataContract]
-    public abstract class AMyFight : IComparable<AMyFight>
+    abstract public class AMyFight : IComparable<AMyFight>
     {
-        [DataMember] public int AttackersMercSlots;
+        [DataMember]
+        public int AttackersMercSlots;
 
-        [DataMember] public List<string> AttackersPlayers = new List<string>();
+        [DataMember]
+        public List<string> AttackersPlayers = new List<string>();
 
-        [DataMember] public Dictionary<ShipType, int> AttackersСasualties = SMyEconomyConsts.GetNewEmptyShipDictionary();
+        [DataMember]
+        public Dictionary<ShipType, int> AttackersСasualties = SMyEconomyConsts.GetNewEmptyShipDictionary();
 
-        [DataMember] public int DefendersMercSlots;
+        [DataMember]
+        public int DefendersMercSlots;
 
-        [DataMember] public List<string> DefendersPlayers = new List<string>();
+        [DataMember]
+        public List<string> DefendersPlayers = new List<string>();
 
-        [DataMember] public Dictionary<ShipType, int> DefendersСasualties = SMyEconomyConsts.GetNewEmptyShipDictionary();
+        [DataMember]
+        public Dictionary<ShipType, int> DefendersСasualties = SMyEconomyConsts.GetNewEmptyShipDictionary();
 
-        [DataMember] protected string MAttackersTag;
+        [DataMember]
+        protected string MAttackersTag;
 
-        [DataMember] protected string MDefendersTag;
+        [DataMember]
+        protected string MDefendersTag;
 
         [IgnoreDataMember]
         public string AttackersTag
@@ -31,8 +39,10 @@ namespace EW.ObjectModel
             set
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (value.Length == 3 || string.IsNullOrEmpty(value)) MAttackersTag = value;
-                else throw new ArgumentException("Некорректный тег", nameof(value));
+                if (value.Length == 3 || string.IsNullOrEmpty(value))
+                    MAttackersTag = value;
+                else
+                    throw new ArgumentException("Некорректный тег", nameof(value));
             }
         }
 
@@ -42,8 +52,10 @@ namespace EW.ObjectModel
             set
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (value.Length == 3 || string.IsNullOrEmpty(value)) MDefendersTag = value;
-                else throw new ArgumentException("Некорректный тег", nameof(value));
+                if (value.Length == 3 || string.IsNullOrEmpty(value))
+                    MDefendersTag = value;
+                else
+                    throw new ArgumentException("Некорректный тег", nameof(value));
             }
         }
 
@@ -52,7 +64,6 @@ namespace EW.ObjectModel
 
         [DataMember]
         public FightResult Result { get; set; }
-
 
         [DataMember]
         public DateTime StartTime { get; set; }

@@ -21,7 +21,9 @@ namespace EW.Utility.ObjectModel
                 EveryDay = true;
             }
             else
+            {
                 EveryDay = false;
+            }
 
             Time = time;
             ScriptName = scriptName ?? throw new ArgumentNullException(nameof(scriptName));

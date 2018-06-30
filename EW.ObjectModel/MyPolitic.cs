@@ -5,9 +5,12 @@ namespace EW.ObjectModel
     [DataContract]
     public class MyPolitic
     {
-        [DataMember] private bool _mPact;
-        [DataMember] protected (string, string) MFactions;
-        [DataMember] protected bool MUnion;
+        [DataMember]
+        private bool _mPact;
+        [DataMember]
+        protected (string, string) MFactions;
+        [DataMember]
+        protected bool MUnion;
 
         [IgnoreDataMember]
         public string Id => Factions.Item1 + "-" + Factions.Item2;
@@ -54,7 +57,6 @@ namespace EW.ObjectModel
             PactTurns = 0;
         }*/
     }
-
 
     public enum MyPoliticStatus
     {

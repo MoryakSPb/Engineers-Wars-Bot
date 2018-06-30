@@ -7,7 +7,7 @@ namespace EW.Utility.ObjectModel.Events
 {
     internal class MyEventFightCreated : AMyEvent
     {
-        internal readonly AMyFight Fight;
+        readonly internal AMyFight Fight;
 
         protected override int[] Destination => MySave.Players.FindAll(x => x.AllowedMessages == MessagesType.All && (x.Tag == Fight.AttackersTag || x.Tag == Fight.DefendersTag)).Select(x => x.Vk).ToArray();
         public MyEventFightCreated(AMyFight fight) : base(false) => Fight = fight ?? throw new ArgumentNullException(nameof(fight));

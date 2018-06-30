@@ -6,7 +6,8 @@ namespace EW.ObjectModel
     [DataContract]
     public class MySectorFight : AMyFight
     {
-        [DataMember] public readonly string Sector;
+        [DataMember]
+        readonly public string Sector;
 
         public bool ImprovementDestroyed { get; set; }
 
