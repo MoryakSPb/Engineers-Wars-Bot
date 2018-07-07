@@ -3,5 +3,4 @@ solution: EW.sln
 mono: none
 dotnet: 2.1.301
 script:
-- dotnet restore
 - dotnet build ./EW -c Release -f netcoreapp2.1
